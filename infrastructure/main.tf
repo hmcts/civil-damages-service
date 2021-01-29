@@ -3,7 +3,7 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "rg" {
-  name     = "${var.product}-${var.component}-${var.env}"
+  name     = "unspec-service-${var.env}"
   location = var.location
 
   tags = var.common_tags
@@ -23,7 +23,7 @@ module "key-vault" {
 }
 
 resource "azurerm_application_insights" "appinsights" {
-  name                = "${var.product}-${var.component}-appinsights-${var.env}"
+  name                = "unspec-service-appinsights-${var.env}"
   location            = var.appinsights_location
   resource_group_name = azurerm_resource_group.rg.name
   application_type    = "web"
