@@ -169,12 +169,15 @@ task contract(type: Test) {
 }
 
 task installDependencies(type: Exec, description: 'Installs Yarn dependencies.') {
-  onlyIf(new Spec<Task>() {
-    boolean isSatisfiedBy(Task task) {
-      return 'false'
-    }
-  })
   commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'install'
+}
+
+task checkDependenciesIntegrity(type: Exec, description: 'Checks integrity of Yarn dependencies.') {
+  commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'check', '--integrity'
+}
+
+task lintUserInterfaceTests(type: Exec, description: 'Runs linting of E2E tests.') {
+  commandLine '/usr/bin/yarn', '--silent', 'lint'
 }
 
 task awaitApplicationReadiness(type: Exec, description: 'Awaits until application is ready.') {
@@ -182,11 +185,6 @@ task awaitApplicationReadiness(type: Exec, description: 'Awaits until applicatio
 }
 
 task runSmokeTests(type: Exec, description: 'Runs smoke tests.') {
-  onlyIf(new Spec<Task>() {
-    boolean isSatisfiedBy(Task task) {
-      return 'false'
-    }
-  })
   commandLine '/usr/bin/yarn', '--silent', 'test:smoke'
 }
 
@@ -207,11 +205,11 @@ def inStrictOrder(Task... tasks) {
 }
 
 task smoke(description: 'Runs the smoke tests.') {
-  dependsOn(inStrictOrder(awaitApplicationReadiness, installDependencies))
+  dependsOn(inStrictOrder(awaitApplicationReadiness, installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runSmokeTests))
 }
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(inStrictOrder(awaitApplicationReadiness, installDependencies))
+  dependsOn(inStrictOrder(awaitApplicationReadiness, installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runFunctionalTests))
 }
 
 project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
