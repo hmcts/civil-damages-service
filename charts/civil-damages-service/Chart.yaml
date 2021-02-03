@@ -24,8 +24,8 @@ dependencies:
     repository: '@hmctspublic'
     condition: idam-pr.enabled
   - name: postgresql
-    version: 8.9.8
-    repository: https://charts.bitnami.com/bitnami
+    version: 11.3
+    repository: hmctspublic.azurecr.io:imported/postgres
     condition: postgresql.enabled
   - name: camunda-bpm
     version: 0.0.12

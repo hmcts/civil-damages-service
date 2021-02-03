@@ -4,7 +4,10 @@ tags:
 postgresql:
   enabled: true
   image:
-    tag: '11.3.0'
+    registry: hmctspublic.azurecr.io
+    repository: imported/postgres
+    tag: '11.3'
+    pullPolicy: Always
   resources:
     requests:
       cpu: 25m
@@ -15,7 +18,12 @@ postgresql:
       CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "camunda" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-
+  securityContext:
+    enabled: true
+    fsGroup: 1001
+    runAsUser: 1001
+  volumePermissions:
+    enabled: true
   postgresqlUsername: hmcts
   postgresqlPassword: hmcts
   persistence:
