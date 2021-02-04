@@ -8,14 +8,15 @@ latestDefinitionAssetId=$(curl https://api.github.com/repos/hmcts/civil-damages-
 
 curl -L \
   -H "Accept: application/octet-stream" \
-  --output civil-damages-camunda-bpmn-definition.zip \
+  --output "$(realpath $workspace)/civil-damages-camunda-bpmn-definition.zip" \
   https://api.github.com/repos/hmcts/civil-damages-camunda-bpmn-definition/releases/assets/${latestDefinitionAssetId} \
-
-unzip civil-damages-camunda-bpmn-definition.zip -d camunda
-rm civil-damages-camunda-bpmn-definition.zip
 
 filepath="$(realpath $workspace)/camunda"
 echo $filepath
+
+unzip "$(realpath $workspace)/civil-damages-camunda-bpmn-definition.zip" -d $filepath
+rm "$(realpath $workspace)/civil-damages-camunda-bpmn-definition.zip"
+
 serviceToken=$($(realpath $workspace)/civil-unspecified-docker/bin/utils/idam-lease-service-token.sh unspec_service $(docker run --rm toolbelt/oathtool --totp -b ${S2S_SECRET:-AABBCCDDEEFFGGHH}))
 
 for file in $(find ${filepath} -name '*.bpmn')
