@@ -7,12 +7,9 @@ postgresql:
     registry: hmctspublic.azurecr.io
     repository: imported/postgres
     tag: '11.3'
-    pullPolicy: Always
-    debug: true
   resources:
     requests:
-      memory: 256Mi
-      cpu: 250m
+      cpu: 25m
   initdbScripts:
     init.sql: |-
       CREATE DATABASE cmc WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
@@ -21,113 +18,11 @@ postgresql:
       CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "camunda" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
   securityContext:
-    enabled: true
-    fsGroup: 1001
-    runAsUser: 1001
+    runAsUser: 0
   postgresqlUsername: hmcts
   postgresqlPassword: hmcts
   persistence:
     enabled: false
-    mountPath: /bitnami/postgresql
-    accessModes:
-      - ReadWriteOnce
-    size: 8Gi
-    annotations: { }
-
-  volumePermissions:
-    enabled: true
-    image:
-      registry: docker.io
-      repository: bitnami/minideb
-      tag: latest
-      pullPolicy: Always
-    securityContext:
-      runAsUser: 0
-
-  replication:
-    enabled: false
-    user: repl_user
-    password: repl_password
-    slaveReplicas: 1
-    synchronousCommit: "off"
-    numSynchronousReplicas: 0
-    applicationName: my_application
-
-  postgresqlDataDir: /bitnami/postgresql
-
-  service:
-    type: ClusterIP
-    port: 5432
-    annotations: {}
-
-  updateStrategy:
-    type: RollingUpdate
-
-  master:
-    nodeSelector: {}
-    affinity: {}
-    tolerations: []
-    podLabels: {}
-    podAnnotations: {}
-
-  slave:
-    nodeSelector: {}
-    affinity: {}
-    tolerations: []
-    podLabels: {}
-    podAnnotations: {}
-
-  networkPolicy:
-    enabled: false
-
-    allowExternal: true
-
-  livenessProbe:
-    enabled: true
-    initialDelaySeconds: 30
-    periodSeconds: 10
-    timeoutSeconds: 5
-    failureThreshold: 6
-    successThreshold: 1
-
-  readinessProbe:
-    enabled: true
-    initialDelaySeconds: 5
-    periodSeconds: 10
-    timeoutSeconds: 5
-    failureThreshold: 6
-    successThreshold: 1
-
-  metrics:
-    enabled: false
-    service:
-      type: ClusterIP
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "9187"
-      loadBalancerIP:
-    image:
-      registry: docker.io
-      repository: wrouesnel/postgres_exporter
-      tag: v0.4.7
-      pullPolicy: IfNotPresent
-    livenessProbe:
-      enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 10
-      timeoutSeconds: 5
-      failureThreshold: 6
-      successThreshold: 1
-
-    readinessProbe:
-      enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 10
-      timeoutSeconds: 5
-      failureThreshold: 6
-      successThreshold: 1
-
-  extraEnv: {}
 
 java:
   image: ${IMAGE_NAME}
