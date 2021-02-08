@@ -48,7 +48,7 @@ def uploadCoreCaseDataDefinitions(env) {
     ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/ccd-unspec-${env}.xlsx"
     sh """
     eval \$(./variables/load-${env}-environment-variables.sh)
-    ${WORKSPACE}/civil-unspecified-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
+    ${WORKSPACE}/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
   """
   }
 }
