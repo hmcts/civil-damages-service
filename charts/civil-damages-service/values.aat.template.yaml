@@ -21,7 +21,8 @@ postgresql:
       CREATE DATABASE "camunda" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
   securityContext:
     enabled: true
-    runAsUser: 0
+    fsGroup: 1001
+    runAsUser: 1001
   volumePermissions:
     enabled: true
     securityContext:
