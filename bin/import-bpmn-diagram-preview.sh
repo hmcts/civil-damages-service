@@ -17,7 +17,7 @@ echo $filepath
 unzip "$(realpath $workspace)/civil-damages-camunda-bpmn-definition.zip" -d $filepath
 rm "$(realpath $workspace)/civil-damages-camunda-bpmn-definition.zip"
 
-serviceToken=$($(realpath $workspace)/bin/utils/idam-lease-service-token.sh unspec_service $(docker run --rm toolbelt/oathtool --totp -b ${S2S_SECRET:-AABBCCDDEEFFGGHH}))
+serviceToken=$($(realpath $workspace)/civil-unspecified-docker/bin/utils/idam-lease-service-token.sh unspec_service $(docker run --rm toolbelt/oathtool --totp -b ${S2S_SECRET:-AABBCCDDEEFFGGHH}))
 
 for file in $(find ${filepath} -name '*.bpmn')
 do
