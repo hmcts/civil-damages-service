@@ -8,6 +8,8 @@ postgresql:
     registry: hmctspublic.azurecr.io
     repository: imported/postgres
     tag: '11.3'
+    pullPolicy: Always
+    debug: true
   resources:
     requests:
       cpu: 25m
@@ -19,9 +21,15 @@ postgresql:
       CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "camunda" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
   securityContext:
+    enabled: true
     runAsUser: 0
+  volumePermissions:
+    enabled: true
+    securityContext:
+      runAsUser: 0
   postgresqlUsername: hmcts
   postgresqlPassword: hmcts
+  postgresqlDataDir: /bitnami/postgresql
   persistence:
     enabled: false
 
