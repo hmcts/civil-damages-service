@@ -89,7 +89,7 @@ ccd:
     definitionImporter:
       enabled: false
     managementWeb:
-      enabled: true
+      enabled: false
     s2s:
       enabled: false
     postgresql:
@@ -97,7 +97,6 @@ ccd:
 
   global:
     ccdApiGatewayIngress: gateway-${SERVICE_FQDN}
-    ccdCaseManagementWebIngress: case-management-web-${SERVICE_FQDN}
     ccdDataStoreUrl: http://${SERVICE_NAME}-ccd-data-store-api
     ccdDefinitionStoreUrl: http://${SERVICE_NAME}-ccd-definition-store
     ccdUserProfileUrl: http://${SERVICE_NAME}-ccd-user-profile-api
