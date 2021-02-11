@@ -33,16 +33,6 @@ def secrets = [
   ]
 ]
 
-def uploadCoreCaseDataDefinitions(env) {
-  dir("${WORKSPACE}/bin"){
-    ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/ccd-unspec-${env}.xlsx"
-    sh """
-    eval \$(./variables/load-${env}-environment-variables.sh)
-    ${WORKSPACE}/civil-unspecified-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
-  """
-  }
-}
-
 def validateRpaContract() {
   sh """ ./gradlew contract """
 }
@@ -107,9 +97,11 @@ withPipeline(type, product, component) {
   before('smoketest:aat') {
     validateRpaContract()
     sh """
+      eval \$(./bin/variables/load-staging-environment-variables.sh)
       ./bin/add-roles.sh
       ./bin/pull-latest-release-asset.sh civil-damages-ccd-definition civil-damages-ccd-definition.zip
       ./bin/pull-latest-release-asset.sh civil-damages-ccd-definition civil-damages-e2e.zip
+      ./bin/import-ccd-definition.sh
     """
     env.URL="https://xui-civil-damages-service-staging.service.core-compute-preview.internal"
     uploadCoreCaseDataDefinitions('staging')
