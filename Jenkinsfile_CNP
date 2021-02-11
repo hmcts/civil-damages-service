@@ -75,7 +75,6 @@ withPipeline(type, product, component) {
       ./bin/add-roles.sh
       ./bin/pull-latest-release-asset.sh civil-damages-ccd-definition civil-damages-ccd-definition.zip
       ./bin/pull-latest-release-asset.sh civil-damages-ccd-definition civil-damages-e2e.zip
-      ./bin/pull-latest-release-asset.sh civil-damages-camunda-bpmn-definition civil-damages-camunda-bpmn-definition.zip
       ./bin/import-ccd-definition.sh
     """
 
@@ -95,6 +94,7 @@ withPipeline(type, product, component) {
     dir("${WORKSPACE}/bin") {
       sh """
         eval \$(./variables/load-preview-environment-variables.sh ${CHANGE_ID})
+        ./pull-latest-release-asset.sh civil-damages-camunda-bpmn-definition civil-damages-camunda-bpmn-definition.zip
         ./import-bpmn-diagram.sh ${WORKSPACE}
       """
     }
@@ -110,7 +110,6 @@ withPipeline(type, product, component) {
       ./bin/add-roles.sh
       ./bin/pull-latest-release-asset.sh civil-damages-ccd-definition civil-damages-ccd-definition.zip
       ./bin/pull-latest-release-asset.sh civil-damages-ccd-definition civil-damages-e2e.zip
-      ./bin/pull-latest-release-asset.sh civil-damages-camunda-bpmn-definition civil-damages-camunda-bpmn-definition.zip
     """
     env.URL="https://xui-civil-damages-service-staging.service.core-compute-preview.internal"
     uploadCoreCaseDataDefinitions('staging')
@@ -130,6 +129,7 @@ withPipeline(type, product, component) {
     dir("${WORKSPACE}/bin") {
       sh """
         eval \$(./variables/load-staging-environment-variables.sh)
+        ./pull-latest-release-asset.sh civil-damages-camunda-bpmn-definition civil-damages-camunda-bpmn-definition.zip
         ./import-bpmn-diagram.sh ${WORKSPACE}
       """
     }
