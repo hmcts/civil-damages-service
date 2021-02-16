@@ -3,9 +3,6 @@
 set -eu
 workspace=${1}
 
-echo ${S2S_SECRET:-AABBCCDDEEFFGGHH}
-echo $(docker run --rm toolbelt/oathtool --totp -b ${S2S_SECRET:-AABBCCDDEEFFGGHH})
-
 serviceToken=$($(realpath $workspace)/bin/utils/idam-lease-service-token.sh unspec_service \
   $(docker run --rm toolbelt/oathtool --totp -b ${S2S_SECRET:-AABBCCDDEEFFGGHH}))
 filepath="$(realpath $workspace)/camunda"
