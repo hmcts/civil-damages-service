@@ -58,14 +58,6 @@ withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
   }
 
-  after('checkout') {
-    sh """
-      eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
-      ./bin/pull-latest-release-asset.sh civil-damages-camunda-bpmn-definition civil-damages-camunda-bpmn-definition.zip
-      ./bin/import-bpmn-diagram.sh .
-    """
-  }
-
   before('smoketest:preview') {
     validateRpaContract()
     sh """
@@ -74,6 +66,8 @@ withPipeline(type, product, component) {
       ./bin/pull-latest-release-asset.sh civil-damages-ccd-definition civil-damages-ccd-definition.zip
       ./bin/pull-latest-release-asset.sh civil-damages-ccd-definition civil-damages-e2e.zip
       ./bin/import-ccd-definition.sh
+      ./bin/pull-latest-release-asset.sh civil-damages-camunda-bpmn-definition civil-damages-camunda-bpmn-definition.zip
+      ./bin/import-bpmn-diagram.sh .
     """
 
     env.URL="https://xui-civil-damages-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
