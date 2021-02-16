@@ -1,6 +1,6 @@
 # civil-damages-service
 
-Civil Damages CCD Callback Service.
+Civil Damages CCD Callback Service. 
 
 ### Contents:
 - [Prerequisites](#prerequisites)
