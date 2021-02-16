@@ -58,6 +58,14 @@ withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
   }
 
+  after('checkout') {
+    sh """
+      eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
+      ./bin/pull-latest-release-asset.sh civil-damages-camunda-bpmn-definition civil-damages-camunda-bpmn-definition.zip
+      ./bin/import-bpmn-diagram.sh .
+    """
+  }
+
   before('smoketest:preview') {
     validateRpaContract()
     sh """
