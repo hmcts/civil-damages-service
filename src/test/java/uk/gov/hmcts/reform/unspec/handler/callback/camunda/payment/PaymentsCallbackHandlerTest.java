@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.unspec.service.PaymentsService;
 import uk.gov.hmcts.reform.unspec.service.Time;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 
 import static feign.Request.HttpMethod.GET;
@@ -36,6 +35,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.unspec.enums.PaymentStatus.FAILED;
+import static uk.gov.hmcts.reform.unspec.enums.PaymentStatus.SUCCESS;
 
 @SpringBootTest(classes = {
     PaymentsCallbackHandler.class,
@@ -66,8 +67,7 @@ class PaymentsCallbackHandlerTest extends BaseCallbackHandlerTest {
     @BeforeEach
     public void setup() {
         caseData = CaseDataBuilder.builder().atStatePendingCaseIssued().build();
-        params = callbackParamsOf(new HashMap<>(), ABOUT_TO_SUBMIT)
-            .toBuilder().caseData(caseData).build();
+        params = callbackParamsOf(caseData, ABOUT_TO_SUBMIT);
 
         when(time.now()).thenReturn(LocalDateTime.of(2020, 1, 1, 12, 0, 0));
     }
@@ -80,8 +80,9 @@ class PaymentsCallbackHandlerTest extends BaseCallbackHandlerTest {
         var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
 
         verify(paymentsService).createCreditAccountPayment(caseData, "BEARER_TOKEN");
-        assertThat(response.getData()).extracting("paymentDetails").extracting("reference")
-            .isEqualTo(SUCCESSFUL_PAYMENT_REFERENCE);
+        assertThat(response.getData()).extracting("claimIssuedPaymentDetails")
+            .extracting("reference", "status", "customerReference")
+            .containsExactly(SUCCESSFUL_PAYMENT_REFERENCE, SUCCESS.toString(), "12345");
         assertThat(response.getData()).containsEntry("paymentSuccessfulDate", "2020-01-01T12:00:00");
     }
 
@@ -93,11 +94,10 @@ class PaymentsCallbackHandlerTest extends BaseCallbackHandlerTest {
         var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
 
         verify(paymentsService).createCreditAccountPayment(caseData, "BEARER_TOKEN");
-        assertThat(response.getData()).extracting("paymentDetails").extracting("reference").isNull();
-        assertThat(response.getData()).extracting("paymentDetails").extracting("errorMessage")
-            .isEqualTo(PAYMENT_ERROR_MESSAGE);
-        assertThat(response.getData()).extracting("paymentDetails").extracting("errorCode")
-            .isEqualTo(PAYMENT_ERROR_CODE);
+        assertThat(response.getData()).extracting("claimIssuedPaymentDetails").extracting("reference").isNull();
+        assertThat(response.getData()).extracting("claimIssuedPaymentDetails")
+            .extracting("errorMessage", "errorCode", "status", "customerReference")
+            .containsExactly(PAYMENT_ERROR_MESSAGE, PAYMENT_ERROR_CODE, FAILED.toString(), "12345");
         assertThat(response.getErrors()).isEmpty();
     }
 

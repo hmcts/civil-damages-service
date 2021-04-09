@@ -16,12 +16,14 @@ import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.callback.CaseEvent;
 import uk.gov.hmcts.reform.unspec.config.ClaimIssueConfiguration;
 import uk.gov.hmcts.reform.unspec.enums.YesOrNo;
+import uk.gov.hmcts.reform.unspec.launchdarkly.FeatureToggleService;
 import uk.gov.hmcts.reform.unspec.launchdarkly.OnBoardingOrganisationControlService;
 import uk.gov.hmcts.reform.unspec.model.BusinessProcess;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
 import uk.gov.hmcts.reform.unspec.model.CorrectEmail;
 import uk.gov.hmcts.reform.unspec.model.IdamUserDetails;
 import uk.gov.hmcts.reform.unspec.model.Party;
+import uk.gov.hmcts.reform.unspec.model.PaymentDetails;
 import uk.gov.hmcts.reform.unspec.model.SolicitorReferences;
 import uk.gov.hmcts.reform.unspec.model.common.DynamicList;
 import uk.gov.hmcts.reform.unspec.repositories.ReferenceNumberRepository;
@@ -83,6 +85,7 @@ public class CreateClaimCallbackHandler extends CallbackHandler implements Parti
     private final OnBoardingOrganisationControlService onboardingOrganisationControlService;
     private final ObjectMapper objectMapper;
     private final Time time;
+    private final FeatureToggleService featureToggleService;
 
     @Override
     protected Map<String, Callback> callbacks() {
@@ -146,17 +149,24 @@ public class CreateClaimCallbackHandler extends CallbackHandler implements Parti
     private CallbackResponse calculateFee(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
         Optional<SolicitorReferences> references = ofNullable(caseData.getSolicitorReferences());
-        String paymentReference = ofNullable(caseData.getPaymentReference())
-            .orElse(references.map(SolicitorReferences::getApplicantSolicitor1Reference).orElse(""));
+        String reference = references.map(SolicitorReferences::getApplicantSolicitor1Reference).orElse("");
+        CaseData.CaseDataBuilder caseDataBuilder = caseData.toBuilder();
 
-        String authToken = callbackParams.getParams().get(BEARER_TOKEN).toString();
-        List<String> pbaNumbers = getPbaAccounts(authToken);
+        if (featureToggleService.isFeatureEnabled("payment-reference")) {
+            Optional<PaymentDetails> paymentDetails = ofNullable(caseData.getClaimIssuedPaymentDetails());
+            String customerReference = paymentDetails.map(PaymentDetails::getCustomerReference).orElse(reference);
+            PaymentDetails updatedDetails = PaymentDetails.builder().customerReference(customerReference).build();
+            caseDataBuilder.claimIssuedPaymentDetails(updatedDetails);
+        } else {
+            String customerReference = ofNullable(caseData.getPaymentReference()).orElse(reference);
+            caseDataBuilder.paymentReference(customerReference);
+        }
 
-        CaseData.CaseDataBuilder caseDataBuilder = caseData.toBuilder()
-            .claimFee(feesService.getFeeDataByClaimValue(caseData.getClaimValue()))
+        List<String> pbaNumbers = getPbaAccounts(callbackParams.getParams().get(BEARER_TOKEN).toString());
+
+        caseDataBuilder.claimFee(feesService.getFeeDataByClaimValue(caseData.getClaimValue()))
             .applicantSolicitor1PbaAccounts(DynamicList.fromList(pbaNumbers))
-            .applicantSolicitor1PbaAccountsIsEmpty(pbaNumbers.isEmpty() ? YES : NO)
-            .paymentReference(paymentReference);
+            .applicantSolicitor1PbaAccountsIsEmpty(pbaNumbers.isEmpty() ? YES : NO);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDataBuilder.build().toMap(objectMapper))

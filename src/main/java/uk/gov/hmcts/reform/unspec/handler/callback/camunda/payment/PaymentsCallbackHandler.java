@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackParams.Params.BEARER_TOKEN;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.MAKE_PBA_PAYMENT;
@@ -57,8 +58,14 @@ public class PaymentsCallbackHandler extends CallbackHandler {
         List<String> errors = new ArrayList<>();
         try {
             var paymentReference = paymentsService.createCreditAccountPayment(caseData, authToken).getReference();
+            PaymentDetails paymentDetails = ofNullable(caseData.getClaimIssuedPaymentDetails())
+                .map(PaymentDetails::toBuilder).orElse(PaymentDetails.builder())
+                .status(SUCCESS)
+                .reference(paymentReference)
+                .build();
+
             caseData = caseData.toBuilder()
-                .paymentDetails(PaymentDetails.builder().status(SUCCESS).reference(paymentReference).build())
+                .claimIssuedPaymentDetails(paymentDetails)
                 .paymentSuccessfulDate(time.now())
                 .build();
         } catch (FeignException e) {
@@ -84,12 +91,15 @@ public class PaymentsCallbackHandler extends CallbackHandler {
         try {
             var paymentDto = objectMapper.readValue(e.contentUTF8(), PaymentDto.class);
             var statusHistory = paymentDto.getStatusHistories()[0];
+            PaymentDetails paymentDetails = ofNullable(caseData.getClaimIssuedPaymentDetails())
+                .map(PaymentDetails::toBuilder).orElse(PaymentDetails.builder())
+                .status(FAILED)
+                .errorCode(statusHistory.getErrorCode())
+                .errorMessage(statusHistory.getErrorMessage())
+                .build();
+
             return caseData.toBuilder()
-                .paymentDetails(PaymentDetails.builder()
-                                    .status(FAILED)
-                                    .errorCode(statusHistory.getErrorCode())
-                                    .errorMessage(statusHistory.getErrorMessage())
-                                    .build())
+                .claimIssuedPaymentDetails(paymentDetails)
                 .build();
         } catch (JsonProcessingException jsonException) {
             log.error(String.format("Unknown payment error for case: %s, response body: %s",
