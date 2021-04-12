@@ -135,6 +135,10 @@ feign:
       remoteExternalTaskService:
         url: http://localhost:9404/engine-rest/
 
+camunda.bpm.client:
+  base-url: http://localhost:9404/engine-rest/
+  async-response-timeout: 29000
+
 fees:
   api:
     url: http://localhost:8765
@@ -237,6 +241,9 @@ feign:
         url: http://fake/engine-rest/
       remoteExternalTaskService:
         url: http://fake/engine-rest/
+
+camunda.bpm.client:
+  base-url: http://fake/engine-rest/
 
 notifications:
   govNotifyApiKey: some-gov-uk-notify-api-key

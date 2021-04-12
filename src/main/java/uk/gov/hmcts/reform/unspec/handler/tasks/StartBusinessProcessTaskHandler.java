@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.unspec.handler.tasks;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.variable.VariableMap;
@@ -22,6 +23,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
+@ExternalTaskSubscription(topicName = "START_BUSINESS_PROCESS")
 public class StartBusinessProcessTaskHandler implements BaseExternalTaskHandler {
 
     public static final String FLOW_STATE = "flowState";
