@@ -25,6 +25,8 @@ import uk.gov.hmcts.reform.unspec.model.ResponseDocument;
 import uk.gov.hmcts.reform.unspec.model.SolicitorOrganisationDetails;
 import uk.gov.hmcts.reform.unspec.model.SolicitorReferences;
 import uk.gov.hmcts.reform.unspec.model.StatementOfTruth;
+import uk.gov.hmcts.reform.unspec.model.common.DynamicList;
+import uk.gov.hmcts.reform.unspec.model.common.DynamicListElement;
 import uk.gov.hmcts.reform.unspec.model.common.Element;
 import uk.gov.hmcts.reform.unspec.model.documents.CaseDocument;
 import uk.gov.hmcts.reform.unspec.model.dq.Applicant1DQ;
@@ -87,6 +89,8 @@ public class CaseDataBuilder {
     private String claimTypeOther;
     private PersonalInjuryType personalInjuryType;
     private String personalInjuryTypeOther;
+    private DynamicList applicantSolicitor1PbaAccounts;
+    private Fee claimFee;
     private StatementOfTruth applicantSolicitor1ClaimStatementOfTruth;
     private Fee claimFee;
     private String paymentReference;
@@ -594,6 +598,14 @@ public class CaseDataBuilder {
             .build();
         claimType = ClaimType.PERSONAL_INJURY;
         personalInjuryType = ROAD_ACCIDENT;
+        applicantSolicitor1PbaAccounts = DynamicList.builder()
+            .value(DynamicListElement.builder().label("PBA0077597").build())
+            .build();
+        claimFee = Fee.builder()
+            .version("1")
+            .code("CODE")
+            .calculatedAmountInPence(BigDecimal.valueOf(100))
+            .build();
         applicant1 = PartyBuilder.builder().individual().build();
         respondent1 = PartyBuilder.builder().soleTrader().build();
         respondent1Represented = YES;
@@ -794,6 +806,8 @@ public class CaseDataBuilder {
             .claimTypeOther(claimTypeOther)
             .personalInjuryType(personalInjuryType)
             .personalInjuryTypeOther(personalInjuryTypeOther)
+            .applicantSolicitor1PbaAccounts(applicantSolicitor1PbaAccounts)
+            .claimFee(claimFee)
             .applicant1(applicant1)
             .respondent1(respondent1)
             .respondent1Represented(respondent1Represented)
