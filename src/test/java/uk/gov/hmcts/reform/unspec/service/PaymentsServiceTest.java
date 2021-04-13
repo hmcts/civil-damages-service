@@ -64,7 +64,8 @@ class PaymentsServiceTest {
     void shouldCreateCreditAccountPayment_whenValidCaseDetails() {
         CaseData caseData = CaseDataBuilder.builder().atStatePendingCaseIssued()
             .applicant1OrganisationPolicy(OrganisationPolicy.builder()
-                                              .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder().organisationID("OrgId").build())
+            .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
+                              .organisationID("OrgId").build())
                                               .build())
             .build();
         var expectedCreditAccountPaymentRequest = CreditAccountPaymentRequest.builder()
