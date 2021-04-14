@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.unspec.callback.Callback;
 import uk.gov.hmcts.reform.unspec.callback.CallbackHandler;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.callback.CaseEvent;
+import uk.gov.hmcts.reform.unspec.launchdarkly.FeatureToggleService;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
 import uk.gov.hmcts.reform.unspec.model.PaymentDetails;
 import uk.gov.hmcts.reform.unspec.service.PaymentsService;
@@ -41,6 +42,7 @@ public class PaymentsCallbackHandler extends CallbackHandler {
     private final PaymentsService paymentsService;
     private final ObjectMapper objectMapper;
     private final Time time;
+    private final FeatureToggleService featureToggleService;
 
     @Override
     protected Map<String, Callback> callbacks() {
@@ -58,16 +60,23 @@ public class PaymentsCallbackHandler extends CallbackHandler {
         List<String> errors = new ArrayList<>();
         try {
             var paymentReference = paymentsService.createCreditAccountPayment(caseData, authToken).getReference();
+            CaseData.CaseDataBuilder builder = caseData.toBuilder();
             PaymentDetails paymentDetails = ofNullable(caseData.getClaimIssuedPaymentDetails())
                 .map(PaymentDetails::toBuilder).orElse(PaymentDetails.builder())
                 .status(SUCCESS)
                 .reference(paymentReference)
                 .build();
 
-            caseData = caseData.toBuilder()
-                .claimIssuedPaymentDetails(paymentDetails)
+            if (featureToggleService.isFeatureEnabled("payment-reference")) {
+                builder.claimIssuedPaymentDetails(paymentDetails);
+            } else {
+                builder.paymentDetails(paymentDetails);
+            }
+
+            caseData = builder
                 .paymentSuccessfulDate(time.now())
                 .build();
+
         } catch (FeignException e) {
             log.info(String.format("Http Status %s ", e.status()), e);
             if (e.status() == 403) {
@@ -98,9 +107,14 @@ public class PaymentsCallbackHandler extends CallbackHandler {
                 .errorMessage(statusHistory.getErrorMessage())
                 .build();
 
-            return caseData.toBuilder()
-                .claimIssuedPaymentDetails(paymentDetails)
-                .build();
+            CaseData.CaseDataBuilder builder = caseData.toBuilder();
+            if (featureToggleService.isFeatureEnabled("payment-reference")) {
+                builder.claimIssuedPaymentDetails(paymentDetails);
+            } else {
+                builder.paymentDetails(paymentDetails);
+            }
+
+            return builder.build();
         } catch (JsonProcessingException jsonException) {
             log.error(String.format("Unknown payment error for case: %s, response body: %s",
                                     caseData.getCcdCaseReference(), e.contentUTF8()
