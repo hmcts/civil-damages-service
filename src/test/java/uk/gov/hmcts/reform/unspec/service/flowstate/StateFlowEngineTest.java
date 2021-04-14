@@ -28,18 +28,18 @@ import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DISMISSED_PAST_CLAIM_DETAILS_NOTIFICATION_DEADLINE;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DISMISSED_PAST_CLAIM_NOTIFICATION_DEADLINE;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_ISSUED;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_ISSUED_PAYMENT_SUCCESSFUL;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_WITHDRAWN;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.DRAFT;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.EXTENSION_REQUESTED;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.PAYMENT_SUCCESSFUL;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.PENDING_CASE_ISSUED;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.PENDING_CLAIM_ISSUED;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.PROCEEDS_OFFLINE_UNREPRESENTED_DEFENDANT;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.RESPONDENT_COUNTER_CLAIM;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.RESPONDENT_FULL_ADMISSION;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.RESPONDENT_FULL_DEFENCE;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.RESPONDENT_PART_ADMISSION;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.TAKEN_OFFLINE_PAST_APPLICANT_RESPONSE_DEADLINE;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT;
 
 @SpringBootTest(classes = {
     JacksonAutoConfiguration.class,
@@ -63,12 +63,12 @@ class StateFlowEngineTest {
             assertThat(stateFlow.getState())
                 .extracting(State::getName)
                 .isNotNull()
-                .isEqualTo(PENDING_CASE_ISSUED.fullName());
+                .isEqualTo(PENDING_CLAIM_ISSUED.fullName());
             assertThat(stateFlow.getStateHistory())
                 .hasSize(2)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName());
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName());
         }
 
         @Test
@@ -80,13 +80,13 @@ class StateFlowEngineTest {
             assertThat(stateFlow.getState())
                 .extracting(State::getName)
                 .isNotNull()
-                .isEqualTo(PROCEEDS_OFFLINE_UNREPRESENTED_DEFENDANT.fullName());
+                .isEqualTo(TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT.fullName());
             assertThat(stateFlow.getStateHistory())
                 .hasSize(4)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName(), PAYMENT_SUCCESSFUL.fullName(),
-                    PROCEEDS_OFFLINE_UNREPRESENTED_DEFENDANT.fullName()
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
+                    TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT.fullName()
                 );
         }
 
@@ -104,8 +104,9 @@ class StateFlowEngineTest {
                 .hasSize(4)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName(), PAYMENT_SUCCESSFUL.fullName(),
-                    PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT.fullName());
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
+                    PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT.fullName()
+                );
         }
 
         @Test
@@ -117,12 +118,12 @@ class StateFlowEngineTest {
             assertThat(stateFlow.getState())
                 .extracting(State::getName)
                 .isNotNull()
-                .isEqualTo(PAYMENT_SUCCESSFUL.fullName());
+                .isEqualTo(CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName());
             assertThat(stateFlow.getStateHistory())
                 .hasSize(3)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName(), PAYMENT_SUCCESSFUL.fullName());
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName());
         }
 
         @Test
@@ -139,7 +140,7 @@ class StateFlowEngineTest {
                 .hasSize(4)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName(), PAYMENT_SUCCESSFUL.fullName(),
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     AWAITING_CASE_NOTIFICATION.fullName()
                 );
         }
@@ -158,7 +159,7 @@ class StateFlowEngineTest {
                 .hasSize(5)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName(), PAYMENT_SUCCESSFUL.fullName(),
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName()
                 );
         }
@@ -177,7 +178,7 @@ class StateFlowEngineTest {
                 .hasSize(6)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName(), PAYMENT_SUCCESSFUL.fullName(),
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
                     CLAIM_ISSUED.fullName()
                 );
@@ -197,7 +198,7 @@ class StateFlowEngineTest {
                 .hasSize(7)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName(), PAYMENT_SUCCESSFUL.fullName(),
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
                     CLAIM_ISSUED.fullName(), CLAIM_ACKNOWLEDGED.fullName()
                 );
@@ -219,7 +220,7 @@ class StateFlowEngineTest {
                 .hasSize(8)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName(), PAYMENT_SUCCESSFUL.fullName(),
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
                     CLAIM_ISSUED.fullName(), CLAIM_ACKNOWLEDGED.fullName(),
                     CLAIM_DISMISSED_DEFENDANT_OUT_OF_TIME.fullName()
@@ -240,7 +241,7 @@ class StateFlowEngineTest {
                 .hasSize(8)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName(), PAYMENT_SUCCESSFUL.fullName(),
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
                     CLAIM_ISSUED.fullName(), CLAIM_ACKNOWLEDGED.fullName(), EXTENSION_REQUESTED.fullName()
                 );
@@ -260,7 +261,7 @@ class StateFlowEngineTest {
                 .hasSize(7)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName(), PAYMENT_SUCCESSFUL.fullName(),
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
                     CLAIM_ISSUED.fullName(), RESPONDENT_FULL_DEFENCE.fullName()
                 );
@@ -280,7 +281,7 @@ class StateFlowEngineTest {
                 .hasSize(7)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName(), PAYMENT_SUCCESSFUL.fullName(),
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
                     CLAIM_ISSUED.fullName(), RESPONDENT_FULL_ADMISSION.fullName()
                 );
@@ -300,7 +301,7 @@ class StateFlowEngineTest {
                 .hasSize(7)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName(), PAYMENT_SUCCESSFUL.fullName(),
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
                     CLAIM_ISSUED.fullName(), RESPONDENT_PART_ADMISSION.fullName()
                 );
@@ -320,7 +321,7 @@ class StateFlowEngineTest {
                 .hasSize(7)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName(), PAYMENT_SUCCESSFUL.fullName(),
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
                     CLAIM_ISSUED.fullName(), RESPONDENT_COUNTER_CLAIM.fullName()
                 );
@@ -340,7 +341,7 @@ class StateFlowEngineTest {
                 .hasSize(7)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName(), PAYMENT_SUCCESSFUL.fullName(),
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
                     CLAIM_ISSUED.fullName(), CLAIM_DISMISSED_DEFENDANT_OUT_OF_TIME.fullName()
                 );
@@ -364,7 +365,7 @@ class StateFlowEngineTest {
                 .hasSize(8)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName(), PAYMENT_SUCCESSFUL.fullName(),
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
                     CLAIM_ISSUED.fullName(), RESPONDENT_FULL_DEFENCE.fullName(),
                     flowState.fullName()
@@ -385,7 +386,7 @@ class StateFlowEngineTest {
                 .hasSize(5)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName(), PAYMENT_SUCCESSFUL.fullName(),
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     AWAITING_CASE_NOTIFICATION.fullName(), CASE_PROCEEDS_IN_CASEMAN.fullName()
                 );
         }
@@ -404,8 +405,8 @@ class StateFlowEngineTest {
                 .hasSize(8)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName(), PAYMENT_SUCCESSFUL.fullName(),
-                    AWAITING_CASE_NOTIFICATION.fullName(),  AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
+                    AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
                     CLAIM_ISSUED.fullName(), RESPONDENT_FULL_DEFENCE.fullName(),
                     TAKEN_OFFLINE_PAST_APPLICANT_RESPONSE_DEADLINE.fullName()
                 );
@@ -425,8 +426,8 @@ class StateFlowEngineTest {
                 .hasSize(5)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName(), PAYMENT_SUCCESSFUL.fullName(),
-                    AWAITING_CASE_NOTIFICATION.fullName(),  CLAIM_DISMISSED_PAST_CLAIM_NOTIFICATION_DEADLINE.fullName()
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
+                    AWAITING_CASE_NOTIFICATION.fullName(), CLAIM_DISMISSED_PAST_CLAIM_NOTIFICATION_DEADLINE.fullName()
                 );
         }
 
@@ -446,7 +447,7 @@ class StateFlowEngineTest {
                 .hasSize(6)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CASE_ISSUED.fullName(), PAYMENT_SUCCESSFUL.fullName(),
+                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
                     CLAIM_DISMISSED_PAST_CLAIM_DETAILS_NOTIFICATION_DEADLINE.fullName()
                 );
@@ -457,10 +458,10 @@ class StateFlowEngineTest {
     class HasTransitionedTo {
 
         @ParameterizedTest
-        @CsvSource({
+        @CsvSource( {
             "true,CLAIM_ISSUED",
-            "true,PAYMENT_SUCCESSFUL",
-            "true,PENDING_CASE_ISSUED",
+            "true,CLAIM_ISSUED_PAYMENT_SUCCESSFUL",
+            "true,PENDING_CLAIM_ISSUED",
             "true,DRAFT",
             "false,RESPONDENT_FULL_DEFENCE",
             "false,FULL_DEFENCE_PROCEED",
@@ -483,11 +484,11 @@ class StateFlowEngineTest {
             mode = EnumSource.Mode.EXCLUDE,
             names = {
                 "DRAFT",
-                "PENDING_CASE_ISSUED",
-                "PAYMENT_FAILED",
-                "PAYMENT_SUCCESSFUL",
+                "PENDING_CLAIM_ISSUED",
+                "CLAIM_ISSUED_PAYMENT_FAILED",
+                "CLAIM_ISSUED_PAYMENT_SUCCESSFUL",
                 "CLAIM_DISCONTINUED",
-                "PROCEEDS_OFFLINE_UNREPRESENTED_DEFENDANT",
+                "TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT",
                 "PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT",
                 "PROCEEDS_OFFLINE_ADMIT_OR_COUNTER_CLAIM",
                 "AWAITING_CASE_NOTIFICATION",
@@ -515,12 +516,15 @@ class StateFlowEngineTest {
             mode = EnumSource.Mode.EXCLUDE,
             names = {
                 "DRAFT",
-                "PENDING_CASE_ISSUED",
-                "PAYMENT_FAILED",
-                "PAYMENT_SUCCESSFUL",
-                "CLAIM_WITHDRAWN",
-                "PROCEEDS_OFFLINE_UNREPRESENTED_DEFENDANT",
+                "CLAIM_SUBMITTED",
+                "PENDING_CLAIM_ISSUED",
                 "PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT",
+                "PENDING_CLAIM_ISSUED_UNREPRESENTED_DEFENDANT",
+                "CLAIM_ISSUED_PAYMENT_FAILED",
+                "CLAIM_ISSUED_PAYMENT_SUCCESSFUL",
+                "CLAIM_WITHDRAWN",
+                "TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT",
+                "TAKEN_OFFLINE_UNREGISTERED_DEFENDANT",
                 "PROCEEDS_OFFLINE_ADMIT_OR_COUNTER_CLAIM",
                 "AWAITING_CASE_NOTIFICATION",
                 "AWAITING_CASE_DETAILS_NOTIFICATION",

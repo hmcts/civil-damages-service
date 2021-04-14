@@ -8,7 +8,6 @@ import java.util.function.Predicate;
 import static uk.gov.hmcts.reform.unspec.enums.CaseState.CASE_DISMISSED;
 import static uk.gov.hmcts.reform.unspec.enums.CaseState.PROCEEDS_IN_HERITAGE_SYSTEM;
 import static uk.gov.hmcts.reform.unspec.enums.PaymentStatus.FAILED;
-import static uk.gov.hmcts.reform.unspec.enums.PaymentStatus.SUCCESS;
 import static uk.gov.hmcts.reform.unspec.enums.RespondentResponseType.COUNTER_CLAIM;
 import static uk.gov.hmcts.reform.unspec.enums.RespondentResponseType.FULL_ADMISSION;
 import static uk.gov.hmcts.reform.unspec.enums.RespondentResponseType.FULL_DEFENCE;
@@ -18,8 +17,8 @@ import static uk.gov.hmcts.reform.unspec.enums.YesOrNo.YES;
 
 public class FlowPredicate {
 
-    public static final Predicate<CaseData> pendingCaseIssued = caseData ->
-        caseData.getLegacyCaseReference() != null;
+    public static final Predicate<CaseData> claimSubmitted = caseData ->
+        caseData.getSubmittedDate() != null;
 
     public static final Predicate<CaseData> respondent1NotRepresented = caseData ->
         caseData.getIssueDate() != null && caseData.getRespondent1Represented() == NO;
@@ -31,9 +30,9 @@ public class FlowPredicate {
         caseData.getPaymentDetails() != null && caseData.getPaymentDetails().getStatus() == FAILED;
 
     public static final Predicate<CaseData> paymentSuccessful = caseData ->
-        caseData.getPaymentDetails() != null && caseData.getPaymentDetails().getStatus() == SUCCESS;
+        caseData.getPaymentSuccessfulDate() != null;
 
-    public static final Predicate<CaseData> claimIssued = caseData ->
+    public static final Predicate<CaseData> pendingClaimIssued = caseData ->
         caseData.getIssueDate() != null
             && caseData.getRespondent1Represented() == YES
             && caseData.getRespondent1OrgRegistered() == YES;
@@ -43,6 +42,32 @@ public class FlowPredicate {
 
     public static final Predicate<CaseData> claimDetailsNotified = caseData ->
         caseData.getClaimDetailsNotificationDate() != null;
+
+    public static final Predicate<CaseData> fullDefence = caseData ->
+        caseData.getRespondent1ResponseDate() != null && caseData.getRespondent1ClaimResponseType() == FULL_DEFENCE;
+
+    public static final Predicate<CaseData> fullAdmission = caseData ->
+        caseData.getApplicant1ResponseDate() != null
+            && caseData.getRespondent1ClaimResponseType() == FULL_ADMISSION;
+
+    public static final Predicate<CaseData> partAdmission = caseData ->
+        caseData.getApplicant1ResponseDate() != null
+            && caseData.getRespondent1ClaimResponseType() == PART_ADMISSION;
+
+    public static final Predicate<CaseData> counterClaim = caseData ->
+        caseData.getApplicant1ResponseDate() != null && caseData.getRespondent1ClaimResponseType() == COUNTER_CLAIM;
+
+    public static final Predicate<CaseData> claimDetailsExtension = caseData ->
+        caseData.getRespondent1TimeExtensionDate() != null;
+
+    public static final Predicate<CaseData> claimIssued = caseData ->
+        caseData.getClaimNotificationDeadline() != null;
+
+    public static final Predicate<CaseData> offlineNotRegistered = caseData ->
+        caseData.getRespondent1OrgRegistered() == NO && caseData.getTakenOfflineDate() != null;
+
+    public static final Predicate<CaseData> offlineNotRepresented = caseData ->
+        caseData.getRespondent1Represented() == NO && caseData.getTakenOfflineDate() != null;
 
     public static final Predicate<CaseData> respondentAcknowledgeClaim = caseData ->
         caseData.getRespondent1AcknowledgeNotificationDate() != null

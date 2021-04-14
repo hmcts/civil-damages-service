@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseDis
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseProceedsInCaseman;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimDetailsNotified;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimDiscontinued;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimIssued;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.pendingClaimIssued;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimNotified;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimTakenOffline;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimWithdrawn;
@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.fullDef
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.pastClaimDetailsNotificationDeadline;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.paymentFailed;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.paymentSuccessful;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.pendingCaseIssued;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimSubmitted;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.respondent1NotRepresented;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.respondent1OrgNotRegistered;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.respondentAcknowledgeClaim;
@@ -43,13 +43,13 @@ class FlowPredicateTest {
         @Test
         void shouldReturnTrue_whenCaseDataAtIssuedState() {
             CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseNotification().build();
-            assertTrue(pendingCaseIssued.test(caseData));
+            assertTrue(claimSubmitted.test(caseData));
         }
 
         @Test
         void shouldReturnFalse_whenCaseDataIsAtDraftState() {
             CaseData caseData = CaseDataBuilder.builder().atStateClaimDraft().build();
-            assertFalse(pendingCaseIssued.test(caseData));
+            assertFalse(claimSubmitted.test(caseData));
         }
     }
 
@@ -157,13 +157,13 @@ class FlowPredicateTest {
         @Test
         void shouldReturnTrue_whenCaseDataIsAtAwaitingCaseNotification() {
             CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseNotification().build();
-            assertTrue(claimIssued.test(caseData));
+            assertTrue(pendingClaimIssued.test(caseData));
         }
 
         @Test
         void shouldReturnFalse_whenCaseDataAtDraftState() {
             CaseData caseData = CaseDataBuilder.builder().atStatePaymentSuccessful().build();
-            assertFalse(claimIssued.test(caseData));
+            assertFalse(pendingClaimIssued.test(caseData));
         }
     }
 

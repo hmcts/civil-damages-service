@@ -89,7 +89,7 @@ class RpaConsumerTest extends BaseRpaTest {
         @SneakyThrows
         void shouldGeneratePact_whenClaimAgainstUnrepresentedDefendant() {
             CaseData caseData = CaseDataBuilder.builder()
-                .atState(FlowState.Main.PROCEEDS_OFFLINE_UNREPRESENTED_DEFENDANT)
+                .atState(FlowState.Main.TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT)
                 .build();
             String payload = roboticsDataMapper.toRoboticsCaseData(caseData).toJsonString();
 

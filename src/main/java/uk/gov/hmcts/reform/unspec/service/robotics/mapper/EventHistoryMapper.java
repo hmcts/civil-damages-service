@@ -33,7 +33,7 @@ public class EventHistoryMapper {
         State state = stateFlowEngine.evaluate(caseData).getState();
         FlowState.Main mainFlowState = (FlowState.Main) FlowState.fromFullName(state.getName());
         switch (mainFlowState) {
-            case PROCEEDS_OFFLINE_UNREPRESENTED_DEFENDANT:
+            case TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT:
                 buildUnrepresentedDefendant(caseData, builder);
                 break;
             case PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT:

@@ -304,11 +304,11 @@ public class CaseDataBuilder {
         switch (flowState) {
             case DRAFT:
                 return atStateClaimDraft();
-            case PENDING_CASE_ISSUED:
+            case PENDING_CLAIM_ISSUED:
                 return atStatePendingCaseIssued();
-            case PAYMENT_SUCCESSFUL:
+            case CLAIM_ISSUED_PAYMENT_SUCCESSFUL:
                 return atStatePaymentSuccessful();
-            case PAYMENT_FAILED:
+            case CLAIM_ISSUED_PAYMENT_FAILED:
                 return atStatePaymentFailed();
             case AWAITING_CASE_NOTIFICATION:
                 return atStateAwaitingCaseNotification();
@@ -338,7 +338,7 @@ public class CaseDataBuilder {
                 return atStateClaimDiscontinued();
             case PROCEEDS_OFFLINE_ADMIT_OR_COUNTER_CLAIM:
                 return atStateProceedsOfflineAdmissionOrCounterClaim();
-            case PROCEEDS_OFFLINE_UNREPRESENTED_DEFENDANT:
+            case TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT:
                 return atStateProceedsOfflineUnrepresentedDefendant();
             case PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT:
                 return atStateProceedsOfflineUnregisteredDefendant();
