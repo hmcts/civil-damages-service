@@ -18,7 +18,8 @@ public class ServedDocumentFiles {
     private List<Element<DocumentWithRegex>> other;
     private List<Element<Document>> medicalReports;
     private List<Element<DocumentWithRegex>> scheduleOfLoss;
-    private Document particularsOfClaimDocument;
+    private Document particularsOfClaimDocumentBackwardsCompatibility;
+    private List<Element<Document>> particularsOfClaimDocument;
     private String particularsOfClaimText;
     private List<Element<DocumentWithRegex>> certificateOfSuitability;
 
@@ -32,6 +33,15 @@ public class ServedDocumentFiles {
         if (ofNullable(particularsOfClaimDocument).isEmpty() && ofNullable(particularsOfClaimText).isEmpty()) {
             errors.add("You must add Particulars of claim details");
         }
+
+        if (ofNullable(particularsOfClaimDocumentBackwardsCompatibility).isPresent() && ofNullable(particularsOfClaimText).isPresent()) {
+            errors.add("More than one Particulars of claim details added");
+        }
+
+        if (ofNullable(particularsOfClaimDocumentBackwardsCompatibility).isEmpty() && ofNullable(particularsOfClaimText).isEmpty()) {
+            errors.add("You must add Particulars of claim details");
+        }
+
         return errors;
     }
 }

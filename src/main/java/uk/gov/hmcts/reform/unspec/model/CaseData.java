@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.unspec.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
@@ -22,6 +24,8 @@ import uk.gov.hmcts.reform.unspec.model.dq.Respondent1DQ;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import javax.validation.Valid;
 
 import static uk.gov.hmcts.reform.unspec.enums.BusinessProcessStatus.FINISHED;
@@ -126,4 +130,19 @@ public class CaseData implements MappableObject {
     private final LocalDateTime applicant1ResponseDate;
     private final LocalDateTime takenOfflineDate;
     private final LocalDateTime claimDismissedDate;
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> toMap(ObjectMapper mapper) {
+        Map<String, Object> map = mapper.convertValue(this, new TypeReference<>() {});
+        if (Optional.ofNullable(this.servedDocumentFiles).map(ServedDocumentFiles::getParticularsOfClaimDocumentBackwardsCompatibility).isPresent()) {
+            Map<String, Object> servedDocumentFilesMap = (Map<String, Object>) map.get("servedDocumentFiles");
+            servedDocumentFilesMap.put(
+                "particularsOfClaimDocument",
+                servedDocumentFilesMap.get("particularsOfClaimDocumentBackwardsCompatibility")
+            );
+            servedDocumentFilesMap.remove("particularsOfClaimDocumentBackwardsCompatibility");
+        }
+        return map;
+    }
 }
