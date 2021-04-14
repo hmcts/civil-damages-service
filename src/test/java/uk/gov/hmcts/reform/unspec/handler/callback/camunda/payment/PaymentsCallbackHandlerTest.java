@@ -119,9 +119,10 @@ class PaymentsCallbackHandlerTest extends BaseCallbackHandlerTest {
         var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
 
         verify(paymentsService).createCreditAccountPayment(caseData, "BEARER_TOKEN");
-        assertThat(response.getData()).extracting("paymentReference").isNull();
-        assertThat(response.getData()).extracting("paymentErrorMessage").isNull();
-        assertThat(response.getData()).extracting("paymentErrorCode").isNull();
+        assertThat(response.getData()).extracting("paymentReference").isEqualTo("12345");
+        assertThat(response.getData()).extracting("claimIssuedPaymentDetails")
+            .extracting("paymentErrorMessage", "paymentErrorCode")
+            .containsExactly(null, null);
         assertThat(response.getErrors()).containsOnly("Technical error occurred");
     }
 
