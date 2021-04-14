@@ -92,7 +92,6 @@ public class CaseDataBuilder {
     private DynamicList applicantSolicitor1PbaAccounts;
     private Fee claimFee;
     private StatementOfTruth applicantSolicitor1ClaimStatementOfTruth;
-    private Fee claimFee;
     private String paymentReference;
     private String legacyCaseReference;
     private AllocatedTrack allocatedTrack;
