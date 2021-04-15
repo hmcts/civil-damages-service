@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.unspec.event.TakeCaseOfflineEvent;
 import uk.gov.hmcts.reform.unspec.service.search.TakeCaseOfflineSearchService;
@@ -14,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+@Component
 @ExternalTaskSubscription(topicName = "TAKE_CASE_OFFLINE")
 public class TakeCaseOfflineHandler implements BaseExternalTaskHandler {
 

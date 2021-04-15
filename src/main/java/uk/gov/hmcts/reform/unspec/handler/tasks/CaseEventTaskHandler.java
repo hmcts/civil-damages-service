@@ -6,7 +6,7 @@ import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.engine.variable.VariableMap;
 import org.camunda.bpm.engine.variable.Variables;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.unspec.service.flowstate.StateFlowEngine;
 import java.util.Map;
 
 @RequiredArgsConstructor
-@Configuration
+@Component
 @ExternalTaskSubscription(topicName = "processCaseEvent")
 public class CaseEventTaskHandler implements BaseExternalTaskHandler {
 

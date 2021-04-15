@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.unspec.helpers.CaseDetailsConverter;
 import uk.gov.hmcts.reform.unspec.service.EventEmitterService;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+@Component
 @ConditionalOnExpression("${polling.event.emitter.enabled:true}")
 @ExternalTaskSubscription(topicName = "POLLING_EVENT_EMITTER")
 public class PollingEventEmitterHandler implements BaseExternalTaskHandler {
