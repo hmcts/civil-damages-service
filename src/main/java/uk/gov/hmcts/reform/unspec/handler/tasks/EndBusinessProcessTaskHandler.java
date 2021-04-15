@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
@@ -20,7 +20,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.END_BUSINESS_PROCESS;
 
 @Slf4j
-@Component
+@Configuration
 @RequiredArgsConstructor
 @ExternalTaskSubscription(topicName = "END_BUSINESS_PROCESS")
 public class EndBusinessProcessTaskHandler implements BaseExternalTaskHandler {

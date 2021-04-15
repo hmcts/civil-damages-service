@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.unspec.event.DismissClaimEvent;
 import uk.gov.hmcts.reform.unspec.service.search.CaseDismissedSearchService;
@@ -14,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-@Component
+@Configuration
 @ExternalTaskSubscription(topicName = "CASE_DISMISSED")
 public class ClaimDismissedHandler implements BaseExternalTaskHandler {
 
