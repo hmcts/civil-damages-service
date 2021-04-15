@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.unspec.service;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.reform.payments.client.request.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.prd.model.ContactInformation;
 import uk.gov.hmcts.reform.prd.model.Organisation;
 import uk.gov.hmcts.reform.unspec.config.PaymentsConfiguration;
-import uk.gov.hmcts.reform.unspec.launchdarkly.FeatureToggleService;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
 import uk.gov.hmcts.reform.unspec.sampledata.CaseDataBuilder;
 
@@ -53,9 +51,6 @@ class PaymentsServiceTest {
     private PaymentsConfiguration paymentsConfiguration;
 
     @MockBean
-    private FeatureToggleService featureToggleService;
-
-    @MockBean
     private OrganisationService organisationService;
 
     @Autowired
@@ -69,58 +64,22 @@ class PaymentsServiceTest {
         given(organisationService.findOrganisationById(any())).willReturn(Optional.of(ORGANISATION));
     }
 
-    @Nested
-    class FeatureToggleEnabled {
+    @Test
+    void shouldCreateCreditAccountPayment_whenValidCaseDetails() {
+        uk.gov.hmcts.reform.ccd.model.Organisation orgId = uk.gov.hmcts.reform.ccd.model.Organisation.builder()
+            .organisationID("OrgId").build();
 
-        @BeforeEach
-        void setUp() {
-            given(featureToggleService.isFeatureEnabled("payment-reference")).willReturn(true);
-        }
+        CaseData caseData = CaseDataBuilder.builder().atStatePendingCaseIssued()
+            .applicant1OrganisationPolicy(OrganisationPolicy.builder().organisation(orgId).build())
+            .build();
 
-        @Test
-        void shouldCreateCreditAccountPayment_whenValidCaseDetails() {
-            uk.gov.hmcts.reform.ccd.model.Organisation orgId = uk.gov.hmcts.reform.ccd.model.Organisation.builder()
-                .organisationID("OrgId").build();
+        var expectedCreditAccountPaymentRequest = getExpectedCreditAccountPaymentRequest(caseData);
 
-            CaseData caseData = CaseDataBuilder.builder().atStatePendingCaseIssued()
-                .applicant1OrganisationPolicy(OrganisationPolicy.builder().organisation(orgId).build())
-                .build();
+        PaymentDto paymentResponse = paymentsService.createCreditAccountPayment(caseData, AUTH_TOKEN);
 
-            var expectedCreditAccountPaymentRequest = getExpectedCreditAccountPaymentRequest(caseData);
-
-            PaymentDto paymentResponse = paymentsService.createCreditAccountPayment(caseData, AUTH_TOKEN);
-
-            verify(organisationService).findOrganisationById("OrgId");
-            verify(paymentsClient).createCreditAccountPayment(AUTH_TOKEN, expectedCreditAccountPaymentRequest);
-            assertThat(paymentResponse).isEqualTo(PAYMENT_DTO);
-        }
-    }
-
-    @Nested
-    class FeatureToggleDisabled {
-
-        @BeforeEach
-        void setUp() {
-            given(featureToggleService.isFeatureEnabled("payment-reference")).willReturn(false);
-        }
-
-        @Test
-        void shouldCreateCreditAccountPayment_whenValidCaseDetails() {
-            uk.gov.hmcts.reform.ccd.model.Organisation orgId = uk.gov.hmcts.reform.ccd.model.Organisation.builder()
-                .organisationID("OrgId").build();
-
-            CaseData caseData = CaseDataBuilder.builder().atStatePendingCaseIssued()
-                .applicant1OrganisationPolicy(OrganisationPolicy.builder().organisation(orgId).build())
-                .build();
-
-            var expectedCreditAccountPaymentRequest = getExpectedCreditAccountPaymentRequest(caseData);
-
-            PaymentDto paymentResponse = paymentsService.createCreditAccountPayment(caseData, AUTH_TOKEN);
-
-            verify(organisationService).findOrganisationById("OrgId");
-            verify(paymentsClient).createCreditAccountPayment(AUTH_TOKEN, expectedCreditAccountPaymentRequest);
-            assertThat(paymentResponse).isEqualTo(PAYMENT_DTO);
-        }
+        verify(organisationService).findOrganisationById("OrgId");
+        verify(paymentsClient).createCreditAccountPayment(AUTH_TOKEN, expectedCreditAccountPaymentRequest);
+        assertThat(paymentResponse).isEqualTo(PAYMENT_DTO);
     }
 
     private CreditAccountPaymentRequest getExpectedCreditAccountPaymentRequest(CaseData caseData) {

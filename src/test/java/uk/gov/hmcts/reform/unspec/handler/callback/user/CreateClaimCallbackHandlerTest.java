@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.unspec.config.ClaimIssueConfiguration;
 import uk.gov.hmcts.reform.unspec.config.MockDatabaseConfiguration;
 import uk.gov.hmcts.reform.unspec.handler.callback.BaseCallbackHandlerTest;
 import uk.gov.hmcts.reform.unspec.helpers.CaseDetailsConverter;
-import uk.gov.hmcts.reform.unspec.launchdarkly.FeatureToggleService;
 import uk.gov.hmcts.reform.unspec.launchdarkly.OnBoardingOrganisationControlService;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
 import uk.gov.hmcts.reform.unspec.model.CorrectEmail;
@@ -60,6 +59,7 @@ import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.MID;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.SUBMITTED;
+import static uk.gov.hmcts.reform.unspec.callback.CallbackVersion.V_1;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.CREATE_CLAIM;
 import static uk.gov.hmcts.reform.unspec.enums.AllocatedTrack.MULTI_CLAIM;
 import static uk.gov.hmcts.reform.unspec.enums.YesOrNo.NO;
@@ -109,9 +109,6 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
     @MockBean
     private IdamClient idamClient;
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     @Autowired
     private CreateClaimCallbackHandler handler;
@@ -293,19 +290,14 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
         }
 
         @Nested
-        class FeatureToggleEnabled {
-
-            @BeforeEach
-            void setup() {
-                given(featureToggleService.isFeatureEnabled("payment-reference")).willReturn(true);
-            }
+        class NewCode {
 
             @Test
             void shouldCalculateClaimFeeAndAddPbaNumbers_whenCalledAndOrgExistsInPrd() {
                 given(organisationService.findOrganisation(any())).willReturn(Optional.of(organisation));
 
                 CaseData caseData = CaseDataBuilder.builder().atStateClaimDraft().build();
-                CallbackParams params = callbackParamsOf(caseData, MID, pageId);
+                CallbackParams params = callbackParamsOf(V_1, caseData, MID, pageId);
 
                 var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
 
@@ -338,7 +330,7 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                 given(organisationService.findOrganisation(any())).willReturn(Optional.empty());
 
                 CaseData caseData = CaseDataBuilder.builder().atStateClaimDraft().build();
-                CallbackParams params = callbackParamsOf(caseData, MID, pageId);
+                CallbackParams params = callbackParamsOf(V_1, caseData, MID, pageId);
 
                 var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
 
@@ -363,11 +355,6 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
         @Nested
         class FeatureToggleDisabled {
-
-            @BeforeEach
-            void setup() {
-                given(featureToggleService.isFeatureEnabled("payment-reference")).willReturn(false);
-            }
 
             @Test
             void shouldCalculateClaimFeeAndAddPbaNumbers_whenCalledAndOrgExistsInPrd() {

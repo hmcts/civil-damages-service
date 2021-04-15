@@ -22,7 +22,17 @@ public abstract class CallbackHandler {
     }
 
     protected String callbackKey(CallbackType type, String pageId) {
-        return pageId == null ? type.getValue() : type.getValue() + "-" + pageId;
+        return callbackKey(null, type, pageId);
+    }
+
+    protected String callbackKey(CallbackVersion version, CallbackType type) {
+        return callbackKey(version, type, null);
+    }
+
+    protected String callbackKey(CallbackVersion version, CallbackType type, String pageId) {
+        String formattedVersion = ofNullable(version).map(x -> x.toString() + "-").orElse("");
+        String formattedPageId = ofNullable(pageId).map(x -> x + "-").orElse("");
+        return String.format("%s%s%s", formattedVersion, type.getValue(), formattedPageId);
     }
 
     public String camundaActivityId() {
@@ -44,19 +54,26 @@ public abstract class CallbackHandler {
     }
 
     public CallbackResponse handle(CallbackParams callbackParams) {
-        String callbackKey = callbackKey(callbackParams.getType(), callbackParams.getPageId());
+        String callbackKey = callbackKey(
+            callbackParams.getVersion(),
+            callbackParams.getType(),
+            callbackParams.getPageId()
+        );
         return ofNullable(callbacks().get(callbackKey))
             .map(callback -> callback.execute(callbackParams))
             .orElseThrow(() -> new CallbackException(
                 String.format(
-                    "Callback for event %s, type %s and page id %s not implemented",
+                    "Callback for event %s, version %s, type %s and page id %s not implemented",
                     callbackParams.getRequest().getEventId(),
-                    callbackParams.getType(), callbackParams.getPageId()
+                    callbackParams.getVersion(),
+                    callbackParams.getType(),
+                    callbackParams.getPageId()
                 )));
     }
 
     /**
      * To be used to return empty callback response, will be used in overriding classes.
+     *
      * @param callbackParams This parameter is required as this is passed as reference for execute method in CallBack
      * @return empty callback response
      */

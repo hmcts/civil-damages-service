@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.payments.client.models.StatusHistoryDto;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.handler.callback.BaseCallbackHandlerTest;
 import uk.gov.hmcts.reform.unspec.helpers.CaseDetailsConverter;
-import uk.gov.hmcts.reform.unspec.launchdarkly.FeatureToggleService;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
 import uk.gov.hmcts.reform.unspec.sampledata.CaseDataBuilder;
 import uk.gov.hmcts.reform.unspec.service.PaymentsService;
@@ -37,6 +36,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.unspec.callback.CallbackVersion.V_1;
 import static uk.gov.hmcts.reform.unspec.enums.PaymentStatus.FAILED;
 import static uk.gov.hmcts.reform.unspec.enums.PaymentStatus.SUCCESS;
 
@@ -57,9 +57,6 @@ class PaymentsCallbackHandlerTest extends BaseCallbackHandlerTest {
     @MockBean
     private Time time;
 
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
     @Autowired
     private PaymentsCallbackHandler handler;
 
@@ -72,17 +69,17 @@ class PaymentsCallbackHandlerTest extends BaseCallbackHandlerTest {
     @BeforeEach
     public void setup() {
         caseData = CaseDataBuilder.builder().atStatePendingCaseIssued().build();
-        params = callbackParamsOf(caseData, ABOUT_TO_SUBMIT);
 
         when(time.now()).thenReturn(LocalDateTime.of(2020, 1, 1, 12, 0, 0));
     }
 
     @Nested
-    class FeatureToggleEnabled {
+    class NewCode {
 
         @BeforeEach
         void setup() {
-            when(featureToggleService.isFeatureEnabled("payment-reference")).thenReturn(true);
+            params = callbackParamsOf(V_1, caseData, ABOUT_TO_SUBMIT);
+
         }
 
         @Test
@@ -150,11 +147,11 @@ class PaymentsCallbackHandlerTest extends BaseCallbackHandlerTest {
     }
 
     @Nested
-    class FeatureToggledDisabled {
+    class OldCode {
 
         @BeforeEach
         void setup() {
-            when(featureToggleService.isFeatureEnabled("payment-reference")).thenReturn(false);
+            params = callbackParamsOf(caseData, ABOUT_TO_SUBMIT);
         }
 
         @Test
@@ -167,7 +164,7 @@ class PaymentsCallbackHandlerTest extends BaseCallbackHandlerTest {
             verify(paymentsService).createCreditAccountPayment(caseData, "BEARER_TOKEN");
             assertThat(response.getData()).extracting("paymentDetails")
                 .extracting("reference", "status", "customerReference")
-                .containsExactly(SUCCESSFUL_PAYMENT_REFERENCE, SUCCESS.toString(), "12345");
+                .containsExactly(SUCCESSFUL_PAYMENT_REFERENCE, SUCCESS.toString(), null);
             assertThat(response.getData()).containsEntry("paymentSuccessfulDate", "2020-01-01T12:00:00");
         }
 
@@ -182,7 +179,7 @@ class PaymentsCallbackHandlerTest extends BaseCallbackHandlerTest {
             assertThat(response.getData()).extracting("paymentDetails").extracting("reference").isNull();
             assertThat(response.getData()).extracting("paymentDetails")
                 .extracting("errorMessage", "errorCode", "status", "customerReference")
-                .containsExactly(PAYMENT_ERROR_MESSAGE, PAYMENT_ERROR_CODE, FAILED.toString(), "12345");
+                .containsExactly(PAYMENT_ERROR_MESSAGE, PAYMENT_ERROR_CODE, FAILED.toString(), null);
             assertThat(response.getErrors()).isEmpty();
         }
 
