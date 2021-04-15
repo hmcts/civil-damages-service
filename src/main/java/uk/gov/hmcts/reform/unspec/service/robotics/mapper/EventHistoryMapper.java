@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.unspec.model.robotics.EventDetails;
 import uk.gov.hmcts.reform.unspec.model.robotics.EventHistory;
 import uk.gov.hmcts.reform.unspec.service.flowstate.FlowState;
 import uk.gov.hmcts.reform.unspec.service.flowstate.StateFlowEngine;
-import uk.gov.hmcts.reform.unspec.stateflow.model.State;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,67 +28,91 @@ public class EventHistoryMapper {
     private final StateFlowEngine stateFlowEngine;
 
     public EventHistory buildEvents(CaseData caseData) {
-        EventHistory.EventHistoryBuilder builder = EventHistory.builder();
-        State state = stateFlowEngine.evaluate(caseData).getState();
-        FlowState.Main mainFlowState = (FlowState.Main) FlowState.fromFullName(state.getName());
-        switch (mainFlowState) {
-            case PROCEEDS_OFFLINE_UNREPRESENTED_DEFENDANT:
-                buildUnrepresentedDefendant(caseData, builder);
-                break;
-            case PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT:
-                buildUnregisteredDefendant(caseData, builder);
-                break;
-            case RESPONDENT_FULL_ADMISSION:
-                buildRespondentFullAdmission(caseData, builder);
-                break;
-            case RESPONDENT_PART_ADMISSION:
-                buildRespondentPartAdmission(caseData, builder);
-                break;
-            case RESPONDENT_COUNTER_CLAIM:
-                buildRespondentCounterClaim(caseData, builder);
-                break;
-            case FULL_DEFENCE_NOT_PROCEED:
-                buildFullDefenceNotProceed(caseData, builder);
-                break;
-            case FULL_DEFENCE_PROCEED:
-                buildFullDefenceProceed(caseData, builder);
-                break;
-            default:
-                break;
-        }
+        EventHistory.EventHistoryBuilder builder = EventHistory.builder()
+            .directionsQuestionnaireFiled(List.of(Event.builder().build()));
+
+        stateFlowEngine.evaluate(caseData)
+            .getStateHistory()
+            .forEach(state -> {
+                FlowState.Main flowState = (FlowState.Main) FlowState.fromFullName(state.getName());
+                switch (flowState) {
+                    case PROCEEDS_OFFLINE_UNREPRESENTED_DEFENDANT:
+                        buildUnrepresentedDefendant(builder, caseData);
+                        break;
+                    case PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT:
+                        buildUnregisteredDefendant(builder, caseData);
+                        break;
+                    case AWAITING_CASE_NOTIFICATION:
+                        buildClaimantHasNotifiedDefendant(builder, caseData);
+                        break;
+                    case CLAIM_ACKNOWLEDGED:
+                        buildAcknowledgementOfServiceReceived(builder, caseData);
+                        break;
+                    case EXTENSION_REQUESTED:
+                        buildConsentExtensionFilingDefence(builder, caseData);
+                        break;
+                    case RESPONDENT_FULL_ADMISSION:
+                        buildRespondentFullAdmission(builder, caseData);
+                        break;
+                    case RESPONDENT_PART_ADMISSION:
+                        buildRespondentPartAdmission(builder, caseData);
+                        break;
+                    case RESPONDENT_COUNTER_CLAIM:
+                        buildRespondentCounterClaim(builder, caseData);
+                        break;
+                    case RESPONDENT_FULL_DEFENCE:
+                        buildRespondentFullDefence(builder, caseData);
+                        break;
+                    case FULL_DEFENCE_NOT_PROCEED:
+                        buildFullDefenceNotProceed(builder, caseData);
+                        break;
+                    case FULL_DEFENCE_PROCEED:
+                        buildFullDefenceProceed(builder, caseData);
+                        break;
+                    default:
+                        break;
+                }
+            });
+
         return builder.build();
     }
 
-    private void buildFullDefenceProceed(CaseData caseData, EventHistory.EventHistoryBuilder builder) {
-        buildMiscellaneousEvents(builder, caseData, "Applicant proceeds", 8);
-        buildAcknowledgementOfServiceReceived(builder, caseData);
-        buildConsentExtensionFilingDefence(builder, caseData);
-        buildDefenceFiled(builder, caseData);
-        builder.directionsQuestionnaireFiled(
-            List.of(
-                Event.builder()
-                    .eventSequence(5)
-                    .eventCode("197")
-                    .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
-                    .litigiousPartyID(RESPONDENT_ID)
-                    .eventDetailsText(prepareEventDetailsText(caseData.getRespondent1DQ()))
-                    .build(),
-                Event.builder()
-                    .eventSequence(7)
-                    .eventCode("197")
-                    .dateReceived(caseData.getApplicant1ResponseDate().format(ISO_DATE))
-                    .litigiousPartyID(APPLICANT_ID)
-                    .eventDetailsText(prepareEventDetailsText(caseData.getApplicant1DQ()))
-                    .build()
-            )
-        ).replyToDefence(List.of(
+    private void buildClaimantHasNotifiedDefendant(EventHistory.EventHistoryBuilder builder, CaseData caseData) {
+        builder.miscellaneous(
+            Event.builder()
+                .eventSequence(1)
+                .eventCode("999")
+                .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
+                .eventDetails(EventDetails.builder()
+                                  .miscText("Claimant has notified defendant")
+                                  .build())
+                .build());
+    }
+
+    private void buildFullDefenceProceed(EventHistory.EventHistoryBuilder builder, CaseData caseData) {
+        builder.replyToDefence(List.of(
             Event.builder()
                 .eventSequence(6)
                 .eventCode("66")
                 .dateReceived(caseData.getApplicant1ResponseDate().format(ISO_DATE))
                 .litigiousPartyID(APPLICANT_ID)
+                .build())
+        ).directionsQuestionnaire(
+            Event.builder()
+                .eventSequence(7)
+                .eventCode("197")
+                .dateReceived(caseData.getApplicant1ResponseDate().format(ISO_DATE))
+                .litigiousPartyID(APPLICANT_ID)
+                .eventDetailsText(prepareEventDetailsText(caseData.getApplicant1DQ()))
                 .build()
-        ));
+        ).miscellaneous(Event.builder()
+                            .eventSequence(8)
+                            .eventCode("999")
+                            .dateReceived(caseData.getApplicant1ResponseDate().format(ISO_DATE))
+                            .eventDetails(EventDetails.builder()
+                                              .miscText("RPA Reason: Applicant proceeds")
+                                              .build())
+                            .build());
     }
 
     private String prepareEventDetailsText(DQ dq) {
@@ -103,13 +126,30 @@ public class EventHistoryMapper {
         );
     }
 
-    private void buildFullDefenceNotProceed(CaseData caseData, EventHistory.EventHistoryBuilder builder) {
-        buildMiscellaneousEvents(builder, caseData, "Claimant intends not to proceed", 6);
-        buildAcknowledgementOfServiceReceived(builder, caseData);
-        buildConsentExtensionFilingDefence(builder, caseData);
-        buildDefenceFiled(builder, caseData);
-        builder.directionsQuestionnaireFiled(
-            List.of(
+    private void buildFullDefenceNotProceed(EventHistory.EventHistoryBuilder builder, CaseData caseData) {
+        builder.miscellaneous(Event.builder()
+                                  .eventSequence(6)
+                                  .eventCode("999")
+                                  .dateReceived(caseData.getApplicant1ResponseDate().format(ISO_DATE))
+                                  .eventDetails(EventDetails.builder()
+                                                    .miscText("RPA Reason: Claimant intends not to proceed")
+                                                    .build())
+                                  .build());
+    }
+
+    private void buildRespondentFullDefence(EventHistory.EventHistoryBuilder builder, CaseData caseData) {
+        builder
+            .defenceFiled(
+                List.of(
+                    Event.builder()
+                        .eventSequence(4)
+                        .eventCode("50")
+                        .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
+                        .litigiousPartyID(RESPONDENT_ID)
+                        .build()
+                ))
+            .clearDirectionsQuestionnaireFiled()
+            .directionsQuestionnaire(
                 Event.builder()
                     .eventSequence(5)
                     .eventCode("197")
@@ -117,24 +157,10 @@ public class EventHistoryMapper {
                     .litigiousPartyID(RESPONDENT_ID)
                     .eventDetailsText(prepareEventDetailsText(caseData.getRespondent1DQ()))
                     .build()
-            )
-        );
+            );
     }
 
-    private void buildDefenceFiled(EventHistory.EventHistoryBuilder builder, CaseData caseData) {
-        builder.defenceFiled(
-            List.of(
-                Event.builder()
-                    .eventSequence(4)
-                    .eventCode("50")
-                    .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
-                    .litigiousPartyID(RESPONDENT_ID)
-                    .build()
-            )
-        );
-    }
-
-    private void buildUnrepresentedDefendant(CaseData caseData, EventHistory.EventHistoryBuilder builder) {
+    private void buildUnrepresentedDefendant(EventHistory.EventHistoryBuilder builder, CaseData caseData) {
         builder.miscellaneous(
             List.of(
                 Event.builder()
@@ -148,7 +174,7 @@ public class EventHistoryMapper {
             ));
     }
 
-    private void buildUnregisteredDefendant(CaseData caseData, EventHistory.EventHistoryBuilder builder) {
+    private void buildUnregisteredDefendant(EventHistory.EventHistoryBuilder builder, CaseData caseData) {
         builder.miscellaneous(
             List.of(
                 Event.builder()
@@ -183,21 +209,24 @@ public class EventHistoryMapper {
                 ));
     }
 
-    private void buildRespondentFullAdmission(CaseData caseData, EventHistory.EventHistoryBuilder builder) {
-        builder.receiptOfAdmission(
-            List.of(
-                Event.builder()
-                    .eventSequence(4)
-                    .eventCode("40")
-                    .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
-                    .litigiousPartyID("002")
-                    .build()
-            )
-        );
-        buildCommonDefendantResponseEvents(builder, caseData, "Defendant fully admits.");
+    private void buildRespondentFullAdmission(EventHistory.EventHistoryBuilder builder, CaseData caseData) {
+        builder.receiptOfAdmission(List.of(Event.builder()
+                                               .eventSequence(4)
+                                               .eventCode("40")
+                                               .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
+                                               .litigiousPartyID("002")
+                                               .build())
+        ).miscellaneous(Event.builder()
+                            .eventSequence(5)
+                            .eventCode("999")
+                            .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
+                            .eventDetails(EventDetails.builder()
+                                              .miscText("RPA Reason: Defendant fully admits.")
+                                              .build())
+                            .build());
     }
 
-    private void buildRespondentPartAdmission(CaseData caseData, EventHistory.EventHistoryBuilder builder) {
+    private void buildRespondentPartAdmission(EventHistory.EventHistoryBuilder builder, CaseData caseData) {
         builder.receiptOfPartAdmission(
             List.of(
                 Event.builder()
@@ -207,11 +236,17 @@ public class EventHistoryMapper {
                     .litigiousPartyID("002")
                     .build()
             )
-        );
-        buildCommonDefendantResponseEvents(builder, caseData, "Defendant partial admission.");
+        ).miscellaneous(Event.builder()
+                            .eventSequence(5)
+                            .eventCode("999")
+                            .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
+                            .eventDetails(EventDetails.builder()
+                                              .miscText("RPA Reason: Defendant partial admission.")
+                                              .build())
+                            .build());
     }
 
-    private void buildRespondentCounterClaim(CaseData caseData, EventHistory.EventHistoryBuilder builder) {
+    private void buildRespondentCounterClaim(EventHistory.EventHistoryBuilder builder, CaseData caseData) {
         builder.defenceAndCounterClaim(
             List.of(
                 Event.builder()
@@ -221,18 +256,14 @@ public class EventHistoryMapper {
                     .litigiousPartyID("002")
                     .build()
             )
-        );
-        buildCommonDefendantResponseEvents(builder, caseData, "Defendant rejects and counter claims.");
-    }
-
-    private void buildCommonDefendantResponseEvents(
-        EventHistory.EventHistoryBuilder builder,
-        CaseData caseData,
-        String rpaReason
-    ) {
-        buildMiscellaneousEvents(builder, caseData, rpaReason, 5);
-        buildAcknowledgementOfServiceReceived(builder, caseData);
-        buildConsentExtensionFilingDefence(builder, caseData);
+        ).miscellaneous(Event.builder()
+                            .eventSequence(5)
+                            .eventCode("999")
+                            .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
+                            .eventDetails(EventDetails.builder()
+                                              .miscText("RPA Reason: Defendant rejects and counter claims.")
+                                              .build())
+                            .build());
     }
 
     private void buildConsentExtensionFilingDefence(EventHistory.EventHistoryBuilder builder, CaseData caseData) {
@@ -250,34 +281,6 @@ public class EventHistoryMapper {
                     .eventDetailsText(format("agreedExtensionDate: %s", caseData
                         .getRespondentSolicitor1AgreedDeadlineExtension()
                         .format(ISO_DATE)))
-                    .build()
-            )
-        );
-    }
-
-    private void buildMiscellaneousEvents(
-        EventHistory.EventHistoryBuilder builder,
-        CaseData caseData,
-        String rpaReason,
-        Integer eventSequence
-    ) {
-        builder.miscellaneous(
-            List.of(
-                Event.builder()
-                    .eventSequence(1)
-                    .eventCode("999")
-                    .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
-                    .eventDetails(EventDetails.builder()
-                                      .miscText("Claimant has notified defendant")
-                                      .build())
-                    .build(),
-                Event.builder()
-                    .eventSequence(eventSequence)
-                    .eventCode("999")
-                    .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
-                    .eventDetails(EventDetails.builder()
-                                      .miscText("RPA Reason: " + rpaReason)
-                                      .build())
                     .build()
             )
         );
