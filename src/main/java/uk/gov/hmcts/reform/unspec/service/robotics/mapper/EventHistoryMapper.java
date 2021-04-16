@@ -253,6 +253,10 @@ public class EventHistoryMapper {
                     .eventCode("45")
                     .dateReceived(dateReceived.format(ISO_DATE))
                     .litigiousPartyID("002")
+                    .eventDetails(EventDetails.builder()
+                                      .agreedExtensionDate(caseData.getRespondentSolicitor1AgreedDeadlineExtension()
+                                                               .format(ISO_DATE))
+                                      .build())
                     .eventDetailsText(format("agreedExtensionDate: %s", caseData
                         .getRespondentSolicitor1AgreedDeadlineExtension()
                         .format(ISO_DATE)))

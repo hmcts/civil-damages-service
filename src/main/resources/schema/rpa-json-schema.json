@@ -836,8 +836,16 @@
           },
           "eventDetails": {
             "$id": "#/definitions/consentExtensionFilingDefenceEventType/items/properties/eventDetails",
-            "type": ["object", "null"],
+            "type": "object",
+            "required": [
+              "agreedExtensionDate"
+            ],
             "properties": {
+              "agreedExtensionDate": {
+                "$id": "#/definitions/consentExtensionFilingDefenceEventType/items/properties/eventDetails/properties/agreedExtensionDate",
+                "type": "string",
+                "description": ""
+              },
               "miscText": {
                 "$id": "#/definitions/consentExtensionFilingDefenceEventType/items/properties/eventDetails/properties/miscText",
                 "type": "string",
