@@ -55,7 +55,7 @@ withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
   }
   onDemo {
-    loadVaultSecrets(secrets)
+//    loadVaultSecrets(secrets)
   }
 
   before('smoketest:preview') {
