@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.applicantOutOfTime;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseDismissed;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseDismissedAfterClaimAcknowledged;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseProceedsInCaseman;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.takenOffline;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimDetailsNotified;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimDiscontinued;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.pendingClaimIssued;
@@ -334,13 +334,13 @@ class FlowPredicateTest {
         @Test
         void shouldReturnTrue_whenCaseDataAtStateCaseProceedsInCaseman() {
             CaseData caseData = CaseDataBuilder.builder().atStateCaseProceedsInCaseman().build();
-            assertTrue(caseProceedsInCaseman.test(caseData));
+            assertTrue(takenOffline.test(caseData));
         }
 
         @Test
         void shouldReturnFalse_whenCaseDataNotAtStateProceedsOffline() {
             CaseData caseData = CaseDataBuilder.builder().atStateApplicantRespondToDefenceAndProceed().build();
-            assertFalse(caseProceedsInCaseman.test(caseData));
+            assertFalse(takenOffline.test(caseData));
         }
     }
 

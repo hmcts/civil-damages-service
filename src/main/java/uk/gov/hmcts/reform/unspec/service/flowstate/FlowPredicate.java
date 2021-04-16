@@ -72,8 +72,7 @@ public class FlowPredicate {
     public static final Predicate<CaseData> respondentAcknowledgeClaim = caseData ->
         caseData.getRespondent1AcknowledgeNotificationDate() != null
             && caseData.getRespondent1ClaimResponseType() == null
-            && caseData.getRespondent1ClaimResponseDocument() == null
-            && caseData.getCcdState() != CASE_DISMISSED;
+            && caseData.getRespondent1ClaimResponseDocument() == null;
 
     public static final Predicate<CaseData> respondentFullDefence = caseData ->
         caseData.getRespondent1ClaimResponseType() == FULL_DEFENCE
@@ -94,19 +93,16 @@ public class FlowPredicate {
     public static final Predicate<CaseData> fullDefenceProceed = caseData ->
         caseData.getApplicant1ProceedWithClaim() != null
             && caseData.getApplicant1ProceedWithClaim() == YES
-            && caseData.getTakenOfflineDate() == null;
+            && caseData.getApplicant1ResponseDate() != null;
 
     public static final Predicate<CaseData> fullDefenceNotProceed = caseData ->
         caseData.getApplicant1ProceedWithClaim() != null
             && caseData.getApplicant1ProceedWithClaim() == NO
-            && caseData.getTakenOfflineDate() == null;
+            && caseData.getApplicant1ResponseDate() != null;
 
     public static final Predicate<CaseData> claimWithdrawn = caseData ->
         caseData.getWithdrawClaim() != null
             && caseData.getCcdState() == CASE_DISMISSED;
-
-    public static final Predicate<CaseData> respondentAgreedExtension = caseData ->
-        caseData.getRespondentSolicitor1AgreedDeadlineExtension() != null;
 
     public static final Predicate<CaseData> claimDiscontinued = caseData ->
         caseData.getDiscontinueClaim() != null
@@ -116,11 +112,29 @@ public class FlowPredicate {
     public static final Predicate<CaseData> claimTakenOffline = caseData ->
         caseData.getCcdState() == PROCEEDS_IN_HERITAGE_SYSTEM;
 
-    public static final Predicate<CaseData> caseProceedsInCaseman = caseData ->
-        caseData.getClaimProceedsInCaseman() != null;
+    public static final Predicate<CaseData> takenOfflineByStaff = caseData ->
+        caseData.getTakenOfflineByStaffDate() != null;
+
+    public static final Predicate<CaseData> takenOffline = caseData ->
+        caseData.getTakenOfflineDate() != null;
+
+    public static final Predicate<CaseData> takenOfflineAfterApplicantResponseDeadline = caseData ->
+        caseData.getTakenOfflineDate() != null && caseData.getApplicant1ResponseDeadline().isAfter(LocalDateTime.now());
 
     public static final Predicate<CaseData> caseDismissed = caseData ->
-        caseData.getClaimDismissedDate() != null && caseData.getRespondent1ClaimResponseIntentionType() == null;
+        caseData.getClaimDismissedDate() != null;
+
+    public static final Predicate<CaseData> caseDismissedAfterClaimDetailsNotificationDeadline = caseData ->
+        caseData.getClaimDismissedDate() != null
+            && caseData.getClaimDetailsNotificationDeadline().isAfter(LocalDateTime.now());
+
+    public static final Predicate<CaseData> caseDismissedAfterClaimNotificationDeadline = caseData ->
+        caseData.getClaimDismissedDate() != null
+            && caseData.getClaimNotificationDeadline().isAfter(LocalDateTime.now());
+
+    public static final Predicate<CaseData> caseDismissedAfterClaimDismissedDeadline = caseData ->
+        caseData.getClaimDismissedDate() != null
+            && caseData.getClaimDismissedDeadline().isAfter(LocalDateTime.now());
 
     public static final Predicate<CaseData> caseDismissedAfterClaimAcknowledged = caseData ->
         caseData.getClaimDismissedDate() != null && caseData.getRespondent1ClaimResponseIntentionType() != null;
