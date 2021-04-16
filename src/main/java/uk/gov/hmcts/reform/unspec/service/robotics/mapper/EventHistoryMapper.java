@@ -72,10 +72,14 @@ public class EventHistoryMapper {
                     .eventCode("197")
                     .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
                     .litigiousPartyID(RESPONDENT_ID)
-                    .eventDetailsText(prepareEventDetailsText(caseData.getRespondent1DQ()))
+                    .eventDetailsText(prepareEventDetailsText(
+                        caseData.getRespondent1DQ(),
+                        getPreferredCourtCode(caseData.getRespondent1DQ())
+                    ))
                     .eventDetails(EventDetails.builder()
-                        .stayClaim(isStayClaim(caseData.getRespondent1DQ()))
-                        .preferredCourtCode(getPreferredCourtCode(caseData.getRespondent1DQ()))
+                                      .stayClaim(isStayClaim(caseData.getRespondent1DQ()))
+                                      .preferredCourtCode(getPreferredCourtCode(caseData.getRespondent1DQ()))
+                                      .preferredCourtName("")
                                       .build())
                     .build(),
                 Event.builder()
@@ -85,9 +89,13 @@ public class EventHistoryMapper {
                     .litigiousPartyID(APPLICANT_ID)
                     .eventDetails(EventDetails.builder()
                                       .stayClaim(isStayClaim(caseData.getApplicant1DQ()))
-                                      .preferredCourtCode(getPreferredCourtCode(caseData.getApplicant1DQ()))
+                                      .preferredCourtCode(caseData.getCourtLocation().getApplicantPreferredCourt())
+                                      .preferredCourtName("")
                                       .build())
-                    .eventDetailsText(prepareEventDetailsText(caseData.getApplicant1DQ()))
+                    .eventDetailsText(prepareEventDetailsText(
+                        caseData.getApplicant1DQ(),
+                        caseData.getCourtLocation().getApplicantPreferredCourt()
+                    ))
                     .build()
             )
         ).replyToDefence(List.of(
@@ -100,10 +108,10 @@ public class EventHistoryMapper {
         ));
     }
 
-    public String prepareEventDetailsText(DQ dq) {
+    public String prepareEventDetailsText(DQ dq, String preferredCourtCode) {
         return format(
             "preferredCourtCode: %s; stayClaim: %s",
-            getPreferredCourtCode(dq),
+            preferredCourtCode,
             isStayClaim(dq)
         );
     }
@@ -116,7 +124,7 @@ public class EventHistoryMapper {
     public String getPreferredCourtCode(DQ dq) {
         return ofNullable(dq.getRequestedCourt())
             .map(RequestedCourt::getResponseCourtCode)
-            .orElse(null);
+            .orElse("");
     }
 
     private void buildFullDefenceNotProceed(CaseData caseData, EventHistory.EventHistoryBuilder builder) {
@@ -134,8 +142,12 @@ public class EventHistoryMapper {
                     .eventDetails(EventDetails.builder()
                                       .stayClaim(isStayClaim(caseData.getRespondent1DQ()))
                                       .preferredCourtCode(getPreferredCourtCode(caseData.getRespondent1DQ()))
+                                      .preferredCourtName("")
                                       .build())
-                    .eventDetailsText(prepareEventDetailsText(caseData.getRespondent1DQ()))
+                    .eventDetailsText(prepareEventDetailsText(
+                        caseData.getRespondent1DQ(),
+                        getPreferredCourtCode(caseData.getRespondent1DQ())
+                    ))
                     .build()
             )
         );

@@ -555,10 +555,14 @@ class EventHistoryMapperTest {
                 .eventCode("197")
                 .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
                 .litigiousPartyID("002")
-                .eventDetailsText(mapper.prepareEventDetailsText(caseData.getRespondent1DQ()))
+                .eventDetailsText(mapper.prepareEventDetailsText(
+                    caseData.getRespondent1DQ(),
+                    mapper.getPreferredCourtCode(caseData.getRespondent1DQ())
+                ))
                 .eventDetails(EventDetails.builder()
                                   .stayClaim(mapper.isStayClaim(caseData.getRespondent1DQ()))
                                   .preferredCourtCode(mapper.getPreferredCourtCode(caseData.getRespondent1DQ()))
+                                  .preferredCourtName("")
                                   .build())
                 .build();
             List<Event> expectedMiscellaneousEvents = List.of(
@@ -648,10 +652,14 @@ class EventHistoryMapperTest {
                 .eventCode("197")
                 .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
                 .litigiousPartyID("002")
-                .eventDetailsText(mapper.prepareEventDetailsText(caseData.getRespondent1DQ()))
+                .eventDetailsText(mapper.prepareEventDetailsText(
+                    caseData.getRespondent1DQ(),
+                    mapper.getPreferredCourtCode(caseData.getRespondent1DQ())
+                ))
                 .eventDetails(EventDetails.builder()
                                   .stayClaim(mapper.isStayClaim(caseData.getRespondent1DQ()))
                                   .preferredCourtCode(mapper.getPreferredCourtCode(caseData.getRespondent1DQ()))
+                                  .preferredCourtName("")
                                   .build())
                 .build();
             List<Event> expectedMiscellaneousEvents = List.of(
@@ -716,10 +724,14 @@ class EventHistoryMapperTest {
                 .eventCode("197")
                 .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
                 .litigiousPartyID("002")
-                .eventDetailsText(mapper.prepareEventDetailsText(caseData.getRespondent1DQ()))
+                .eventDetailsText(mapper.prepareEventDetailsText(
+                    caseData.getRespondent1DQ(),
+                    mapper.getPreferredCourtCode(caseData.getRespondent1DQ())
+                ))
                 .eventDetails(EventDetails.builder()
                                   .stayClaim(mapper.isStayClaim(caseData.getRespondent1DQ()))
                                   .preferredCourtCode(mapper.getPreferredCourtCode(caseData.getRespondent1DQ()))
+                                  .preferredCourtName("")
                                   .build())
                 .build();
             Event expectedReplyToDefence = Event.builder()
@@ -733,11 +745,15 @@ class EventHistoryMapperTest {
                 .eventCode("197")
                 .dateReceived(caseData.getApplicant1ResponseDate().format(ISO_DATE))
                 .litigiousPartyID("001")
-                .eventDetailsText(mapper.prepareEventDetailsText(caseData.getApplicant1DQ()))
                 .eventDetails(EventDetails.builder()
                                   .stayClaim(mapper.isStayClaim(caseData.getApplicant1DQ()))
-                                  .preferredCourtCode(mapper.getPreferredCourtCode(caseData.getApplicant1DQ()))
+                                  .preferredCourtCode(caseData.getCourtLocation().getApplicantPreferredCourt())
+                                  .preferredCourtName("")
                                   .build())
+                .eventDetailsText(mapper.prepareEventDetailsText(
+                    caseData.getApplicant1DQ(),
+                    caseData.getCourtLocation().getApplicantPreferredCourt()
+                ))
                 .build();
             List<Event> expectedMiscellaneousEvents = List.of(
                 Event.builder()
@@ -829,10 +845,14 @@ class EventHistoryMapperTest {
                 .eventCode("197")
                 .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
                 .litigiousPartyID("002")
-                .eventDetailsText(mapper.prepareEventDetailsText(caseData.getRespondent1DQ()))
+                .eventDetailsText(mapper.prepareEventDetailsText(
+                    caseData.getRespondent1DQ(),
+                    mapper.getPreferredCourtCode(caseData.getRespondent1DQ())
+                ))
                 .eventDetails(EventDetails.builder()
                                   .stayClaim(mapper.isStayClaim(caseData.getRespondent1DQ()))
                                   .preferredCourtCode(mapper.getPreferredCourtCode(caseData.getRespondent1DQ()))
+                                  .preferredCourtName("")
                                   .build())
                 .build();
             Event expectedReplyToDefence = Event.builder()
@@ -846,11 +866,15 @@ class EventHistoryMapperTest {
                 .eventCode("197")
                 .dateReceived(caseData.getApplicant1ResponseDate().format(ISO_DATE))
                 .litigiousPartyID("001")
-                .eventDetailsText(mapper.prepareEventDetailsText(caseData.getApplicant1DQ()))
                 .eventDetails(EventDetails.builder()
                                   .stayClaim(mapper.isStayClaim(caseData.getApplicant1DQ()))
-                                  .preferredCourtCode(mapper.getPreferredCourtCode(caseData.getApplicant1DQ()))
+                                  .preferredCourtCode(caseData.getCourtLocation().getApplicantPreferredCourt())
+                                  .preferredCourtName("")
                                   .build())
+                .eventDetailsText(mapper.prepareEventDetailsText(
+                    caseData.getApplicant1DQ(),
+                    caseData.getCourtLocation().getApplicantPreferredCourt()
+                ))
                 .build();
             List<Event> expectedMiscellaneousEvents = List.of(
                 Event.builder()

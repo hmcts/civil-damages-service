@@ -480,7 +480,7 @@
     "courtCodeType": {
       "$id": "#/definitions/courtCodeType",
       "type": ["string", "null"],
-      "pattern": "^\\d{3}$",
+      "pattern": "^(?:\\d{3}|)$",
       "description": "The HMCTS 3 digit court location code."
     },
     "contactDXType": {
@@ -1190,7 +1190,7 @@
             "properties": {
               "stayClaim": {
                 "$id": "#/definitions/directionsQuestionnaireFiledEventType/items/properties/eventDetails/properties/stayClaim",
-                "type": "string",
+                "type": "boolean",
                 "description": ""
               },
               "preferredCourtCode": {
@@ -1210,7 +1210,7 @@
             "additionalProperties": false
           },
           "eventDetailsText": {
-            "$id": "#/definitions/directionsQuestionnaireFiledEventType/items/properties/eventCode",
+            "$id": "#/definitions/directionsQuestionnaireFiledEventType/items/properties/eventDetailsText",
             "type": ["string", "null"],
             "maxLength": 250,
             "description": ""
