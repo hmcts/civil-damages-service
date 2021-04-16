@@ -1,4 +1,6 @@
-variable "product" {}
+variable "product" {
+  default = "unspec"
+}
 
 variable "component" {}
 
