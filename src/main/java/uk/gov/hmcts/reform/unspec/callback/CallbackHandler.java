@@ -31,7 +31,7 @@ public abstract class CallbackHandler {
 
     protected String callbackKey(CallbackVersion version, CallbackType type, String pageId) {
         String formattedVersion = ofNullable(version).map(x -> x.toString() + "-").orElse("");
-        String formattedPageId = ofNullable(pageId).map(x -> x + "-").orElse("");
+        String formattedPageId = ofNullable(pageId).map(x -> "-" + x).orElse("");
         return String.format("%s%s%s", formattedVersion, type.getValue(), formattedPageId);
     }
 
@@ -54,11 +54,14 @@ public abstract class CallbackHandler {
     }
 
     public CallbackResponse handle(CallbackParams callbackParams) {
-        String callbackKey = callbackKey(
-            callbackParams.getVersion(),
-            callbackParams.getType(),
-            callbackParams.getPageId()
-        );
+        String callbackKey;
+
+        callbackKey = callbackKey(callbackParams.getVersion(), callbackParams.getType(), callbackParams.getPageId());
+
+        if (ofNullable(callbacks().get(callbackKey)).isEmpty()) {
+            callbackKey = callbackKey(callbackParams.getType(), callbackParams.getPageId());
+        }
+
         return ofNullable(callbacks().get(callbackKey))
             .map(callback -> callback.execute(callbackParams))
             .orElseThrow(() -> new CallbackException(

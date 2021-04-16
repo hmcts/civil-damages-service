@@ -286,4 +286,23 @@ class CallbackHandlerFactoryTest {
 
         assertEquals(EVENT_HANDLED_RESPONSE, callbackResponse);
     }
+
+    @Test
+    void shouldDefaultToMethod_whenVersionSpecifiedInCallbackButNotInHandler() {
+        CallbackRequest callbackRequest = CallbackRequest
+            .builder()
+            .eventId(DEFENDANT_RESPONSE.name())
+            .build();
+
+        CallbackParams params = CallbackParams.builder()
+            .request(callbackRequest)
+            .type(ABOUT_TO_SUBMIT)
+            .version(V_1)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+
+        CallbackResponse callbackResponse = callbackHandlerFactory.dispatch(params);
+
+        assertEquals(EVENT_HANDLED_RESPONSE, callbackResponse);
+    }
 }
