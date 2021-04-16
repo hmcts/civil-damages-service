@@ -1182,6 +1182,31 @@
               "object",
               "null"
             ],
+            "required": [
+              "stayClaim",
+              "preferredCourtCode",
+              "preferredCourtName"
+            ],
+            "properties": {
+              "stayClaim": {
+                "$id": "#/definitions/directionsQuestionnaireFiledEventType/items/properties/eventDetails/properties/stayClaim",
+                "type": "string",
+                "description": ""
+              },
+              "preferredCourtCode": {
+                "$id": "#/definitions/directionsQuestionnaireFiledEventType/items/properties/eventDetails/properties/preferredCourtCode",
+                "$ref": "#/definitions/courtCodeType",
+                "description": ""
+              },
+              "preferredCourtName": {
+                "$id": "#/definitions/directionsQuestionnaireFiledEventType/items/properties/eventDetails/properties/preferredCourtName",
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": ""
+              }
+            },
             "additionalProperties": false
           },
           "eventDetailsText": {
