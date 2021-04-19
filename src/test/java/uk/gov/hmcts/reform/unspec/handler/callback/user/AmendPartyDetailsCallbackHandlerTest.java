@@ -46,7 +46,7 @@ class AmendPartyDetailsCallbackHandlerTest extends BaseCallbackHandlerTest {
 
         @Test
         void shouldReturnExpectedSubmittedCallbackResponse_whenInvoked() {
-            CaseData caseData = CaseDataBuilder.builder().atStateClaimCreated().build();
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimIssued().build();
             CallbackParams params = callbackParamsOf(caseData, SUBMITTED);
             SubmittedCallbackResponse response = (SubmittedCallbackResponse) handler.handle(params);
 

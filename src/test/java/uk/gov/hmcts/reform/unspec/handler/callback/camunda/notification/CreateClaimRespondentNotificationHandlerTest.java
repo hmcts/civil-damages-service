@@ -44,7 +44,7 @@ class CreateClaimRespondentNotificationHandlerTest extends BaseCallbackHandlerTe
 
         @Test
         void shouldNotifyRespondentSolicitor_whenInvoked() {
-            CaseData caseData = CaseDataBuilder.builder().atStateRespondentFullDefence().build();
+            CaseData caseData = CaseDataBuilder.builder().atStateFullDefence().build();
             CallbackParams params = CallbackParamsBuilder.builder().of(ABOUT_TO_SUBMIT, caseData).build();
 
             handler.handle(params);

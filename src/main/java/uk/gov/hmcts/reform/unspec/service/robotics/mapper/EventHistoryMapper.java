@@ -39,13 +39,13 @@ public class EventHistoryMapper {
             case PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT:
                 buildUnregisteredDefendant(caseData, builder);
                 break;
-            case RESPONDENT_FULL_ADMISSION:
+            case FULL_ADMISSION:
                 buildRespondentFullAdmission(caseData, builder);
                 break;
-            case RESPONDENT_PART_ADMISSION:
+            case PART_ADMISSION:
                 buildRespondentPartAdmission(caseData, builder);
                 break;
-            case RESPONDENT_COUNTER_CLAIM:
+            case COUNTER_CLAIM:
                 buildRespondentCounterClaim(caseData, builder);
                 break;
             case FULL_DEFENCE_NOT_PROCEED:

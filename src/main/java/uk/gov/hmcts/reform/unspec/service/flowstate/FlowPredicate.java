@@ -70,9 +70,11 @@ public class FlowPredicate {
         caseData.getRespondent1Represented() == NO && caseData.getTakenOfflineDate() != null;
 
     public static final Predicate<CaseData> respondentAcknowledgeClaim = caseData ->
+        caseData.getRespondent1AcknowledgeNotificationDate() != null;
+
+    public static final Predicate<CaseData> respondentAcknowledgeClaimExtension = caseData ->
         caseData.getRespondent1AcknowledgeNotificationDate() != null
-            && caseData.getRespondent1ClaimResponseType() == null
-            && caseData.getRespondent1ClaimResponseDocument() == null;
+        && caseData.getRespondent1TimeExtensionDate() != null;
 
     public static final Predicate<CaseData> respondentFullDefence = caseData ->
         caseData.getRespondent1ClaimResponseType() == FULL_DEFENCE

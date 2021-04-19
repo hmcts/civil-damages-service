@@ -20,24 +20,26 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.AWAITING_CASE_DETAILS_NOTIFICATION;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.AWAITING_CASE_NOTIFICATION;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CASE_PROCEEDS_IN_CASEMAN;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_ACKNOWLEDGED;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DETAILS_NOTIFIED;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DISCONTINUED;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DISMISSED_DEFENDANT_OUT_OF_TIME;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DISMISSED_PAST_CLAIM_DETAILS_NOTIFICATION_DEADLINE;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DISMISSED_PAST_CLAIM_NOTIFICATION_DEADLINE;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_ISSUED;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_ISSUED_PAYMENT_SUCCESSFUL;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_NOTIFIED;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_SUBMITTED;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_WITHDRAWN;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.COUNTER_CLAIM;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.DRAFT;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.EXTENSION_REQUESTED;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.FULL_ADMISSION;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.FULL_DEFENCE;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.NOTIFICATION_ACKNOWLEDGED;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.PART_ADMISSION;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.PENDING_CLAIM_ISSUED;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.RESPONDENT_COUNTER_CLAIM;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.RESPONDENT_FULL_ADMISSION;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.RESPONDENT_FULL_DEFENCE;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.RESPONDENT_PART_ADMISSION;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.TAKEN_OFFLINE_PAST_APPLICANT_RESPONSE_DEADLINE;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT;
 
@@ -56,7 +58,7 @@ class StateFlowEngineTest {
 
         @Test
         void shouldReturnPendingCaseIssued_whenCaseDataAtStatePendingCaseIssued() {
-            CaseData caseData = CaseDataBuilder.builder().atStatePendingCaseIssued().build();
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimSubmitted().build();
 
             StateFlow stateFlow = stateFlowEngine.evaluate(caseData);
 
@@ -92,7 +94,7 @@ class StateFlowEngineTest {
 
         @Test
         void shouldReturnProceedsWithOfflineJourney_whenCaseDataAtStateClaimDraftIssuedAndRespondent1NotRegistered() {
-            CaseData caseData = CaseDataBuilder.builder().atStateProceedsOfflineUnregisteredDefendant().build();
+            CaseData caseData = CaseDataBuilder.builder().atStatePendingClaimIssuedUnRegisteredDefendent().build();
 
             StateFlow stateFlow = stateFlowEngine.evaluate(caseData);
 
@@ -128,26 +130,26 @@ class StateFlowEngineTest {
 
         @Test
         void shouldReturnAwaitingCaseNotification_whenCaseDataAtStateAwaitingCaseNotification() {
-            CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseNotification().build();
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimNotified().build();
 
             StateFlow stateFlow = stateFlowEngine.evaluate(caseData);
 
             assertThat(stateFlow.getState())
                 .extracting(State::getName)
                 .isNotNull()
-                .isEqualTo(AWAITING_CASE_NOTIFICATION.fullName());
+                .isEqualTo(CLAIM_ISSUED.fullName());
             assertThat(stateFlow.getStateHistory())
                 .hasSize(4)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
-                    AWAITING_CASE_NOTIFICATION.fullName()
+                    DRAFT.fullName(), CLAIM_SUBMITTED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
+                    PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED.fullName()
                 );
         }
 
         @Test
         void shouldReturnAwaitingCaseNotification_whenCaseDataAtStateAwaitingCaseDetailsNotification() {
-            CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseDetailsNotification().build();
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimDetailsNotified().build();
 
             StateFlow stateFlow = stateFlowEngine.evaluate(caseData);
 
@@ -160,13 +162,13 @@ class StateFlowEngineTest {
                 .extracting(State::getName)
                 .containsExactly(
                     DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
-                    AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName()
+                    CLAIM_ISSUED.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName()
                 );
         }
 
         @Test
         void shouldReturnClaimIssued_whenCaseDataAtStateClaimIssued() {
-            CaseData caseData = CaseDataBuilder.builder().atStateClaimCreated().build();
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimIssued().build();
 
             StateFlow stateFlow = stateFlowEngine.evaluate(caseData);
 
@@ -179,34 +181,35 @@ class StateFlowEngineTest {
                 .extracting(State::getName)
                 .containsExactly(
                     DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
-                    AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
+                    CLAIM_ISSUED.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
                     CLAIM_ISSUED.fullName()
                 );
         }
 
         @Test
         void shouldReturnClaimAcknowledge_whenCaseDataAtStateClaimAcknowledge() {
-            CaseData caseData = CaseDataBuilder.builder().atStateClaimAcknowledge().build();
+            CaseData caseData = CaseDataBuilder.builder().atStateNotificationAcknowledged().build();
 
             StateFlow stateFlow = stateFlowEngine.evaluate(caseData);
 
             assertThat(stateFlow.getState())
                 .extracting(State::getName)
                 .isNotNull()
-                .isEqualTo(CLAIM_ACKNOWLEDGED.fullName());
+                .isEqualTo(NOTIFICATION_ACKNOWLEDGED.fullName());
             assertThat(stateFlow.getStateHistory())
                 .hasSize(7)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
-                    AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
-                    CLAIM_ISSUED.fullName(), CLAIM_ACKNOWLEDGED.fullName()
+                    DRAFT.fullName(), CLAIM_SUBMITTED.fullName(), PENDING_CLAIM_ISSUED.fullName(),
+                    CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(), CLAIM_ISSUED.fullName(),
+                    CLAIM_NOTIFIED.fullName(), CLAIM_DETAILS_NOTIFIED.fullName(),
+                    NOTIFICATION_ACKNOWLEDGED.fullName()
                 );
         }
 
         @Test
         void shouldReturnClaimDismissed_whenCaseDataAtStateClaimAcknowledgeAndCcdStateIsDismissed() {
-            CaseData caseData = CaseDataBuilder.builder().atStateClaimAcknowledge()
+            CaseData caseData = CaseDataBuilder.builder().atStateNotificationAcknowledged()
                 .claimDismissedDate(LocalDateTime.now())
                 .build();
 
@@ -215,115 +218,132 @@ class StateFlowEngineTest {
             assertThat(stateFlow.getState())
                 .extracting(State::getName)
                 .isNotNull()
-                .isEqualTo(CLAIM_DISMISSED_DEFENDANT_OUT_OF_TIME.fullName());
+                .isEqualTo(CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE.fullName());
             assertThat(stateFlow.getStateHistory())
                 .hasSize(8)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
-                    AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
-                    CLAIM_ISSUED.fullName(), CLAIM_ACKNOWLEDGED.fullName(),
-                    CLAIM_DISMISSED_DEFENDANT_OUT_OF_TIME.fullName()
+                    DRAFT.fullName(), CLAIM_SUBMITTED.fullName(), PENDING_CLAIM_ISSUED.fullName(),
+                    CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
+                    CLAIM_ISSUED.fullName(),
+                    NOTIFICATION_ACKNOWLEDGED.fullName(),
+                    CLAIM_NOTIFIED.fullName(), CLAIM_DETAILS_NOTIFIED.fullName(),
+                    NOTIFICATION_ACKNOWLEDGED.fullName(),
+                    CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE.fullName()
                 );
         }
 
         @Test
         void shouldReturnExtensionRequested_whenCaseDataAtStateExtensionRequested() {
-            CaseData caseData = CaseDataBuilder.builder().atStateExtensionRequested().build();
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimDetailsNotifiedTimeExtension().build();
 
             StateFlow stateFlow = stateFlowEngine.evaluate(caseData);
 
             assertThat(stateFlow.getState())
                 .extracting(State::getName)
                 .isNotNull()
-                .isEqualTo(EXTENSION_REQUESTED.fullName());
+                .isEqualTo(CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION.fullName());
             assertThat(stateFlow.getStateHistory())
                 .hasSize(8)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
-                    AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
-                    CLAIM_ISSUED.fullName(), CLAIM_ACKNOWLEDGED.fullName(), EXTENSION_REQUESTED.fullName()
+                    DRAFT.fullName(), CLAIM_SUBMITTED.fullName(), PENDING_CLAIM_ISSUED.fullName(),
+                    CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
+                    CLAIM_ISSUED.fullName(),
+                    CLAIM_NOTIFIED.fullName(), CLAIM_DETAILS_NOTIFIED.fullName(),
+                    CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION.fullName()
                 );
         }
 
         @Test
         void shouldReturnFullDefence_whenCaseDataAtStateRespondentFullDefence() {
-            CaseData caseData = CaseDataBuilder.builder().atStateRespondentFullDefence().build();
+            CaseData caseData = CaseDataBuilder.builder().atStateFullDefence().build();
 
             StateFlow stateFlow = stateFlowEngine.evaluate(caseData);
 
             assertThat(stateFlow.getState())
                 .extracting(State::getName)
                 .isNotNull()
-                .isEqualTo(RESPONDENT_FULL_DEFENCE.fullName());
+                .isEqualTo(FULL_DEFENCE.fullName());
             assertThat(stateFlow.getStateHistory())
                 .hasSize(7)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
-                    AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
-                    CLAIM_ISSUED.fullName(), RESPONDENT_FULL_DEFENCE.fullName()
+                    DRAFT.fullName(), CLAIM_SUBMITTED.fullName(), PENDING_CLAIM_ISSUED.fullName(),
+                    CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
+                    CLAIM_ISSUED.fullName(),
+                    CLAIM_NOTIFIED.fullName(), CLAIM_DETAILS_NOTIFIED.fullName(),
+                    NOTIFICATION_ACKNOWLEDGED.fullName(),
+                    FULL_DEFENCE.fullName()
                 );
         }
 
         @Test
         void shouldReturnFullAdmission_whenCaseDataAtStateRespondentFullAdmission() {
-            CaseData caseData = CaseDataBuilder.builder().atStateRespondentFullAdmission().build();
+            CaseData caseData = CaseDataBuilder.builder().atStateFullAdmission().build();
 
             StateFlow stateFlow = stateFlowEngine.evaluate(caseData);
 
             assertThat(stateFlow.getState())
                 .extracting(State::getName)
                 .isNotNull()
-                .isEqualTo(RESPONDENT_FULL_ADMISSION.fullName());
+                .isEqualTo(FULL_ADMISSION.fullName());
             assertThat(stateFlow.getStateHistory())
                 .hasSize(7)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
-                    AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
-                    CLAIM_ISSUED.fullName(), RESPONDENT_FULL_ADMISSION.fullName()
+                    DRAFT.fullName(), CLAIM_SUBMITTED.fullName(), PENDING_CLAIM_ISSUED.fullName(),
+                    CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
+                    CLAIM_ISSUED.fullName(),
+                    CLAIM_NOTIFIED.fullName(), CLAIM_DETAILS_NOTIFIED.fullName(),
+                    NOTIFICATION_ACKNOWLEDGED.fullName(),
+                    FULL_ADMISSION.fullName()
                 );
         }
 
         @Test
         void shouldReturnPartAdmission_whenCaseDataAtStateRespondentPartAdmission() {
-            CaseData caseData = CaseDataBuilder.builder().atStateRespondentPartAdmission().build();
+            CaseData caseData = CaseDataBuilder.builder().atStatePartAdmission().build();
 
             StateFlow stateFlow = stateFlowEngine.evaluate(caseData);
 
             assertThat(stateFlow.getState())
                 .extracting(State::getName)
                 .isNotNull()
-                .isEqualTo(RESPONDENT_PART_ADMISSION.fullName());
+                .isEqualTo(PART_ADMISSION.fullName());
             assertThat(stateFlow.getStateHistory())
                 .hasSize(7)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
-                    AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
-                    CLAIM_ISSUED.fullName(), RESPONDENT_PART_ADMISSION.fullName()
+                    DRAFT.fullName(), CLAIM_SUBMITTED.fullName(), PENDING_CLAIM_ISSUED.fullName(),
+                    CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
+                    CLAIM_ISSUED.fullName(),
+                    CLAIM_NOTIFIED.fullName(), CLAIM_DETAILS_NOTIFIED.fullName(),
+                    NOTIFICATION_ACKNOWLEDGED.fullName(),
+                    PART_ADMISSION.fullName()
                 );
         }
 
         @Test
         void shouldReturnCounterClaim_whenCaseDataAtStateRespondentCounterClaim() {
-            CaseData caseData = CaseDataBuilder.builder().atStateRespondentCounterClaim().build();
+            CaseData caseData = CaseDataBuilder.builder().atStateCounterClaim().build();
 
             StateFlow stateFlow = stateFlowEngine.evaluate(caseData);
 
             assertThat(stateFlow.getState())
                 .extracting(State::getName)
                 .isNotNull()
-                .isEqualTo(RESPONDENT_COUNTER_CLAIM.fullName());
+                .isEqualTo(COUNTER_CLAIM.fullName());
             assertThat(stateFlow.getStateHistory())
                 .hasSize(7)
                 .extracting(State::getName)
                 .containsExactly(
-                    DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
-                    AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
-                    CLAIM_ISSUED.fullName(), RESPONDENT_COUNTER_CLAIM.fullName()
+                    DRAFT.fullName(), CLAIM_SUBMITTED.fullName(), PENDING_CLAIM_ISSUED.fullName(),
+                    CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
+                    CLAIM_ISSUED.fullName(),
+                    CLAIM_NOTIFIED.fullName(), CLAIM_DETAILS_NOTIFIED.fullName(),
+                    NOTIFICATION_ACKNOWLEDGED.fullName(),
+                    COUNTER_CLAIM.fullName()
                 );
         }
 
@@ -343,7 +363,8 @@ class StateFlowEngineTest {
                 .containsExactly(
                     DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
-                    CLAIM_ISSUED.fullName(), CLAIM_DISMISSED_DEFENDANT_OUT_OF_TIME.fullName()
+                    CLAIM_ISSUED.fullName(),
+                    CLAIM_DISMISSED_DEFENDANT_OUT_OF_TIME.fullName()
                 );
         }
 
@@ -367,7 +388,7 @@ class StateFlowEngineTest {
                 .containsExactly(
                     DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
-                    CLAIM_ISSUED.fullName(), RESPONDENT_FULL_DEFENCE.fullName(),
+                    CLAIM_ISSUED.fullName(), FULL_DEFENCE.fullName(),
                     flowState.fullName()
                 );
         }
@@ -407,7 +428,7 @@ class StateFlowEngineTest {
                 .containsExactly(
                     DRAFT.fullName(), PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
-                    CLAIM_ISSUED.fullName(), RESPONDENT_FULL_DEFENCE.fullName(),
+                    CLAIM_ISSUED.fullName(), FULL_DEFENCE.fullName(),
                     TAKEN_OFFLINE_PAST_APPLICANT_RESPONSE_DEADLINE.fullName()
                 );
         }
@@ -523,13 +544,12 @@ class StateFlowEngineTest {
                 "CLAIM_ISSUED_PAYMENT_SUCCESSFUL",
                 "PENDING_CLAIM_ISSUED",
                 "CLAIM_ISSUED",
+                "CLAIM_NOTIFIED",
+                "CLAIM_DETAILS_NOTIFIED",
+                "CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION",
                 "TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT",
                 "TAKEN_OFFLINE_UNREGISTERED_DEFENDANT",
                 "PROCEEDS_OFFLINE_ADMIT_OR_COUNTER_CLAIM",
-                "AWAITING_CASE_NOTIFICATION",
-                "AWAITING_CASE_DETAILS_NOTIFICATION",
-                "CASE_PROCEEDS_IN_CASEMAN",
-                "CLAIM_DISMISSED_DEFENDANT_OUT_OF_TIME",
                 "CLAIM_DISMISSED_PAST_CLAIM_NOTIFICATION_DEADLINE",
                 "CLAIM_DISMISSED_PAST_CLAIM_DETAILS_NOTIFICATION_DEADLINE"
             })
@@ -539,6 +559,7 @@ class StateFlowEngineTest {
 
             StateFlow stateFlow = stateFlowEngine.evaluate(caseData);
 
+            System.out.println("Stateflow " + stateFlow.getState());
             assertThat(FlowState.fromFullName(stateFlow.getState().getName()))
                 .isEqualTo(CLAIM_DISCONTINUED);
         }

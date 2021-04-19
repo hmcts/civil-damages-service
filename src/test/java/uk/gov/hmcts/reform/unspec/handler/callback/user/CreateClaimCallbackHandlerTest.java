@@ -703,7 +703,7 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
             @Test
             void shouldReturnExpectedSubmittedCallbackResponse_whenRespondent1HasRepresentation() {
-                CaseData caseData = CaseDataBuilder.builder().atStateClaimCreated().build();
+                CaseData caseData = CaseDataBuilder.builder().atStateClaimIssued().build();
                 CallbackParams params = callbackParamsOf(caseData, SUBMITTED);
                 SubmittedCallbackResponse response = (SubmittedCallbackResponse) handler.handle(params);
 
@@ -728,7 +728,7 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
             @Test
             void shouldReturnExpectedSubmittedCallbackResponse_whenRespondent1SolicitorNotRegisteredInMyHmcts() {
-                CaseData caseData = CaseDataBuilder.builder().atStateClaimCreated()
+                CaseData caseData = CaseDataBuilder.builder().atStateClaimIssued()
                     .respondent1Represented(YES)
                     .respondent1OrgRegistered(NO)
                     .build();

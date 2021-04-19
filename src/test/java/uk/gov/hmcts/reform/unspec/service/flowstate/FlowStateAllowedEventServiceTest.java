@@ -42,18 +42,19 @@ import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.RESUBMIT_CLAIM;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.TAKE_CASE_OFFLINE;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.WITHDRAW_CLAIM;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.AWAITING_CASE_DETAILS_NOTIFICATION;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.AWAITING_CASE_NOTIFICATION;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_ACKNOWLEDGED;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DETAILS_NOTIFIED;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_ISSUED;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_ISSUED_PAYMENT_FAILED;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_NOTIFIED;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.COUNTER_CLAIM;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.DRAFT;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.EXTENSION_REQUESTED;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.FULL_ADMISSION;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.FULL_DEFENCE;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.FULL_DEFENCE_NOT_PROCEED;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.FULL_DEFENCE_PROCEED;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.RESPONDENT_COUNTER_CLAIM;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.RESPONDENT_FULL_ADMISSION;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.RESPONDENT_FULL_DEFENCE;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.RESPONDENT_PART_ADMISSION;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.NOTIFICATION_ACKNOWLEDGED;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.PART_ADMISSION;
 
 @SpringBootTest(classes = {
     JacksonAutoConfiguration.class,
@@ -74,18 +75,21 @@ class FlowStateAllowedEventServiceTest {
             return Stream.of(
                 of(CaseDataBuilder.builder().atStateClaimDraft().build(), DRAFT),
                 of(CaseDataBuilder.builder().atStatePaymentFailed().build(), CLAIM_ISSUED_PAYMENT_FAILED),
-                of(CaseDataBuilder.builder().atStateAwaitingCaseNotification().build(), AWAITING_CASE_NOTIFICATION),
+                of(CaseDataBuilder.builder().atStateClaimNotified().build(), CLAIM_NOTIFIED),
                 of(
-                    CaseDataBuilder.builder().atStateAwaitingCaseDetailsNotification().build(),
-                    AWAITING_CASE_DETAILS_NOTIFICATION
+                    CaseDataBuilder.builder().atStateClaimDetailsNotified().build(),
+                    CLAIM_DETAILS_NOTIFIED
                 ),
-                of(CaseDataBuilder.builder().atStateClaimCreated().build(), CLAIM_ISSUED),
-                of(CaseDataBuilder.builder().atStateClaimAcknowledge().build(), CLAIM_ACKNOWLEDGED),
-                of(CaseDataBuilder.builder().atStateRespondentFullDefence().build(), RESPONDENT_FULL_DEFENCE),
-                of(CaseDataBuilder.builder().atStateRespondentFullAdmission().build(), RESPONDENT_FULL_ADMISSION),
-                of(CaseDataBuilder.builder().atStateRespondentPartAdmission().build(), RESPONDENT_PART_ADMISSION),
-                of(CaseDataBuilder.builder().atStateRespondentCounterClaim().build(), RESPONDENT_COUNTER_CLAIM),
-                of(CaseDataBuilder.builder().atStateExtensionRequested().build(), EXTENSION_REQUESTED)
+                of(CaseDataBuilder.builder().atStateClaimIssued().build(), CLAIM_ISSUED),
+                of(CaseDataBuilder.builder().atStateNotificationAcknowledged().build(), NOTIFICATION_ACKNOWLEDGED),
+                of(CaseDataBuilder.builder().atStateFullDefence().build(), FULL_DEFENCE),
+                of(CaseDataBuilder.builder().atStateFullAdmission().build(), FULL_ADMISSION),
+                of(CaseDataBuilder.builder().atStatePartAdmission().build(), PART_ADMISSION),
+                of(CaseDataBuilder.builder().atStateCounterClaim().build(), COUNTER_CLAIM),
+                of(
+                    CaseDataBuilder.builder().atStateClaimDetailsNotifiedTimeExtension().build(),
+                    CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION
+                )
             );
         }
     }
@@ -125,7 +129,7 @@ class FlowStateAllowedEventServiceTest {
                     }
                 ),
                 of(
-                    AWAITING_CASE_NOTIFICATION,
+                    CLAIM_NOTIFIED,
                     new CaseEvent[] {
                         NOTIFY_DEFENDANT_OF_CLAIM,
                         ADD_DEFENDANT_LITIGATION_FRIEND,
@@ -159,7 +163,7 @@ class FlowStateAllowedEventServiceTest {
                     }
                 ),
                 of(
-                    EXTENSION_REQUESTED,
+                    CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION,
                     new CaseEvent[] {
                         DEFENDANT_RESPONSE,
                         ADD_DEFENDANT_LITIGATION_FRIEND,
@@ -171,7 +175,7 @@ class FlowStateAllowedEventServiceTest {
                     }
                 ),
                 of(
-                    CLAIM_ACKNOWLEDGED,
+                    NOTIFICATION_ACKNOWLEDGED,
                     new CaseEvent[] {
                         DEFENDANT_RESPONSE,
                         ADD_DEFENDANT_LITIGATION_FRIEND,
@@ -184,7 +188,7 @@ class FlowStateAllowedEventServiceTest {
                     }
                 ),
                 of(
-                    RESPONDENT_FULL_DEFENCE,
+                    FULL_DEFENCE,
                     new CaseEvent[] {
                         CLAIMANT_RESPONSE,
                         WITHDRAW_CLAIM,
@@ -196,7 +200,7 @@ class FlowStateAllowedEventServiceTest {
                     }
                 ),
                 of(
-                    RESPONDENT_FULL_ADMISSION,
+                    FULL_ADMISSION,
                     new CaseEvent[] {
                         WITHDRAW_CLAIM,
                         ADD_DEFENDANT_LITIGATION_FRIEND,
@@ -206,7 +210,7 @@ class FlowStateAllowedEventServiceTest {
                     }
                 ),
                 of(
-                    RESPONDENT_PART_ADMISSION,
+                    PART_ADMISSION,
                     new CaseEvent[] {
                         WITHDRAW_CLAIM,
                         ADD_DEFENDANT_LITIGATION_FRIEND,
@@ -216,7 +220,7 @@ class FlowStateAllowedEventServiceTest {
                     }
                 ),
                 of(
-                    RESPONDENT_COUNTER_CLAIM,
+                    COUNTER_CLAIM,
                     new CaseEvent[] {
                         WITHDRAW_CLAIM,
                         ADD_DEFENDANT_LITIGATION_FRIEND,
@@ -296,62 +300,63 @@ class FlowStateAllowedEventServiceTest {
                 of(CREATE_CLAIM, new String[] {DRAFT.fullName()}),
                 of(RESUBMIT_CLAIM, new String[] {CLAIM_ISSUED_PAYMENT_FAILED.fullName()}),
                 of(ACKNOWLEDGE_CLAIM, new String[] {CLAIM_ISSUED.fullName()}),
-                of(NOTIFY_DEFENDANT_OF_CLAIM, new String[] {AWAITING_CASE_NOTIFICATION.fullName()}),
-                of(CLAIMANT_RESPONSE, new String[] {RESPONDENT_FULL_DEFENCE.fullName()}),
-                of(DEFENDANT_RESPONSE, new String[] {CLAIM_ACKNOWLEDGED.fullName(), EXTENSION_REQUESTED.fullName()}),
+                of(NOTIFY_DEFENDANT_OF_CLAIM, new String[] {CLAIM_NOTIFIED.fullName()}),
+                of(CLAIMANT_RESPONSE, new String[] {FULL_DEFENCE.fullName()}),
+                of(DEFENDANT_RESPONSE, new String[] {NOTIFICATION_ACKNOWLEDGED.fullName(),
+                    CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION.fullName()}),
                 of(
                     WITHDRAW_CLAIM,
                     new String[] {DRAFT.fullName(), CLAIM_ISSUED.fullName(),
-                        CLAIM_ACKNOWLEDGED.fullName(), CLAIM_ISSUED_PAYMENT_FAILED.fullName(),
-                        RESPONDENT_FULL_DEFENCE.fullName(), RESPONDENT_FULL_ADMISSION.fullName(),
-                        RESPONDENT_PART_ADMISSION.fullName(), RESPONDENT_COUNTER_CLAIM.fullName(),
+                        NOTIFICATION_ACKNOWLEDGED.fullName(), CLAIM_ISSUED_PAYMENT_FAILED.fullName(),
+                        FULL_DEFENCE.fullName(), FULL_ADMISSION.fullName(),
+                        PART_ADMISSION.fullName(), COUNTER_CLAIM.fullName(),
                         FULL_DEFENCE_PROCEED.fullName(), FULL_DEFENCE_NOT_PROCEED.fullName(),
-                        EXTENSION_REQUESTED.fullName()
+                        CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION.fullName()
                     }
                 ),
                 of(
                     DISCONTINUE_CLAIM,
                     new String[] {DRAFT.fullName(), CLAIM_ISSUED.fullName(),
-                        CLAIM_ACKNOWLEDGED.fullName(), CLAIM_ISSUED_PAYMENT_FAILED.fullName(),
-                        RESPONDENT_FULL_DEFENCE.fullName(), RESPONDENT_FULL_ADMISSION.fullName(),
-                        RESPONDENT_PART_ADMISSION.fullName(), RESPONDENT_COUNTER_CLAIM.fullName(),
+                        NOTIFICATION_ACKNOWLEDGED.fullName(), CLAIM_ISSUED_PAYMENT_FAILED.fullName(),
+                        FULL_DEFENCE.fullName(), FULL_ADMISSION.fullName(),
+                        PART_ADMISSION.fullName(), COUNTER_CLAIM.fullName(),
                         FULL_DEFENCE_PROCEED.fullName(), FULL_DEFENCE_NOT_PROCEED.fullName(),
-                        EXTENSION_REQUESTED.fullName()
+                        CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION.fullName()
                     }
                 ),
                 of(
                     CASE_PROCEEDS_IN_CASEMAN,
-                    new String[] {AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
-                        CLAIM_ISSUED.fullName(), CLAIM_ACKNOWLEDGED.fullName(),
-                        RESPONDENT_FULL_DEFENCE.fullName(), RESPONDENT_FULL_ADMISSION.fullName(),
-                        RESPONDENT_PART_ADMISSION.fullName(), RESPONDENT_COUNTER_CLAIM.fullName(),
+                    new String[] {CLAIM_NOTIFIED.fullName(), CLAIM_DETAILS_NOTIFIED.fullName(),
+                        CLAIM_ISSUED.fullName(), NOTIFICATION_ACKNOWLEDGED.fullName(),
+                        FULL_DEFENCE.fullName(), FULL_ADMISSION.fullName(),
+                        PART_ADMISSION.fullName(), COUNTER_CLAIM.fullName(),
                         FULL_DEFENCE_PROCEED.fullName(), FULL_DEFENCE_NOT_PROCEED.fullName(),
-                        EXTENSION_REQUESTED.fullName()
+                        CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION.fullName()
                     }
                 ),
                 of(
                     ADD_DEFENDANT_LITIGATION_FRIEND,
-                    new String[] {AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName(),
-                        CLAIM_ISSUED.fullName(), CLAIM_ACKNOWLEDGED.fullName(),
-                        RESPONDENT_FULL_DEFENCE.fullName(), RESPONDENT_FULL_ADMISSION.fullName(),
-                        RESPONDENT_PART_ADMISSION.fullName(), RESPONDENT_COUNTER_CLAIM.fullName(),
+                    new String[] {CLAIM_NOTIFIED.fullName(), CLAIM_DETAILS_NOTIFIED.fullName(),
+                        CLAIM_ISSUED.fullName(), NOTIFICATION_ACKNOWLEDGED.fullName(),
+                        FULL_DEFENCE.fullName(), FULL_ADMISSION.fullName(),
+                        PART_ADMISSION.fullName(), COUNTER_CLAIM.fullName(),
                         FULL_DEFENCE_PROCEED.fullName(), FULL_DEFENCE_NOT_PROCEED.fullName(),
-                        EXTENSION_REQUESTED.fullName()
+                        CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION.fullName()
                     }
                 ),
                 of(
                     ADD_OR_AMEND_CLAIM_DOCUMENTS,
-                    new String[] {AWAITING_CASE_NOTIFICATION.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName()}
+                    new String[] {CLAIM_NOTIFIED.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName()}
                 ),
                 of(NOTIFY_DEFENDANT_OF_CLAIM_DETAILS, new String[] {AWAITING_CASE_DETAILS_NOTIFICATION.fullName()}),
-                of(INFORM_AGREED_EXTENSION_DATE, new String[] {CLAIM_ACKNOWLEDGED.fullName()}),
+                of(INFORM_AGREED_EXTENSION_DATE, new String[] {NOTIFICATION_ACKNOWLEDGED.fullName()}),
                 of(
                     AMEND_PARTY_DETAILS,
-                    new String[] {CLAIM_ISSUED_PAYMENT_FAILED.fullName(), AWAITING_CASE_NOTIFICATION.fullName(),
+                    new String[] {CLAIM_ISSUED_PAYMENT_FAILED.fullName(), CLAIM_NOTIFIED.fullName(),
                         AWAITING_CASE_DETAILS_NOTIFICATION.fullName(), CLAIM_ISSUED.fullName(),
-                        EXTENSION_REQUESTED.fullName(), CLAIM_ACKNOWLEDGED.fullName(),
-                        RESPONDENT_FULL_DEFENCE.fullName(), RESPONDENT_FULL_ADMISSION.fullName(),
-                        RESPONDENT_PART_ADMISSION.fullName(), RESPONDENT_COUNTER_CLAIM.fullName(),
+                        CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION.fullName(), NOTIFICATION_ACKNOWLEDGED.fullName(),
+                        FULL_DEFENCE.fullName(), FULL_ADMISSION.fullName(),
+                        PART_ADMISSION.fullName(), COUNTER_CLAIM.fullName(),
                         FULL_DEFENCE_PROCEED.fullName(), FULL_DEFENCE_NOT_PROCEED.fullName()
                     }
                 )

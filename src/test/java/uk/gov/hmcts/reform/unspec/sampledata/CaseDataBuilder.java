@@ -304,30 +304,38 @@ public class CaseDataBuilder {
         switch (flowState) {
             case DRAFT:
                 return atStateClaimDraft();
-            case PENDING_CLAIM_ISSUED:
-                return atStatePendingCaseIssued();
+            case CLAIM_SUBMITTED:
+                return atStateClaimSubmitted();
             case CLAIM_ISSUED_PAYMENT_SUCCESSFUL:
                 return atStatePaymentSuccessful();
             case CLAIM_ISSUED_PAYMENT_FAILED:
                 return atStatePaymentFailed();
-            case AWAITING_CASE_NOTIFICATION:
-                return atStateAwaitingCaseNotification();
-            case AWAITING_CASE_DETAILS_NOTIFICATION:
-                return atStateAwaitingCaseDetailsNotification();
+            case PENDING_CLAIM_ISSUED:
+                return atStatePendingClaimIssued();
+            case PENDING_CLAIM_ISSUED_UNREPRESENTED_DEFENDANT:
+                return atStatePendingClaimIssuedUnRepresentedDefendant();
+            case PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT:
+                return atStatePendingClaimIssuedUnRegisteredDefendent();
             case CLAIM_ISSUED:
-                return atStateClaimCreated();
-            case EXTENSION_REQUESTED:
-                return atStateExtensionRequested();
-            case CLAIM_ACKNOWLEDGED:
-                return atStateClaimAcknowledge();
-            case RESPONDENT_FULL_DEFENCE:
-                return atStateRespondentFullDefence();
-            case RESPONDENT_FULL_ADMISSION:
-                return atStateRespondentFullAdmission();
-            case RESPONDENT_PART_ADMISSION:
-                return atStateRespondentPartAdmission();
-            case RESPONDENT_COUNTER_CLAIM:
-                return atStateRespondentCounterClaim();
+                return atStateClaimIssued();
+            case CLAIM_NOTIFIED:
+                return atStateClaimNotified();
+            case CLAIM_DETAILS_NOTIFIED:
+                return atStateClaimDetailsNotified();
+            case CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION:
+                return atStateClaimDetailsNotifiedTimeExtension();
+            case NOTIFICATION_ACKNOWLEDGED:
+                return atStateNotificationAcknowledged();
+            case NOTIFICATION_ACKNOWLEDGED_TIME_EXTENSION:
+                return atStateNotificationAcknowledgeTimeExtension();
+            case FULL_DEFENCE:
+                return atStateFullDefence();
+            case FULL_ADMISSION:
+                return atStateFullAdmission();
+            case PART_ADMISSION:
+                return atStatePartAdmission();
+            case COUNTER_CLAIM:
+                return atStateCounterClaim();
             case FULL_DEFENCE_PROCEED:
                 return atStateApplicantRespondToDefenceAndProceed();
             case FULL_DEFENCE_NOT_PROCEED:
@@ -336,16 +344,12 @@ public class CaseDataBuilder {
                 return atStateClaimWithdrawn();
             case CLAIM_DISCONTINUED:
                 return atStateClaimDiscontinued();
-            case PROCEEDS_OFFLINE_ADMIT_OR_COUNTER_CLAIM:
-                return atStateProceedsOfflineAdmissionOrCounterClaim();
             case TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT:
                 return atStateProceedsOfflineUnrepresentedDefendant();
-            case PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT:
+            case TAKEN_OFFLINE_UNREGISTERED_DEFENDANT:
                 return atStateProceedsOfflineUnregisteredDefendant();
             case CASE_PROCEEDS_IN_CASEMAN:
                 return atStateCaseProceedsInCaseman();
-            case CLAIM_DISMISSED_DEFENDANT_OUT_OF_TIME:
-                return atStateClaimDismissed();
             case CLAIM_DISMISSED_PAST_CLAIM_DETAILS_NOTIFICATION_DEADLINE:
                 return atStateClaimDismissedPastClaimDetailsNotificationDeadline();
             case TAKEN_OFFLINE_PAST_APPLICANT_RESPONSE_DEADLINE:
@@ -358,7 +362,7 @@ public class CaseDataBuilder {
     }
 
     public CaseDataBuilder atStateClaimDismissedPastClaimNotificationDeadline() {
-        atStateAwaitingCaseNotification();
+        atStateClaimNotified();
         ccdState = CASE_DISMISSED;
         claimNotificationDeadline = LocalDateTime.now().minusDays(1);
         claimDismissedDate = LocalDateTime.now();
@@ -366,7 +370,7 @@ public class CaseDataBuilder {
     }
 
     public CaseDataBuilder atStateClaimDismissedPastClaimDetailsNotificationDeadline() {
-        atStateAwaitingCaseDetailsNotification();
+        atStateClaimDetailsNotified();
         claimDetailsNotificationDeadline = LocalDateTime.now().minusDays(5);
         ccdState = CASE_DISMISSED;
         claimDismissedDate = LocalDateTime.now();
@@ -398,11 +402,39 @@ public class CaseDataBuilder {
         issueDate = CLAIM_ISSUED_DATE;
         respondent1Represented = YES;
         respondent1OrgRegistered = NO;
+        takenOfflineDate = LocalDateTime.now();
+        respondent1OrganisationPolicy = null;
+
+        respondentSolicitor1OrganisationDetails = SolicitorOrganisationDetails.builder()
+            .email("testorg@email.com")
+            .organisationName("test org name")
+            .fax("123123123")
+            .dx("test org dx")
+            .phoneNumber("0123456789")
+            .address(AddressBuilder.builder().build())
+            .build();
+        return this;
+    }
+
+    public CaseDataBuilder atStatePendingClaimIssuedUnRepresentedDefendant() {
+        atStatePaymentSuccessful();
+        ccdState = PENDING_CASE_ISSUED;
+        issueDate = CLAIM_ISSUED_DATE;
+        respondent1Represented = NO;
+        return this;
+    }
+
+    public CaseDataBuilder atStatePendingClaimIssuedUnRegisteredDefendent() {
+        atStatePaymentSuccessful();
+        ccdState = PENDING_CASE_ISSUED;
+        issueDate = CLAIM_ISSUED_DATE;
+        respondent1Represented = YES;
+        respondent1OrgRegistered = NO;
         return this;
     }
 
     public CaseDataBuilder atStateClaimDiscontinued() {
-        atStateClaimCreated();
+        atStateClaimIssued();
         return discontinueClaim();
     }
 
@@ -427,11 +459,12 @@ public class CaseDataBuilder {
             .date(LocalDate.now())
             .reason("My reason")
             .build();
+        this.claimDismissedDate = LocalDateTime.now();
         return this;
     }
 
     public CaseDataBuilder atStateClaimWithdrawn() {
-        atStateClaimCreated();
+        atStateClaimIssued();
         return withdrawClaim();
     }
 
@@ -484,22 +517,22 @@ public class CaseDataBuilder {
             .build();
         respondentSolicitor1EmailAddress = "civilunspecified@gmail.com";
         applicantSolicitor1ClaimStatementOfTruth = StatementOfTruthBuilder.builder().build();
-        submittedDate = LocalDateTime.now();
         applicantSolicitor1CheckEmail = CorrectEmail.builder().email("civilunspecified@gmail.com").correct(YES).build();
         return this;
     }
 
-    public CaseDataBuilder atStatePendingCaseIssued() {
+    public CaseDataBuilder atStateClaimSubmitted() {
         atStateClaimDraft();
         legacyCaseReference = LEGACY_CASE_REFERENCE;
         allocatedTrack = FAST_CLAIM;
         ccdState = PENDING_CASE_ISSUED;
         ccdCaseReference = CASE_ID;
+        submittedDate = LocalDateTime.now();
         return this;
     }
 
     public CaseDataBuilder atStatePaymentFailed() {
-        atStatePendingCaseIssued();
+        atStateClaimSubmitted();
 
         paymentDetails = PaymentDetails.builder()
             .status(FAILED)
@@ -510,50 +543,55 @@ public class CaseDataBuilder {
     }
 
     public CaseDataBuilder atStatePaymentSuccessful() {
-        atStatePendingCaseIssued();
+        atStateClaimSubmitted();
         paymentDetails = PaymentDetails.builder()
             .status(SUCCESS)
             .reference("RC-1604-0739-2145-4711")
             .build();
         paymentSuccessfulDate = LocalDateTime.now();
-        claimDetailsNotificationDeadline = LocalDateTime.now().plusDays(1);
         return this;
     }
 
-    public CaseDataBuilder atStateAwaitingCaseNotification() {
+    public CaseDataBuilder atStatePendingClaimIssued() {
         atStatePaymentSuccessful();
-        ccdState = CASE_ISSUED;
         issueDate = CLAIM_ISSUED_DATE;
-        claimNotificationDeadline = LocalDateTime.now();
+        ccdState = PENDING_CASE_ISSUED;
         return this;
     }
 
-    public CaseDataBuilder atStateAwaitingCaseDetailsNotification() {
-        atStateAwaitingCaseNotification();
-        claimNotificationDate = LocalDateTime.now();
-        claimDetailsNotificationDeadline = DEADLINE;
+    public CaseDataBuilder atStateClaimNotified() {
+        atStateClaimIssued();
         ccdState = AWAITING_CASE_DETAILS_NOTIFICATION;
+        claimNotificationDate = LocalDateTime.now();
+        claimDetailsNotificationDeadline = LocalDateTime.now();
         return this;
     }
 
-    public CaseDataBuilder atStateClaimCreated() {
-        atStateAwaitingCaseDetailsNotification();
+    public CaseDataBuilder atStateClaimDetailsNotified() {
+        atStateClaimNotified();
+        respondent1ResponseDeadline = LocalDateTime.now();
+        claimDismissedDeadline = LocalDateTime.now();
         claimDetailsNotificationDate = LocalDateTime.now();
-        claimDismissedDeadline = LocalDateTime.now().plusMonths(6);
         ccdState = AWAITING_RESPONDENT_ACKNOWLEDGEMENT;
-        respondent1ResponseDeadline = RESPONSE_DEADLINE;
         return this;
     }
 
-    public CaseDataBuilder atStateExtensionRequested() {
-        atStateClaimAcknowledge();
-        respondentSolicitor1AgreedDeadlineExtension = LocalDate.now();
+    public CaseDataBuilder atStateClaimIssued() {
+        atStatePendingClaimIssued();
+        claimNotificationDeadline = LocalDateTime.now();
+        ccdState = CASE_ISSUED;
+        return this;
+    }
+
+    public CaseDataBuilder atStateClaimDetailsNotifiedTimeExtension() {
+        atStateClaimDetailsNotified();
+        respondent1ResponseDeadline = LocalDateTime.now();
         respondent1TimeExtensionDate = LocalDateTime.now();
         return this;
     }
 
     public CaseDataBuilder atStateCaseProceedsInCaseman() {
-        atStateAwaitingCaseNotification();
+        atStateClaimNotified();
         claimProceedsInCaseman = ClaimProceedsInCaseman.builder()
             .date(LocalDate.now())
             .reason(ReasonForProceedingOnPaper.APPLICATION)
@@ -562,39 +600,35 @@ public class CaseDataBuilder {
         return this;
     }
 
-    public CaseDataBuilder atStateRespondentFullDefence() {
+    public CaseDataBuilder atStateFullDefence() {
         atStateRespondentRespondToClaim(RespondentResponseType.FULL_DEFENCE);
         respondent1ClaimResponseDocument = ResponseDocument.builder()
             .file(DocumentBuilder.builder().documentName("defendant-response.pdf").build())
             .build();
         respondent1DQ();
-        respondent1ResponseDate = LocalDateTime.now();
         return this;
     }
 
-    public CaseDataBuilder atStateRespondentFullAdmission() {
+    public CaseDataBuilder atStateFullAdmission() {
         atStateRespondentRespondToClaim(RespondentResponseType.FULL_ADMISSION);
         takenOfflineDate = LocalDateTime.now();
-        respondent1ResponseDate = LocalDateTime.now();
         return this;
     }
 
-    public CaseDataBuilder atStateRespondentPartAdmission() {
+    public CaseDataBuilder atStatePartAdmission() {
         atStateRespondentRespondToClaim(RespondentResponseType.PART_ADMISSION);
         takenOfflineDate = LocalDateTime.now();
-        respondent1ResponseDate = LocalDateTime.now();
         return this;
     }
 
-    public CaseDataBuilder atStateRespondentCounterClaim() {
+    public CaseDataBuilder atStateCounterClaim() {
         atStateRespondentRespondToClaim(RespondentResponseType.COUNTER_CLAIM);
         takenOfflineDate = LocalDateTime.now();
-        respondent1ResponseDate = LocalDateTime.now();
         return this;
     }
 
     public CaseDataBuilder atStateRespondentRespondToClaim(RespondentResponseType respondentResponseType) {
-        atStateClaimAcknowledge();
+        atStateNotificationAcknowledged();
         respondent1ClaimResponseType = respondentResponseType;
         applicant1ResponseDeadline = APPLICANT_RESPONSE_DEADLINE;
         respondent1ResponseDate = LocalDateTime.now();
@@ -603,20 +637,20 @@ public class CaseDataBuilder {
     }
 
     public CaseDataBuilder atStateProceedsOfflineAdmissionOrCounterClaim() {
-        atStateRespondentFullDefence();
+        atStateFullDefence();
         ccdState = PROCEEDS_IN_HERITAGE_SYSTEM;
         return this;
     }
 
     public CaseDataBuilder atStateClaimDismissed() {
-        atStateClaimCreated();
+        atStateClaimIssued();
         ccdState = CASE_DISMISSED;
         claimDismissedDate = LocalDateTime.now();
         return this;
     }
 
     public CaseDataBuilder atStateApplicantRespondToDefenceAndProceed() {
-        atStateRespondentFullDefence();
+        atStateFullDefence();
         applicant1ProceedWithClaim = YES;
         applicant1DefenceResponseDocument = ResponseDocument.builder()
             .file(DocumentBuilder.builder().documentName("claimant-response.pdf").build())
@@ -627,21 +661,29 @@ public class CaseDataBuilder {
     }
 
     public CaseDataBuilder atStateApplicantRespondToDefenceAndNotProceed() {
-        atStateRespondentFullDefence();
+        atStateFullDefence();
         applicant1ProceedWithClaim = NO;
         applicant1ResponseDate = LocalDateTime.now();
         return this;
     }
 
-    public CaseDataBuilder atStateClaimAcknowledge() {
-        atStateClaimCreated();
+    public CaseDataBuilder atStateNotificationAcknowledged() {
+        atStateClaimDetailsNotified();
         respondent1ClaimResponseIntentionType = FULL_DEFENCE;
         respondent1AcknowledgeNotificationDate = LocalDateTime.now();
+        respondent1ResponseDeadline = LocalDateTime.now();
+        return this;
+    }
+
+    public CaseDataBuilder atStateNotificationAcknowledgeTimeExtension() {
+        atStateNotificationAcknowledged();
+        respondent1TimeExtensionDate = LocalDateTime.now();
+        respondent1ResponseDeadline = LocalDateTime.now();
         return this;
     }
 
     public CaseDataBuilder atStateTakenOfflinePastApplicantResponseDeadline() {
-        atStateRespondentFullDefence();
+        atStateFullDefence();
         takenOfflineDate = LocalDateTime.now().plusDays(2);
         return this;
     }

@@ -65,7 +65,7 @@ class PaymentsCallbackHandlerTest extends BaseCallbackHandlerTest {
 
     @BeforeEach
     public void setup() {
-        caseData = CaseDataBuilder.builder().atStatePendingCaseIssued().build();
+        caseData = CaseDataBuilder.builder().atStateClaimSubmitted().build();
         params = callbackParamsOf(new HashMap<>(), ABOUT_TO_SUBMIT)
             .toBuilder().caseData(caseData).build();
 

@@ -93,7 +93,7 @@ class GenerateClaimFormCallbackHandlerTest extends BaseCallbackHandlerTest {
 
         @Test
         void shouldGenerateDocumentAndSetStateAsCaseIssued_whenRespondentIsRepresented() {
-            CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseNotification()
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimNotified()
                 .build();
             CallbackParams params = callbackParamsOf(caseData, ABOUT_TO_SUBMIT);
 
@@ -126,7 +126,7 @@ class GenerateClaimFormCallbackHandlerTest extends BaseCallbackHandlerTest {
 
         @Test
         void shouldGenerateDocumentAndSetStateAsProceedsInHeritageSystem_whenRespondentSolicitorUnregistered() {
-            CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseNotification()
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimNotified()
                 .respondent1OrgRegistered(NO)
                 .build();
             CallbackParams params = callbackParamsOf(caseData, ABOUT_TO_SUBMIT);

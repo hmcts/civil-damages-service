@@ -9,6 +9,9 @@ import uk.gov.hmcts.reform.unspec.stateflow.StateFlow;
 import uk.gov.hmcts.reform.unspec.stateflow.StateFlowBuilder;
 import uk.gov.hmcts.reform.unspec.stateflow.model.State;
 
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimDiscontinued;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimWithdrawn;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.respondentAcknowledgeClaimExtension;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.takenOfflineAfterApplicantResponseDeadline;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseDismissedAfterClaimDetailsNotificationDeadline;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseDismissedAfterClaimDismissedDeadline;
@@ -33,6 +36,7 @@ import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.respond
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.respondent1OrgNotRegistered;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.respondentAcknowledgeClaim;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.takenOfflineByStaff;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DISCONTINUED;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DETAILS_NOTIFIED;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION;
@@ -43,6 +47,7 @@ import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_ISSUED_PAYMENT_SUCCESSFUL;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_NOTIFIED;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_SUBMITTED;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_WITHDRAWN;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.COUNTER_CLAIM;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.DRAFT;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.FLOW_NAME;
@@ -91,6 +96,8 @@ public class StateFlowEngine {
                 .transitionTo(CLAIM_DISMISSED_PAST_CLAIM_NOTIFICATION_DEADLINE)
                     .onlyIf(caseDismissedAfterClaimNotificationDeadline)
                 .transitionTo(TAKEN_OFFLINE_BY_STAFF).onlyIf(takenOfflineByStaff)
+                .transitionTo(CLAIM_WITHDRAWN).onlyIf(claimWithdrawn)
+                .transitionTo(CLAIM_DISCONTINUED).onlyIf(claimDiscontinued)
             .state(CLAIM_NOTIFIED)
                 .transitionTo(CLAIM_DETAILS_NOTIFIED).onlyIf(claimDetailsNotified)
                 .transitionTo(TAKEN_OFFLINE_BY_STAFF).onlyIf(takenOfflineByStaff)
@@ -98,10 +105,11 @@ public class StateFlowEngine {
                     .onlyIf(caseDismissedAfterClaimNotificationDeadline)
                 .transitionTo(CLAIM_DISMISSED_PAST_CLAIM_DETAILS_NOTIFICATION_DEADLINE)
                     .onlyIf(caseDismissedAfterClaimDetailsNotificationDeadline)
+                .transitionTo(CLAIM_WITHDRAWN).onlyIf(claimWithdrawn)
+                .transitionTo(CLAIM_DISCONTINUED).onlyIf(claimDiscontinued)
             .state(CLAIM_DETAILS_NOTIFIED)
                 .transitionTo(CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION).onlyIf(claimDetailsExtension)
                 .transitionTo(NOTIFICATION_ACKNOWLEDGED).onlyIf(respondentAcknowledgeClaim)
-                .transitionTo(NOTIFICATION_ACKNOWLEDGED_TIME_EXTENSION).onlyIf(respondentAcknowledgeClaim)
                 .transitionTo(FULL_DEFENCE).onlyIf(fullDefence)
                 .transitionTo(FULL_ADMISSION).onlyIf(fullAdmission)
                 .transitionTo(PART_ADMISSION).onlyIf(partAdmission)
@@ -109,6 +117,8 @@ public class StateFlowEngine {
                 .transitionTo(TAKEN_OFFLINE_BY_STAFF).onlyIf(takenOfflineByStaff)
                 .transitionTo(CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE)
                     .onlyIf(caseDismissedAfterClaimDismissedDeadline)
+                .transitionTo(CLAIM_WITHDRAWN).onlyIf(claimWithdrawn)
+                .transitionTo(CLAIM_DISCONTINUED).onlyIf(claimDiscontinued)
             .state(CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION)
                 .transitionTo(NOTIFICATION_ACKNOWLEDGED).onlyIf(respondentAcknowledgeClaim)
                 .transitionTo(FULL_DEFENCE).onlyIf(fullDefence)
@@ -118,8 +128,10 @@ public class StateFlowEngine {
                 .transitionTo(TAKEN_OFFLINE_BY_STAFF).onlyIf(takenOfflineByStaff)
                 .transitionTo(CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE)
                     .onlyIf(caseDismissedAfterClaimDismissedDeadline)
+                .transitionTo(CLAIM_WITHDRAWN).onlyIf(claimWithdrawn)
+                .transitionTo(CLAIM_DISCONTINUED).onlyIf(claimDiscontinued)
             .state(NOTIFICATION_ACKNOWLEDGED)
-                .transitionTo(NOTIFICATION_ACKNOWLEDGED_TIME_EXTENSION).onlyIf(respondentAcknowledgeClaim)
+                .transitionTo(NOTIFICATION_ACKNOWLEDGED_TIME_EXTENSION).onlyIf(respondentAcknowledgeClaimExtension)
                 .transitionTo(FULL_DEFENCE).onlyIf(fullDefence)
                 .transitionTo(FULL_ADMISSION).onlyIf(fullAdmission)
                 .transitionTo(PART_ADMISSION).onlyIf(partAdmission)
@@ -127,6 +139,8 @@ public class StateFlowEngine {
                 .transitionTo(TAKEN_OFFLINE_BY_STAFF).onlyIf(takenOfflineByStaff)
                 .transitionTo(CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE)
                     .onlyIf(caseDismissedAfterClaimDismissedDeadline)
+                .transitionTo(CLAIM_WITHDRAWN).onlyIf(claimWithdrawn)
+                .transitionTo(CLAIM_DISCONTINUED).onlyIf(claimDiscontinued)
             .state(NOTIFICATION_ACKNOWLEDGED_TIME_EXTENSION)
                 .transitionTo(FULL_DEFENCE).onlyIf(fullDefence)
                 .transitionTo(FULL_ADMISSION).onlyIf(fullAdmission)
@@ -135,12 +149,16 @@ public class StateFlowEngine {
                 .transitionTo(TAKEN_OFFLINE_BY_STAFF).onlyIf(takenOfflineByStaff)
                 .transitionTo(CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE)
                     .onlyIf(caseDismissedAfterClaimDismissedDeadline)
+                .transitionTo(CLAIM_WITHDRAWN).onlyIf(claimWithdrawn)
+                .transitionTo(CLAIM_DISCONTINUED).onlyIf(claimDiscontinued)
             .state(FULL_DEFENCE)
                 .transitionTo(FULL_DEFENCE_PROCEED).onlyIf(fullDefenceProceed)
                 .transitionTo(FULL_DEFENCE_NOT_PROCEED).onlyIf(fullDefenceNotProceed)
                 .transitionTo(TAKEN_OFFLINE_BY_STAFF).onlyIf(takenOfflineByStaff)
                 .transitionTo(TAKEN_OFFLINE_PAST_APPLICANT_RESPONSE_DEADLINE)
                     .onlyIf(takenOfflineAfterApplicantResponseDeadline)
+                .transitionTo(CLAIM_WITHDRAWN).onlyIf(claimWithdrawn)
+                .transitionTo(CLAIM_DISCONTINUED).onlyIf(claimDiscontinued)
             .state(FULL_ADMISSION)
             .state(PART_ADMISSION)
             .state(COUNTER_CLAIM)

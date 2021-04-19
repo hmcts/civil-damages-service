@@ -27,7 +27,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackParams.Params.BEARER_TOKEN;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.GENERATE_CLAIM_FORM;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.AWAITING_CASE_NOTIFICATION;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DETAILS_NOTIFIED;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.fromFullName;
 import static uk.gov.hmcts.reform.unspec.utils.ElementUtils.wrapElements;
 
@@ -81,7 +81,7 @@ public class GenerateClaimFormCallbackHandler extends CallbackHandler {
 
     private CaseState getState(CaseData data) {
         FlowState flowState = fromFullName(stateFlowEngine.evaluate(data).getState().getName());
-        return flowState == AWAITING_CASE_NOTIFICATION ? CaseState.CASE_ISSUED :
-                CaseState.PROCEEDS_IN_HERITAGE_SYSTEM;
+        return flowState == CLAIM_DETAILS_NOTIFIED ? CaseState.CASE_ISSUED :
+            CaseState.PROCEEDS_IN_HERITAGE_SYSTEM;
     }
 }

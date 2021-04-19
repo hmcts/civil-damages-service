@@ -77,7 +77,7 @@ class CaseProceedsInCasemanCallbackHandlerTest extends BaseCallbackHandlerTest {
 
         @Test
         void shouldReturnNoErrors_whenDateInPast() {
-            CaseData caseData = CaseDataBuilder.builder().atStateClaimCreated()
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimIssued()
                 .claimProceedsInCaseman(ClaimProceedsInCaseman.builder().date(LocalDate.now().minusDays(1)).build())
                 .build();
             CallbackParams params = callbackParamsOf(caseData, MID, PAGE_ID);
@@ -100,7 +100,7 @@ class CaseProceedsInCasemanCallbackHandlerTest extends BaseCallbackHandlerTest {
 
         @Test
         void shouldAddTakenOfflineDate_whenInvoked() {
-            CaseData caseData = CaseDataBuilder.builder().atStateRespondentFullDefence().build();
+            CaseData caseData = CaseDataBuilder.builder().atStateFullDefence().build();
             CallbackParams params = callbackParamsOf(caseData, ABOUT_TO_SUBMIT);
 
             AboutToStartOrSubmitCallbackResponse response =
