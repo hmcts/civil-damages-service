@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.unspec.callback;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.unspec.model.BusinessProcess;
@@ -12,6 +14,7 @@ import static java.util.Optional.ofNullable;
 public abstract class CallbackHandler {
 
     private static final String DEFAULT = "default";
+    private static final Logger LOG = LoggerFactory.getLogger(CallbackHandler.class);
 
     protected abstract Map<String, Callback> callbacks();
 
@@ -30,8 +33,8 @@ public abstract class CallbackHandler {
     }
 
     protected String callbackKey(CallbackVersion version, CallbackType type, String pageId) {
-        String formattedVersion = ofNullable(version).map(x -> x.toString() + "-").orElse("");
-        String formattedPageId = ofNullable(pageId).map(x -> "-" + x).orElse("");
+        String formattedVersion = ofNullable(version).map(v -> v.toString() + "-").orElse("");
+        String formattedPageId = ofNullable(pageId).map(id -> "-" + id).orElse("");
         return String.format("%s%s%s", formattedVersion, type.getValue(), formattedPageId);
     }
 
@@ -59,6 +62,7 @@ public abstract class CallbackHandler {
         callbackKey = callbackKey(callbackParams.getVersion(), callbackParams.getType(), callbackParams.getPageId());
 
         if (ofNullable(callbacks().get(callbackKey)).isEmpty()) {
+            LOG.info(String.format("No implementation found for %s, falling back to default", callbackKey));
             callbackKey = callbackKey(callbackParams.getType(), callbackParams.getPageId());
         }
 
