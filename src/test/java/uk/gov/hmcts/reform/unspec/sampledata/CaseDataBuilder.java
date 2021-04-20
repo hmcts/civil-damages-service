@@ -131,6 +131,7 @@ public class CaseDataBuilder {
     private LocalDateTime applicant1ResponseDeadline;
     private LocalDateTime applicant1ResponseDate;
     private LocalDateTime takenOfflineDate;
+    private LocalDateTime takenOfflineByStaffDate;
     private LocalDateTime claimDismissedDate;
 
     private SolicitorOrganisationDetails respondentSolicitor1OrganisationDetails;
@@ -344,18 +345,20 @@ public class CaseDataBuilder {
                 return atStateClaimWithdrawn();
             case CLAIM_DISCONTINUED:
                 return atStateClaimDiscontinued();
+            case CLAIM_DISMISSED_PAST_CLAIM_NOTIFICATION_DEADLINE:
+                return atStateClaimDismissedPastClaimNotificationDeadline();
+            case CLAIM_DISMISSED_PAST_CLAIM_DETAILS_NOTIFICATION_DEADLINE:
+                return atStateClaimDismissedPastClaimDetailsNotificationDeadline();
+            case TAKEN_OFFLINE_BY_STAFF:
+                return atStateCaseProceedsInCaseman();
+            case CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE:
+                return atStateClaimDismissedPastClaimDismissedDeadline();
+            case TAKEN_OFFLINE_PAST_APPLICANT_RESPONSE_DEADLINE:
+                return atStateTakenOfflinePastApplicantResponseDeadline();
             case TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT:
                 return atStateProceedsOfflineUnrepresentedDefendant();
             case TAKEN_OFFLINE_UNREGISTERED_DEFENDANT:
                 return atStateProceedsOfflineUnregisteredDefendant();
-            case CASE_PROCEEDS_IN_CASEMAN:
-                return atStateCaseProceedsInCaseman();
-            case CLAIM_DISMISSED_PAST_CLAIM_DETAILS_NOTIFICATION_DEADLINE:
-                return atStateClaimDismissedPastClaimDetailsNotificationDeadline();
-            case TAKEN_OFFLINE_PAST_APPLICANT_RESPONSE_DEADLINE:
-                return atStateTakenOfflinePastApplicantResponseDeadline();
-            case CLAIM_DISMISSED_PAST_CLAIM_NOTIFICATION_DEADLINE:
-                return atStateClaimDismissedPastClaimNotificationDeadline();
             default:
                 throw new IllegalArgumentException("Invalid internal state: " + flowState);
         }
@@ -377,13 +380,19 @@ public class CaseDataBuilder {
         return this;
     }
 
+    public CaseDataBuilder atStateClaimDismissedPastClaimDismissedDeadline() {
+        atStateNotificationAcknowledged();
+        ccdState = CASE_DISMISSED;
+        claimDismissedDate = LocalDateTime.now();
+        return this;
+    }
+
     public CaseDataBuilder atStateProceedsOfflineUnrepresentedDefendant() {
         atStatePaymentSuccessful();
         ccdState = PROCEEDS_IN_HERITAGE_SYSTEM;
         issueDate = CLAIM_ISSUED_DATE;
         respondent1Represented = NO;
         takenOfflineDate = LocalDateTime.now();
-        respondent1OrganisationPolicy = null;
 
         respondentSolicitor1OrganisationDetails = SolicitorOrganisationDetails.builder()
             .email("testorg@email.com")
@@ -403,7 +412,6 @@ public class CaseDataBuilder {
         respondent1Represented = YES;
         respondent1OrgRegistered = NO;
         takenOfflineDate = LocalDateTime.now();
-        respondent1OrganisationPolicy = null;
 
         respondentSolicitor1OrganisationDetails = SolicitorOrganisationDetails.builder()
             .email("testorg@email.com")
@@ -596,7 +604,7 @@ public class CaseDataBuilder {
             .date(LocalDate.now())
             .reason(ReasonForProceedingOnPaper.APPLICATION)
             .build();
-        takenOfflineDate = LocalDateTime.now();
+        takenOfflineByStaffDate = LocalDateTime.now();
         return this;
     }
 
@@ -643,7 +651,7 @@ public class CaseDataBuilder {
     }
 
     public CaseDataBuilder atStateClaimDismissed() {
-        atStateClaimIssued();
+        atStateNotificationAcknowledged();
         ccdState = CASE_DISMISSED;
         claimDismissedDate = LocalDateTime.now();
         return this;
@@ -768,6 +776,7 @@ public class CaseDataBuilder {
             .applicant1ResponseDeadline(applicant1ResponseDeadline)
             .takenOfflineDate(takenOfflineDate)
             .claimDismissedDate(claimDismissedDate)
+            .takenOfflineByStaffDate(takenOfflineByStaffDate)
             .build();
     }
 }

@@ -107,8 +107,8 @@ public class FlowPredicate {
             && caseData.getCcdState() == CASE_DISMISSED;
 
     public static final Predicate<CaseData> claimDiscontinued = caseData ->
-        caseData.getDiscontinueClaim() != null
-            && caseData.getCcdState() == CASE_DISMISSED;
+        caseData.getDiscontinueClaim() != null && caseData.getCcdState() == CASE_DISMISSED
+            && caseData.getClaimDismissedDate() != null;
 
     // update with dateClaimTakenOffline date when exists
     public static final Predicate<CaseData> claimTakenOffline = caseData ->

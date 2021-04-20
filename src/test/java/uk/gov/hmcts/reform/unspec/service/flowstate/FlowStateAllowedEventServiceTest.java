@@ -41,7 +41,6 @@ import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_DEFENDANT_OF_
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.RESUBMIT_CLAIM;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.TAKE_CASE_OFFLINE;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.WITHDRAW_CLAIM;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.AWAITING_CASE_DETAILS_NOTIFICATION;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DETAILS_NOTIFIED;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_ISSUED;
@@ -140,7 +139,7 @@ class FlowStateAllowedEventServiceTest {
                     }
                 ),
                 of(
-                    AWAITING_CASE_DETAILS_NOTIFICATION,
+                    CLAIM_NOTIFIED,
                     new CaseEvent[] {
                         NOTIFY_DEFENDANT_OF_CLAIM_DETAILS,
                         ADD_DEFENDANT_LITIGATION_FRIEND,
@@ -346,14 +345,14 @@ class FlowStateAllowedEventServiceTest {
                 ),
                 of(
                     ADD_OR_AMEND_CLAIM_DOCUMENTS,
-                    new String[] {CLAIM_NOTIFIED.fullName(), AWAITING_CASE_DETAILS_NOTIFICATION.fullName()}
+                    new String[] {CLAIM_NOTIFIED.fullName()}
                 ),
-                of(NOTIFY_DEFENDANT_OF_CLAIM_DETAILS, new String[] {AWAITING_CASE_DETAILS_NOTIFICATION.fullName()}),
+                of(NOTIFY_DEFENDANT_OF_CLAIM_DETAILS, new String[] {CLAIM_NOTIFIED.fullName()}),
                 of(INFORM_AGREED_EXTENSION_DATE, new String[] {NOTIFICATION_ACKNOWLEDGED.fullName()}),
                 of(
                     AMEND_PARTY_DETAILS,
-                    new String[] {CLAIM_ISSUED_PAYMENT_FAILED.fullName(), CLAIM_NOTIFIED.fullName(),
-                        AWAITING_CASE_DETAILS_NOTIFICATION.fullName(), CLAIM_ISSUED.fullName(),
+                    new String[] {CLAIM_ISSUED_PAYMENT_FAILED.fullName(),
+                        CLAIM_NOTIFIED.fullName(), CLAIM_ISSUED.fullName(),
                         CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION.fullName(), NOTIFICATION_ACKNOWLEDGED.fullName(),
                         FULL_DEFENCE.fullName(), FULL_ADMISSION.fullName(),
                         PART_ADMISSION.fullName(), COUNTER_CLAIM.fullName(),
