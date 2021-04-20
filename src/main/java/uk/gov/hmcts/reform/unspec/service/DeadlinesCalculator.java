@@ -28,15 +28,22 @@ public class DeadlinesCalculator {
         return calculateFirstWorkingDay(notificationDeadline).atTime(MIDNIGHT);
     }
 
-    public LocalDateTime plus14DaysAt4pmDeadline(LocalDate startDate) {
-        LocalDate notificationDeadline = startDate.plusDays(14);
+    public LocalDateTime plus14DaysAt4pmDeadline(LocalDateTime startDate) {
+        LocalDateTime dateTime = startDate;
+        if (is4pmOrAfter(startDate)) {
+            dateTime = startDate.plusDays(1);
+        }
+        LocalDate notificationDeadline = dateTime.plusDays(14).toLocalDate();
         return calculateFirstWorkingDay(notificationDeadline).atTime(END_OF_BUSINESS_DAY);
     }
 
     public LocalDateTime calculateApplicantResponseDeadline(LocalDateTime responseDate, AllocatedTrack track) {
+        LocalDateTime dateTime = responseDate;
+        if (is4pmOrAfter(responseDate)) {
+            dateTime = responseDate.plusDays(1);
+        }
         int daysToAdd = getDaysToAddToDeadline(track);
-
-        return calculateFirstWorkingDay(responseDate.toLocalDate()).plusDays(daysToAdd).atTime(END_OF_BUSINESS_DAY);
+        return calculateFirstWorkingDay(dateTime.toLocalDate()).plusDays(daysToAdd).atTime(END_OF_BUSINESS_DAY);
     }
 
     public LocalDate calculateFirstWorkingDay(LocalDate date) {
@@ -44,5 +51,9 @@ public class DeadlinesCalculator {
             date = date.plusDays(1);
         }
         return date;
+    }
+
+    private boolean is4pmOrAfter(LocalDateTime dateOfService) {
+        return dateOfService.getHour() >= 16;
     }
 }
