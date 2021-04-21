@@ -11,9 +11,10 @@ public interface NotificationData {
     String RESPONDENT_NAME = "defendantName";
     String ISSUED_ON = "issuedOn";
     String RESPONSE_DEADLINE = "responseDeadline";
+    String NOTIFICATION_DEADLINE = "notificationDeadline";
+    String AGREED_EXTENSION_DATE = "agreedExtensionDate";
     String FRONTEND_BASE_URL_KEY = "frontendBaseUrl";
     String FRONTEND_BASE_URL = "https://www.MyHMCTS.gov.uk";
-    String AGREED_EXTENSION_DATE = "date";
 
     Map<String, String> addProperties(CaseData caseData);
 
