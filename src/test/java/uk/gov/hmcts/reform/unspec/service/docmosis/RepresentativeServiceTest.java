@@ -66,7 +66,7 @@ class RepresentativeServiceTest {
 
         @Test
         void shouldReturnValidOrganisationDetails_whenStateFlowIsNotProceedsOfflineUnrepresentedDefendant() {
-            CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseNotification().build();
+            CaseData caseData = CaseDataBuilder.builder().atStatePendingClaimIssued().build();
 
             Representative representative = representativeService.getRespondentRepresentative(caseData);
 

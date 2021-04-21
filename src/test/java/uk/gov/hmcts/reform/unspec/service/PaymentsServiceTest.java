@@ -62,7 +62,7 @@ class PaymentsServiceTest {
 
     @Test
     void shouldCreateCreditAccountPayment_whenValidCaseDetails() {
-        CaseData caseData = CaseDataBuilder.builder().atStatePendingCaseIssued()
+        CaseData caseData = CaseDataBuilder.builder().atStateClaimSubmitted()
             .applicant1OrganisationPolicy(OrganisationPolicy.builder()
             .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
                               .organisationID("OrgId").build())

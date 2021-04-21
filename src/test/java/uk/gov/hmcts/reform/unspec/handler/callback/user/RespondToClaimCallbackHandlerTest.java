@@ -95,7 +95,7 @@ class RespondToClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
         @Test
         void shouldReturnError_whenIndividualDateOfBirthIsInTheFuture() {
-            CaseData caseData = CaseDataBuilder.builder().atStateClaimCreated()
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimDetailsNotified()
                 .respondent1(PartyBuilder.builder().individual()
                                  .individualDateOfBirth(LocalDate.now().plusDays(1))
                                  .build())
@@ -109,7 +109,7 @@ class RespondToClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
         @Test
         void shouldReturnError_whenSoleTraderDateOfBirthIsInTheFuture() {
-            CaseData caseData = CaseDataBuilder.builder().atStateClaimCreated()
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimDetailsNotified()
                 .respondent1(PartyBuilder.builder().individual()
                                  .soleTraderDateOfBirth(LocalDate.now().plusDays(1))
                                  .build())
@@ -123,7 +123,7 @@ class RespondToClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
         @Test
         void shouldReturnNoError_whenIndividualDateOfBirthIsInThePast() {
-            CaseData caseData = CaseDataBuilder.builder().atStateClaimCreated()
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimDetailsNotified()
                 .respondent1(PartyBuilder.builder().individual()
                                  .individualDateOfBirth(LocalDate.now().minusYears(1))
                                  .build())
@@ -138,7 +138,7 @@ class RespondToClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
         @Test
         void shouldReturnNoError_whenSoleTraderDateOfBirthIsInThePast() {
-            CaseData caseData = CaseDataBuilder.builder().atStateClaimCreated()
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimDetailsNotified()
                 .respondent1(PartyBuilder.builder().individual()
                                  .soleTraderDateOfBirth(LocalDate.now().minusYears(1))
                                  .build())
