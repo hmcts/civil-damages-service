@@ -81,6 +81,9 @@ allprojects {
       dependency group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.4.31'
       dependency group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: '1.4.32'
       // CVE-2020-29582
+
+      // CVE-2021-29425
+      dependency group: 'commons-io', name: 'commons-io', version: '2.8.0'
     }
     imports {
       mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.2'
@@ -151,9 +154,13 @@ task integration(type: Test) {
 task contract(type: Test) {
   useJUnitPlatform()
   description = "Runs pact contract tests"
-  group = "Verification"
+  group = "Delivery pipeline"
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
+}
+
+task pullTestAsset(type: Exec, description: 'Installs Yarn dependencies.') {
+  commandLine './bin/pull-latest-release-asset.sh', 'civil-damages-ccd-definition', 'civil-damages-e2e.zip'
 }
 
 task installDependencies(type: Exec, description: 'Installs Yarn dependencies.') {
@@ -189,11 +196,11 @@ def inStrictOrder(Task... tasks) {
 }
 
 task smoke(description: 'Runs the smoke tests.') {
-  dependsOn(inStrictOrder(awaitApplicationReadiness, installDependencies, checkDependenciesIntegrity, runSmokeTests))
+  dependsOn(inStrictOrder(awaitApplicationReadiness, pullTestAsset, installDependencies, checkDependenciesIntegrity, runSmokeTests))
 }
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(inStrictOrder(awaitApplicationReadiness, installDependencies, checkDependenciesIntegrity, runFunctionalTests))
+  dependsOn(inStrictOrder(awaitApplicationReadiness, pullTestAsset, installDependencies, checkDependenciesIntegrity, runFunctionalTests))
 }
 
 project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
@@ -367,6 +374,17 @@ wrapper {
     distributionType = Wrapper.DistributionType.ALL
 }
 
+task runAndPublishConsumerPactTests(type: Test){
+  logger.lifecycle("Runs pact Tests")
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+
+}
+
+runAndPublishConsumerPactTests.dependsOn contract
+
+runAndPublishConsumerPactTests.finalizedBy pactPublish
+
 project.ext {
   pactVersion = getCheckedOutGitCommitHash()
 }
@@ -375,7 +393,9 @@ pact {
   publish {
     pactDirectory = 'target/pacts'
     pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'https://pact-broker.platform.hmcts.net/'
-    pactBrokerToken = System.getenv("PACT_BROKER_TOKEN")
+    if(pactBrokerUrl == 'https://civil-damages-claims.pactflow.io/') {
+      pactBrokerToken = System.getenv("PACT_BROKER_TOKEN")
+    }
     tags = [System.getenv("PACT_BRANCH_NAME") ?: getCheckedOutGitCommitHash(), 'latest']
     version = project.pactVersion
     if(pactBrokerUrl != 'https://pact-broker.platform.hmcts.net/'){
