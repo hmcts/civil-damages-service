@@ -13,6 +13,7 @@ postgresql:
       cpu: 25m
   initdbScripts:
     init.sql: |-
+      CREATE USER $CAMUNDA_DB_USER_NAME WITH PASSWORD $CAMUNDA_DB_PASSWORD
       CREATE DATABASE cmc WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
