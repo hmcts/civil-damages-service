@@ -13,14 +13,14 @@ postgresql:
       cpu: 25m
   initdbScripts:
     init.sql: |-
-      CREATE USER $CAMUNDA_DB_USER_NAME WITH PASSWORD $CAMUNDA_DB_PASSWORD
+      CREATE USER :postgresqlUsername WITH PASSWORD :postgresqlPassword
       CREATE DATABASE cmc WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE DATABASE "camunda" WITH OWNER = testuser ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-  postgresqlUsername: hmcts
-  postgresqlPassword: hmcts
+      CREATE DATABASE "camunda" WITH OWNER = :postgresqlUsername ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+  postgresqlUsername: ${CAMUNDA_DB_USER_NAME}
+  postgresqlPassword: ${CAMUNDA_DB_PASSWORD}
   persistence:
     enabled: false
 
