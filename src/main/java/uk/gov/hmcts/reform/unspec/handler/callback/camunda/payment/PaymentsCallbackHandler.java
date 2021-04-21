@@ -74,6 +74,7 @@ public class PaymentsCallbackHandler extends CallbackHandler {
                 log.error(String.format("Payment error status code 400 for case: %s, response body: %s",
                                         caseData.getCcdCaseReference(), e.contentUTF8()
                 ));
+                caseData = updateWithDuplicatePaymentError(caseData, e);
             } else {
                 errors.add(ERROR_MESSAGE);
             }
@@ -82,6 +83,15 @@ public class PaymentsCallbackHandler extends CallbackHandler {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseData.toMap(objectMapper))
             .errors(errors)
+            .build();
+    }
+
+    private CaseData updateWithDuplicatePaymentError(CaseData caseData, FeignException e) {
+        return caseData.toBuilder()
+            .paymentDetails(PaymentDetails.builder()
+                                .status(FAILED)
+                                .errorMessage(e.getMessage())
+                                .build())
             .build();
     }
 
@@ -110,6 +120,7 @@ public class PaymentsCallbackHandler extends CallbackHandler {
                 log.error(String.format("Payment error status code 400 for case: %s, response body: %s",
                                         caseData.getCcdCaseReference(), e.contentUTF8()
                 ));
+                caseData = updateWithDuplicatePaymentError(caseData, e);
             } else {
                 errors.add(ERROR_MESSAGE);
             }
