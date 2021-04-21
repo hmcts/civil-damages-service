@@ -2,6 +2,7 @@
 
 @Library("Infrastructure")
 import uk.gov.hmcts.contino.AppPipelineConfig
+import uk.gov.hmcts.contino.AppPipelineDsl
 
 def type = "java"
 def product = "civil-damages"
@@ -32,6 +33,9 @@ def secrets = [
     secret('ccd-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD')
   ]
 ]
+
+// Vars for Kubernetes
+env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
 def validateRpaContract() {
   sh """ ./gradlew contract """
@@ -117,5 +121,9 @@ withPipeline(type, product, component) {
 
   after('functionalTest:aat') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  }
+
+  onMaster() {
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
   }
 }
