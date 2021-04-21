@@ -13,6 +13,7 @@ public interface NotificationData {
     String RESPONSE_DEADLINE = "responseDeadline";
     String FRONTEND_BASE_URL_KEY = "frontendBaseUrl";
     String FRONTEND_BASE_URL = "https://www.MyHMCTS.gov.uk";
+    String AGREED_EXTENSION_DATE = "date";
 
     Map<String, String> addProperties(CaseData caseData);
 

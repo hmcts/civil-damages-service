@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.unspec.callback.Callback;
 import uk.gov.hmcts.reform.unspec.callback.CallbackHandler;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.callback.CaseEvent;
+import uk.gov.hmcts.reform.unspec.model.BusinessProcess;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
 import uk.gov.hmcts.reform.unspec.service.DeadlinesCalculator;
 import uk.gov.hmcts.reform.unspec.service.Time;
@@ -75,6 +76,8 @@ public class InformAgreedExtensionDateCallbackHandler extends CallbackHandler {
         CaseData.CaseDataBuilder caseDataBuilder = caseData.toBuilder()
             .respondent1TimeExtensionDate(time.now())
             .respondent1ResponseDeadline(newDeadline);
+            //TODO: merge on last CMC-1442 PR
+            //.businessProcess(BusinessProcess.ready(INFORM_AGREED_EXTENSION_DATE));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDataBuilder.build().toMap(objectMapper))
