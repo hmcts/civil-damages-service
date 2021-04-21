@@ -120,55 +120,55 @@ class NotifyClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
             }
         }
 
-        //@Nested
-        //class SubmittedOnDeadlineDay {
-        //
-        //    LocalDateTime claimNotificationDeadline = LocalDateTime.of(2021, 4, 6, 0, 0);
-        //    LocalDateTime claimDetailsNotificationDeadline = LocalDateTime.of(2021, 4, 5, 16, 0);
-        //    LocalDateTime expectedDeadline = claimNotificationDeadline.toLocalDate().atTime(16, 0);
-        //
-        //    @BeforeEach
-        //    void setup() {
-        //        when(deadlinesCalculator.plus14DaysAt4pmDeadline(any(LocalDateTime.class)))
-        //            .thenReturn(claimDetailsNotificationDeadline);
-        //    }
-        //
-        //    @Test
-        //    void shouldSetDetailsNotificationDeadlineTo4pmDeadline_whenNotifyClaimBefore4pm() {
-        //        LocalDateTime notifyClaimDateTime = LocalDateTime.of(2021, 4, 5, 10, 0);
-        //        when(time.now()).thenReturn(notifyClaimDateTime);
-        //
-        //        CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseDetailsNotification()
-        //            .claimNotificationDeadline(claimNotificationDeadline)
-        //            .build();
-        //        CallbackParams params = CallbackParamsBuilder.builder().of(
-        //            CallbackType.ABOUT_TO_SUBMIT,
-        //            caseData
-        //        ).build();
-        //        var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
-        //
-        //        assertThat(response.getData())
-        //            .containsEntry("claimDetailsNotificationDeadline", expectedDeadline.format(ISO_DATE_TIME));
-        //    }
-        //
-        //    @Test
-        //    void shouldSetDetailsNotificationDeadlineTo4pmDeadline_whenNotifyClaimAfter4pm() {
-        //        LocalDateTime notifyClaimDateTime = LocalDateTime.of(2021, 4, 5, 17, 0);
-        //        when(time.now()).thenReturn(notifyClaimDateTime);
-        //
-        //        CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseDetailsNotification()
-        //            .claimNotificationDeadline(claimNotificationDeadline)
-        //            .build();
-        //        CallbackParams params = CallbackParamsBuilder.builder().of(
-        //            CallbackType.ABOUT_TO_SUBMIT,
-        //            caseData
-        //        ).build();
-        //        var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
-        //
-        //        assertThat(response.getData())
-        //            .containsEntry("claimDetailsNotificationDeadline", expectedDeadline.format(ISO_DATE_TIME));
-        //    }
-        //}
+        @Nested
+        class SubmittedOnDeadlineDay {
+
+            LocalDateTime claimNotificationDeadline = LocalDateTime.of(2021, 4, 6, 0, 0);
+            LocalDateTime claimDetailsNotificationDeadline = LocalDateTime.of(2021, 4, 5, 16, 0);
+            LocalDateTime expectedDeadline = claimDetailsNotificationDeadline;
+
+            @BeforeEach
+            void setup() {
+                when(deadlinesCalculator.plus14DaysAt4pmDeadline(any(LocalDateTime.class)))
+                    .thenReturn(claimDetailsNotificationDeadline);
+            }
+
+            @Test
+            void shouldSetDetailsNotificationDeadlineTo4pmDeadline_whenNotifyClaimBefore4pm() {
+                LocalDateTime notifyClaimDateTime = LocalDateTime.of(2021, 4, 5, 10, 0);
+                when(time.now()).thenReturn(notifyClaimDateTime);
+
+                CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseDetailsNotification()
+                    .claimNotificationDeadline(claimNotificationDeadline)
+                    .build();
+                CallbackParams params = CallbackParamsBuilder.builder().of(
+                    CallbackType.ABOUT_TO_SUBMIT,
+                    caseData
+                ).build();
+                var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
+
+                assertThat(response.getData())
+                    .containsEntry("claimDetailsNotificationDeadline", expectedDeadline.format(ISO_DATE_TIME));
+            }
+
+            @Test
+            void shouldSetDetailsNotificationDeadlineTo4pmDeadline_whenNotifyClaimAfter4pm() {
+                LocalDateTime notifyClaimDateTime = LocalDateTime.of(2021, 4, 5, 17, 0);
+                when(time.now()).thenReturn(notifyClaimDateTime);
+
+                CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseDetailsNotification()
+                    .claimNotificationDeadline(claimNotificationDeadline)
+                    .build();
+                CallbackParams params = CallbackParamsBuilder.builder().of(
+                    CallbackType.ABOUT_TO_SUBMIT,
+                    caseData
+                ).build();
+                var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
+
+                assertThat(response.getData())
+                    .containsEntry("claimDetailsNotificationDeadline", expectedDeadline.format(ISO_DATE_TIME));
+            }
+        }
     }
 
     @Nested
