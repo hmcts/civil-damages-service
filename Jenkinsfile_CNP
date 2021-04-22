@@ -30,8 +30,8 @@ def secrets = [
     secret('microservicekey-unspec-service', 'S2S_SECRET'),
     secret('ccd-importer-username', 'CCD_CONFIGURER_IMPORTER_USERNAME'),
     secret('ccd-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD'),
-    secret('camunda-db-username', 'CAMUNDA_DB_USER_NAME'),
-    secret('camunda-db-password', 'CAMUNDA_DB_PASSWORD')
+    secret('postgres-user', 'POSTGRES_USER'),
+    secret('postgres-password', 'POSTGRES_PASSWORD')
   ]
 ]
 

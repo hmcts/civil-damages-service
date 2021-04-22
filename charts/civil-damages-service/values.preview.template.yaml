@@ -13,13 +13,13 @@ postgresql:
       cpu: 25m
   initdbScripts:
     init.sql: |-
-      CREATE DATABASE cmc WITH OWNER = testuser ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE DATABASE "data-store" WITH OWNER = testuser ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE DATABASE "definition-store" WITH OWNER = testuser ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE DATABASE "user-profile" WITH OWNER = testuser ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE DATABASE "camunda" WITH OWNER = testuser ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-  postgresqlUsername: ${CAMUNDA_DB_USER_NAME}
-  postgresqlPassword: ${CAMUNDA_DB_PASSWORD}
+      CREATE DATABASE cmc WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE "camunda" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+  postgresqlUsername: ${POSTGRES_USER}
+  postgresqlPassword: ${POSTGRES_PASSWORD}
   persistence:
     enabled: false
 
@@ -51,8 +51,8 @@ java:
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-ccd-data-store-api
     OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
     CMC_DB_HOST: ${SERVICE_NAME}-postgresql
-    CMC_DB_USERNAME: ${CAMUNDA_DB_USER_NAME}
-    CMC_DB_PASSWORD: ${CAMUNDA_DB_PASSWORD}
+    CMC_DB_USERNAME: ${POSTGRES_USER}
+    CMC_DB_PASSWORD: ${POSTGRES_PASSWORD}
     CMC_DB_CONNECTION_OPTIONS: '?sslmode=allow'
     REFERENCE_DATABASE_MIGRATION: true
     FEIGN_CLIENT_CONFIG_REMOTERUNTIMESERVICE_URL: http://camunda-${SERVICE_FQDN}/engine-rest/
@@ -152,8 +152,6 @@ ccd:
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
 
   postgresql:
-    postgresqlUsername: ${CAMUNDA_DB_USER_NAME}
-    postgresqlPassword: ${CAMUNDA_DB_PASSWORD}
     persistence:
       enabled: false
 
@@ -167,8 +165,8 @@ camunda-bpm:
       CAMUNDA_API_AUTH_ENABLED: false
       CAMUNDA_DB_HOST: ${SERVICE_NAME}-postgresql
       CAMUNDA_DB_NAME: camunda
-      CAMUNDA_DB_USER_NAME: ${CAMUNDA_DB_USER_NAME}
-      CAMUNDA_DB_PASSWORD: ${CAMUNDA_DB_PASSWORD}
+      CAMUNDA_DB_USER_NAME: ${POSTGRES_USER}
+      CAMUNDA_DB_PASSWORD: ${POSTGRES_PASSWORD}
       CAMUNDA_BPM_DATABASE_SCHEMA_UPDATE: true
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       CAMUNDA_DB_CONN_OPTIONS: ""
