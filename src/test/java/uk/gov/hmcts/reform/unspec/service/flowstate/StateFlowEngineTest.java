@@ -40,6 +40,7 @@ import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.PENDIN
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.PENDING_CLAIM_ISSUED_UNREPRESENTED_DEFENDANT;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.TAKEN_OFFLINE_BY_STAFF;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.TAKEN_OFFLINE_PAST_APPLICANT_RESPONSE_DEADLINE;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.TAKEN_OFFLINE_UNREGISTERED_DEFENDANT;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT;
 
 @SpringBootTest(classes = {
@@ -102,13 +103,15 @@ class StateFlowEngineTest {
             assertThat(stateFlow.getState())
                 .extracting(State::getName)
                 .isNotNull()
-                .isEqualTo(PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT.fullName());
+                .isEqualTo(TAKEN_OFFLINE_UNREGISTERED_DEFENDANT.fullName());
             assertThat(stateFlow.getStateHistory())
-                .hasSize(4)
+                .hasSize(5)
                 .extracting(State::getName)
                 .containsExactly(
                     DRAFT.fullName(), CLAIM_SUBMITTED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
-                    PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT.fullName());
+                    PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT.fullName(),
+                    TAKEN_OFFLINE_UNREGISTERED_DEFENDANT.fullName()
+                );
         }
 
         @Test
@@ -302,7 +305,7 @@ class StateFlowEngineTest {
                 .isNotNull()
                 .isEqualTo(FULL_DEFENCE.fullName());
             assertThat(stateFlow.getStateHistory())
-                .hasSize(8)
+                .hasSize(9)
                 .extracting(State::getName)
                 .containsExactly(
                     DRAFT.fullName(), CLAIM_SUBMITTED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
@@ -322,12 +325,12 @@ class StateFlowEngineTest {
                 .isNotNull()
                 .isEqualTo(FULL_ADMISSION.fullName());
             assertThat(stateFlow.getStateHistory())
-                .hasSize(8)
+                .hasSize(9)
                 .extracting(State::getName)
                 .containsExactly(
                     DRAFT.fullName(), CLAIM_SUBMITTED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED.fullName(), CLAIM_NOTIFIED.fullName(),
-                    CLAIM_DETAILS_NOTIFIED.fullName(), FULL_ADMISSION.fullName()
+                    CLAIM_DETAILS_NOTIFIED.fullName(), NOTIFICATION_ACKNOWLEDGED.fullName(), FULL_ADMISSION.fullName()
                 );
         }
 
@@ -342,12 +345,12 @@ class StateFlowEngineTest {
                 .isNotNull()
                 .isEqualTo(PART_ADMISSION.fullName());
             assertThat(stateFlow.getStateHistory())
-                .hasSize(8)
+                .hasSize(9)
                 .extracting(State::getName)
                 .containsExactly(
                     DRAFT.fullName(), CLAIM_SUBMITTED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED.fullName(), CLAIM_NOTIFIED.fullName(),
-                    CLAIM_DETAILS_NOTIFIED.fullName(), PART_ADMISSION.fullName()
+                    CLAIM_DETAILS_NOTIFIED.fullName(), NOTIFICATION_ACKNOWLEDGED.fullName(), PART_ADMISSION.fullName()
                 );
         }
 
@@ -362,12 +365,12 @@ class StateFlowEngineTest {
                 .isNotNull()
                 .isEqualTo(COUNTER_CLAIM.fullName());
             assertThat(stateFlow.getStateHistory())
-                .hasSize(8)
+                .hasSize(9)
                 .extracting(State::getName)
                 .containsExactly(
                     DRAFT.fullName(), CLAIM_SUBMITTED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED.fullName(), CLAIM_NOTIFIED.fullName(),
-                    CLAIM_DETAILS_NOTIFIED.fullName(), COUNTER_CLAIM.fullName()
+                    CLAIM_DETAILS_NOTIFIED.fullName(), NOTIFICATION_ACKNOWLEDGED.fullName(), COUNTER_CLAIM.fullName()
                 );
         }
 
@@ -406,12 +409,12 @@ class StateFlowEngineTest {
                 .isNotNull()
                 .isEqualTo(flowState.fullName());
             assertThat(stateFlow.getStateHistory())
-                .hasSize(9)
+                .hasSize(10)
                 .extracting(State::getName)
                 .containsExactly(
                     DRAFT.fullName(), CLAIM_SUBMITTED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED.fullName(), CLAIM_NOTIFIED.fullName(),
-                    CLAIM_DETAILS_NOTIFIED.fullName(), FULL_DEFENCE.fullName(),
+                    CLAIM_DETAILS_NOTIFIED.fullName(), NOTIFICATION_ACKNOWLEDGED.fullName(), FULL_DEFENCE.fullName(),
                     flowState.fullName()
                 );
         }
@@ -446,12 +449,12 @@ class StateFlowEngineTest {
                 .isNotNull()
                 .isEqualTo(TAKEN_OFFLINE_PAST_APPLICANT_RESPONSE_DEADLINE.fullName());
             assertThat(stateFlow.getStateHistory())
-                .hasSize(9)
+                .hasSize(10)
                 .extracting(State::getName)
                 .containsExactly(
                     DRAFT.fullName(), CLAIM_SUBMITTED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
                     PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED.fullName(), CLAIM_NOTIFIED.fullName(),
-                    CLAIM_DETAILS_NOTIFIED.fullName(), FULL_DEFENCE.fullName(),
+                    CLAIM_DETAILS_NOTIFIED.fullName(), NOTIFICATION_ACKNOWLEDGED.fullName(), FULL_DEFENCE.fullName(),
                     TAKEN_OFFLINE_PAST_APPLICANT_RESPONSE_DEADLINE.fullName()
                 );
         }

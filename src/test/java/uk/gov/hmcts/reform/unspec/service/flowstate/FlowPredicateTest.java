@@ -16,21 +16,29 @@ import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.casePro
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimDetailsNotified;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimDetailsNotifiedTimeExtension;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimIssued;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.notificationAcknowledgedTimeExtension;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.pendingClaimIssued;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimNotified;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimSubmitted;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimTakenOffline;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.counterClaim;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.counterClaimAfterAcknowledge;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.counterClaimAfterNotifyDetails;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.fullAdmission;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.fullAdmissionAfterAcknowledge;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.fullAdmissionAfterNotifyDetails;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.fullDefence;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.fullDefenceAfterAcknowledge;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.fullDefenceAfterNotifyDetails;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.fullDefenceProceed;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.notificationAcknowledged;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.notificationAcknowledgedTimeExtension;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.partAdmission;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.partAdmissionAfterAcknowledge;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.partAdmissionAfterNotifyDetails;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.pastClaimDetailsNotificationDeadline;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.pastClaimNotificationDeadline;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.paymentFailed;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.paymentSuccessful;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.pendingClaimIssued;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.respondent1NotRepresented;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.respondent1OrgNotRegistered;
 
@@ -238,6 +246,18 @@ class FlowPredicateTest {
         }
 
         @Test
+        void shouldReturnTrue_whenCaseDataAtStateFullDefenceAfterNotifyDetails() {
+            CaseData caseData = CaseDataBuilder.builder().atStateRespondentFullDefenceAfterNotifyDetails().build();
+            assertTrue(fullDefenceAfterNotifyDetails.test(caseData));
+        }
+
+        @Test
+        void shouldReturnTrue_whenCaseDataAtStateFullDefenceAfterNotificationAcknowledgement() {
+            CaseData caseData = CaseDataBuilder.builder().atStateRespondentFullDefence().build();
+            assertTrue(fullDefenceAfterAcknowledge.test(caseData));
+        }
+
+        @Test
         void shouldReturnFalse_whenCaseDataAtStateClosed() {
             CaseData caseData = CaseDataBuilder.builder().atStateClaimDiscontinued().build();
             assertFalse(fullDefence.test(caseData));
@@ -260,6 +280,18 @@ class FlowPredicateTest {
         }
 
         @Test
+        void shouldReturnTrue_whenCaseDataAtStateFullAdmissionAfterNotifyDetails() {
+            CaseData caseData = CaseDataBuilder.builder().atStateRespondentFullAdmissionAfterNotifyDetails().build();
+            assertTrue(fullAdmissionAfterNotifyDetails.test(caseData));
+        }
+
+        @Test
+        void shouldReturnTrue_whenCaseDataAtStateFullAdmissionAfterAcknowledge() {
+            CaseData caseData = CaseDataBuilder.builder().atStateRespondentFullAdmission().build();
+            assertTrue(fullAdmissionAfterAcknowledge.test(caseData));
+        }
+
+        @Test
         void shouldReturnFalse_whenCaseDataAtStateCaseProceedsInCaseman() {
             CaseData caseData = CaseDataBuilder.builder().atStateTakenOfflineByStaff().build();
             assertFalse(fullAdmission.test(caseData));
@@ -276,6 +308,18 @@ class FlowPredicateTest {
         }
 
         @Test
+        void shouldReturnTrue_whenCaseDataAtStatePartAdmissionAfterNotifyDetails() {
+            CaseData caseData = CaseDataBuilder.builder().atStateRespondentPartAdmissionAfterNotifyDetails().build();
+            assertTrue(partAdmissionAfterNotifyDetails.test(caseData));
+        }
+
+        @Test
+        void shouldReturnTrue_whenCaseDataAtStatePartAdmissionAfterAcknowledge() {
+            CaseData caseData = CaseDataBuilder.builder().atStateRespondentPartAdmission().build();
+            assertTrue(partAdmissionAfterAcknowledge.test(caseData));
+        }
+
+        @Test
         void shouldReturnFalse_whenCaseDataAtStateCaseProceedsInCaseman() {
             CaseData caseData = CaseDataBuilder.builder().atStateTakenOfflineByStaff().build();
             assertFalse(partAdmission.test(caseData));
@@ -289,6 +333,18 @@ class FlowPredicateTest {
         void shouldReturnTrue_whenCaseDataAtStatePartAdmission() {
             CaseData caseData = CaseDataBuilder.builder().atStateRespondentCounterClaim().build();
             assertTrue(counterClaim.test(caseData));
+        }
+
+        @Test
+        void shouldReturnTrue_whenCaseDataAtStatePartAdmissionAfterNotifyDetails() {
+            CaseData caseData = CaseDataBuilder.builder().atStateRespondentCounterClaimAfterNotifyDetails().build();
+            assertTrue(counterClaimAfterNotifyDetails.test(caseData));
+        }
+
+        @Test
+        void shouldReturnTrue_whenCaseDataAtStatePartAdmissionAfterAcknowledge() {
+            CaseData caseData = CaseDataBuilder.builder().atStateRespondentCounterClaim().build();
+            assertTrue(counterClaimAfterAcknowledge.test(caseData));
         }
 
         @Test

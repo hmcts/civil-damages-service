@@ -9,29 +9,37 @@ import uk.gov.hmcts.reform.unspec.stateflow.StateFlow;
 import uk.gov.hmcts.reform.unspec.stateflow.StateFlowBuilder;
 import uk.gov.hmcts.reform.unspec.stateflow.model.State;
 
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.notificationAcknowledgedTimeExtension;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.applicantOutOfTime;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseDismissed;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseDismissedAfterClaimAcknowledged;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimDetailsNotified;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.pendingClaimIssued;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimDetailsNotifiedTimeExtension;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimIssued;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimNotified;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimSubmitted;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.counterClaim;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.counterClaimAfterAcknowledge;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.counterClaimAfterNotifyDetails;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.fullAdmission;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.fullAdmissionAfterAcknowledge;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.fullAdmissionAfterNotifyDetails;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.fullDefence;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.fullDefenceAfterAcknowledge;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.fullDefenceAfterNotifyDetails;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.fullDefenceNotProceed;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.fullDefenceProceed;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.notificationAcknowledged;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.notificationAcknowledgedTimeExtension;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.partAdmission;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.partAdmissionAfterAcknowledge;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.partAdmissionAfterNotifyDetails;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.pastClaimDetailsNotificationDeadline;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.pastClaimNotificationDeadline;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.paymentFailed;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.paymentSuccessful;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.pendingClaimIssued;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.respondent1NotRepresented;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.respondent1OrgNotRegistered;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimDetailsNotifiedTimeExtension;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.takenOfflineByStaff;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.takenOfflineBySystem;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DETAILS_NOTIFIED;
@@ -99,14 +107,14 @@ public class StateFlowEngine {
             .state(CLAIM_DETAILS_NOTIFIED)
                 .transitionTo(CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION).onlyIf(claimDetailsNotifiedTimeExtension)
                 .transitionTo(NOTIFICATION_ACKNOWLEDGED).onlyIf(notificationAcknowledged)
-                .transitionTo(FULL_DEFENCE).onlyIf(fullDefence)
-                .transitionTo(FULL_ADMISSION).onlyIf(fullAdmission)
-                .transitionTo(PART_ADMISSION).onlyIf(partAdmission)
-                .transitionTo(COUNTER_CLAIM).onlyIf(counterClaim)
+                .transitionTo(FULL_DEFENCE).onlyIf(fullDefenceAfterNotifyDetails)
+                .transitionTo(FULL_ADMISSION).onlyIf(fullAdmissionAfterNotifyDetails)
+                .transitionTo(PART_ADMISSION).onlyIf(partAdmissionAfterNotifyDetails)
+                .transitionTo(COUNTER_CLAIM).onlyIf(counterClaimAfterNotifyDetails)
                 .transitionTo(TAKEN_OFFLINE_BY_STAFF).onlyIf(takenOfflineByStaff)
                 .transitionTo(CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE).onlyIf(caseDismissed)
             .state(CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION)
-                .transitionTo(NOTIFICATION_ACKNOWLEDGED).onlyIf(notificationAcknowledged)
+                .transitionTo(NOTIFICATION_ACKNOWLEDGED).onlyIf(notificationAcknowledgedTimeExtension)
                 .transitionTo(FULL_DEFENCE).onlyIf(fullDefence)
                 .transitionTo(FULL_ADMISSION).onlyIf(fullAdmission)
                 .transitionTo(PART_ADMISSION).onlyIf(partAdmission)
@@ -115,10 +123,10 @@ public class StateFlowEngine {
             .state(NOTIFICATION_ACKNOWLEDGED)
                 .transitionTo(NOTIFICATION_ACKNOWLEDGED_TIME_EXTENSION)
                     .onlyIf(notificationAcknowledgedTimeExtension)
-                .transitionTo(FULL_DEFENCE).onlyIf(fullDefence)
-                .transitionTo(FULL_ADMISSION).onlyIf(fullAdmission)
-                .transitionTo(PART_ADMISSION).onlyIf(partAdmission)
-                .transitionTo(COUNTER_CLAIM).onlyIf(counterClaim)
+                .transitionTo(FULL_DEFENCE).onlyIf(fullDefenceAfterAcknowledge)
+                .transitionTo(FULL_ADMISSION).onlyIf(fullAdmissionAfterAcknowledge)
+                .transitionTo(PART_ADMISSION).onlyIf(partAdmissionAfterAcknowledge)
+                .transitionTo(COUNTER_CLAIM).onlyIf(counterClaimAfterAcknowledge)
                 .transitionTo(TAKEN_OFFLINE_BY_STAFF).onlyIf(takenOfflineByStaff)
                 .transitionTo(CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE).onlyIf(caseDismissedAfterClaimAcknowledged)
             .state(NOTIFICATION_ACKNOWLEDGED_TIME_EXTENSION)

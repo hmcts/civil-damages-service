@@ -58,6 +58,7 @@ public class RoboticsCaseDataAssert extends CustomAssert<RoboticsCaseDataAssert,
             null,
             expected.getApplicant1OrganisationPolicy()
         );
+
         assertSolicitor(
             RESPONDENT_SOLICITOR_ID,
             "respondent1" + "." + "reference",
@@ -135,16 +136,18 @@ public class RoboticsCaseDataAssert extends CustomAssert<RoboticsCaseDataAssert,
                                  SolicitorOrganisationDetails solicitorOrganisationDetails,
                                  OrganisationPolicy organisationPolicy
     ) {
-        compare(
-            "id",
-            solicitor.getId(),
-            ofNullable(id)
-        );
-        compare(
-            fieldName,
-            solicitor.getReference(),
-            ofNullable(reference)
-        );
+        ofNullable(solicitor.getId())
+            .ifPresent(solicitorId -> compare(
+                "id",
+                solicitorId,
+                ofNullable(id)
+            ));
+        ofNullable(solicitor.getReference())
+            .ifPresent(solicitorReference -> compare(
+                fieldName,
+                solicitorReference,
+                ofNullable(reference)
+            ));
         ofNullable(solicitorOrganisationDetails)
             .ifPresent(organisationDetails -> {
                 compare(

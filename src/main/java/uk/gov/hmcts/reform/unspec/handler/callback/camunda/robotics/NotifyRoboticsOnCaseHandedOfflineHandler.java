@@ -77,8 +77,6 @@ public class NotifyRoboticsOnCaseHandedOfflineHandler extends CallbackHandler {
         } catch (JsonProcessingException e) {
             throw new RoboticsDataException(e.getMessage(), e);
         }
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseData.toMap(mapper))
-            .build();
+        return AboutToStartOrSubmitCallbackResponse.builder().build();
     }
 }

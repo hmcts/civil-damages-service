@@ -9,8 +9,8 @@ import uk.gov.hmcts.reform.unspec.service.flowstate.StateFlowEngine;
 
 import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.unspec.model.docmosis.sealedclaim.Representative.fromOrganisation;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.PENDING_CLAIM_ISSUED_UNREPRESENTED_DEFENDANT;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.TAKEN_OFFLINE_UNREGISTERED_DEFENDANT;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.fromFullName;
 
 @Service
@@ -36,7 +36,7 @@ public class RepresentativeService {
 
     private boolean organisationPicked(CaseData caseData) {
         var flowState = fromFullName(stateFlowEngine.evaluate(caseData).getState().getName());
-        return flowState != PENDING_CLAIM_ISSUED_UNREPRESENTED_DEFENDANT
-            && flowState != PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT;
+        return flowState != TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT
+            && flowState != TAKEN_OFFLINE_UNREGISTERED_DEFENDANT;
     }
 }

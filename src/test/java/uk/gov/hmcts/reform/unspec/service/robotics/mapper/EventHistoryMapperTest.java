@@ -118,7 +118,7 @@ class EventHistoryMapperTest {
         @Test
         void shouldPrepareExpectedEvents_whenClaimWithRespondentFullAdmissionWithOptionalEvents() {
             CaseData caseData = CaseDataBuilder.builder()
-                .atStateClaimDetailsNotifiedTimeExtension()
+                .atStateNotificationAcknowledgedTimeExtension()
                 .atStateRespondentFullAdmission()
                 .build();
             Event expectedReceiptOfAdmission = Event.builder()
@@ -258,7 +258,7 @@ class EventHistoryMapperTest {
         @Test
         void shouldPrepareExpectedEvents_whenClaimWithRespondentPartAdmissionWithOptionalEvents() {
             CaseData caseData = CaseDataBuilder.builder()
-                .atStateClaimDetailsNotifiedTimeExtension()
+                .atStateNotificationAcknowledgedTimeExtension()
                 .atStateRespondentPartAdmission()
                 .respondent1ClaimResponseIntentionType(PART_DEFENCE)
                 .build();
@@ -400,7 +400,7 @@ class EventHistoryMapperTest {
         @Test
         void shouldPrepareExpectedEvents_whenClaimWithRespondentCounterClaimWithOptionalEvents() {
             CaseData caseData = CaseDataBuilder.builder()
-                .atStateClaimDetailsNotifiedTimeExtension()
+                .atStateNotificationAcknowledgedTimeExtension()
                 .atStateRespondentCounterClaim()
                 .respondent1ClaimResponseIntentionType(CONTEST_JURISDICTION)
                 .build();
@@ -541,7 +541,7 @@ class EventHistoryMapperTest {
         @Test
         void shouldPrepareExpectedEvents_whenClaimWithFullDefenceNotProceedsWithOptionalEvents() {
             CaseData caseData = CaseDataBuilder.builder()
-                .atStateClaimDetailsNotifiedTimeExtension()
+                .atStateNotificationAcknowledgedTimeExtension()
                 .atState(FlowState.Main.FULL_DEFENCE_NOT_PROCEED)
                 .build();
             Event expectedDefenceFiled = Event.builder()
@@ -710,7 +710,7 @@ class EventHistoryMapperTest {
         @Test
         void shouldPrepareExpectedEvents_whenClaimWithFullDefenceProceedsWithOptionalEvents() {
             CaseData caseData = CaseDataBuilder.builder()
-                .atStateClaimDetailsNotifiedTimeExtension()
+                .atStateRespondentFullDefenceAfterAcknowledgementTimeExtension()
                 .atState(FlowState.Main.FULL_DEFENCE_PROCEED)
                 .build();
             Event expectedDefenceFiled = Event.builder()
@@ -928,13 +928,12 @@ class EventHistoryMapperTest {
         "FULL_ADMISSION",
         "PART_ADMISSION",
         "COUNTER_CLAIM",
-        "PENDING_CLAIM_ISSUED_UNREPRESENTED_DEFENDANT",
-        "PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT",
+        "TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT",
+        "TAKEN_OFFLINE_UNREGISTERED_DEFENDANT",
         "FULL_DEFENCE_NOT_PROCEED",
         "FULL_DEFENCE_PROCEED"
     })
     void shouldBuildEmptyEventHistory_whenNoMappingsDefinedForStateFlow(FlowState.Main flowStateMain) {
-        System.out.println("state is "+ flowStateMain.fullName());
         CaseData caseData = CaseDataBuilder.builder().atState(flowStateMain).build();
 
         var eventHistory = mapper.buildEvents(caseData);
