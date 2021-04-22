@@ -96,7 +96,7 @@ public class AcknowledgeClaimCallbackHandler extends CallbackHandler {
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(String.format(
-                "# You have acknowledged claim%n## Claim number: %s",
+                "# You have acknowledged the claim%n## Claim number: %s",
                 caseData.getLegacyCaseReference()
             ))
             .confirmationBody(body)
