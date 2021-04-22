@@ -126,8 +126,6 @@ ccd:
     java:
       imagePullPolicy: Always
       environment:
-        DATA_STORE_DB_USERNAME: ${CAMUNDA_DB_USER_NAME}
-        DATA_STORE_DB_PASSWORD: ${CAMUNDA_DB_PASSWORD}
         DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DATA_STORE_IDAM_KEY: ${CCD_DATA_STORE_S2S_SECRET}
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_gw,ccd_ps,bulk_scan_orchestrator,ccpay_bubble,ctsc_work_allocation,em_ccd_orchestrator,xui_webapp,unspec_service
@@ -140,8 +138,6 @@ ccd:
     java:
       imagePullPolicy: Always
       environment:
-        DEFINITION_STORE_DB_NAME: ${CAMUNDA_DB_USER_NAME}
-        DEFINITION_STORE_DB_USERNAME: ${CAMUNDA_DB_PASSWORD}
         DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DEFINITION_STORE_IDAM_KEY: ${CCD_DEFINITION_STORE_S2S_SECRET}
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
@@ -151,13 +147,13 @@ ccd:
     java:
       imagePullPolicy: Always
       enviroment:
-        USER_PROFILE_DB_USERNAME: ${CAMUNDA_DB_USER_NAME}
-        USER_PROFILE_DB_PASSWORD: ${CAMUNDA_DB_PASSWORD}
         USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
       keyVaults: []
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
 
   postgresql:
+    postgresqlUsername: ${CAMUNDA_DB_USER_NAME}
+    postgresqlPassword: ${CAMUNDA_DB_PASSWORD}
     persistence:
       enabled: false
 
