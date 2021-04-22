@@ -29,10 +29,7 @@ public class ProceedOfflineCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<String, Callback> callbacks() {
-        return Map.of(
-            callbackKey(ABOUT_TO_SUBMIT),
-            this::captureTakenOfflineDate
-        );
+        return Map.of(callbackKey(ABOUT_TO_SUBMIT), this::captureTakenOfflineDate);
     }
 
     private CallbackResponse captureTakenOfflineDate(CallbackParams callbackParams) {
