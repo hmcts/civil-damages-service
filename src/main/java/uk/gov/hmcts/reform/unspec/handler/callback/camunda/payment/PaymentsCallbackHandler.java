@@ -90,7 +90,7 @@ public class PaymentsCallbackHandler extends CallbackHandler {
         return caseData.toBuilder()
             .paymentDetails(PaymentDetails.builder()
                                 .status(FAILED)
-                                .errorMessage(e.getMessage())
+                                .errorMessage(e.contentUTF8())
                                 .build())
             .build();
     }
