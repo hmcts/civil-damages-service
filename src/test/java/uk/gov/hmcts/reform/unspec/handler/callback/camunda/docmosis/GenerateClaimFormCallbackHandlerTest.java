@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.unspec.model.CaseData;
 import uk.gov.hmcts.reform.unspec.model.documents.CaseDocument;
 import uk.gov.hmcts.reform.unspec.model.documents.Document;
 import uk.gov.hmcts.reform.unspec.sampledata.CaseDataBuilder;
-import uk.gov.hmcts.reform.unspec.service.DeadlinesCalculator;
 import uk.gov.hmcts.reform.unspec.service.Time;
 import uk.gov.hmcts.reform.unspec.service.docmosis.sealedclaim.SealedClaimFormGenerator;
 
@@ -26,7 +25,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static java.time.LocalDate.now;
-import static java.time.LocalTime.MIDNIGHT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
