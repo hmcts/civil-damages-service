@@ -97,7 +97,7 @@ public class CaseDataBuilder {
     private AllocatedTrack allocatedTrack;
     private CaseState ccdState;
     private List<Element<CaseDocument>> systemGeneratedCaseDocuments;
-    private PaymentDetails paymentDetails;
+    private PaymentDetails claimIssuedPaymentDetails;
     private CorrectEmail applicantSolicitor1CheckEmail;
     private IdamUserDetails applicantSolicitor1UserDetails;
     //Deadline extension
@@ -415,7 +415,7 @@ public class CaseDataBuilder {
 
     public CaseDataBuilder atStateClaimDraftWithMinimalData() {
         courtLocation = CourtLocation.builder()
-            .applicantPreferredCourt("121")
+            .applicantPreferredCourt("127")
             .build();
         applicant1 = PartyBuilder.builder().companyWithMinimalData().build();
         applicant1LitigationFriendRequired = NO;
@@ -458,7 +458,7 @@ public class CaseDataBuilder {
 
     public CaseDataBuilder atStatePaymentSuccessfulWithMinimalData() {
         atStatePendingCaseIssuedWithMinimalData();
-        paymentDetails = PaymentDetails.builder()
+        claimIssuedPaymentDetails = PaymentDetails.builder()
             .status(SUCCESS)
             .reference("RC-1604-0739-2145-4711")
             .build();
@@ -591,7 +591,7 @@ public class CaseDataBuilder {
             .respondentSolicitor1Reference("6789")
             .build();
         courtLocation = CourtLocation.builder()
-            .applicantPreferredCourt("121")
+            .applicantPreferredCourt("127")
             .build();
         claimValue = ClaimValue.builder()
             .statementOfValueInPennies(BigDecimal.valueOf(10000000))
@@ -635,7 +635,7 @@ public class CaseDataBuilder {
     public CaseDataBuilder atStatePaymentFailed() {
         atStateClaimSubmitted();
 
-        paymentDetails = PaymentDetails.builder()
+        claimIssuedPaymentDetails = PaymentDetails.builder()
             .status(FAILED)
             .errorMessage("Your account is deleted")
             .errorCode("CA-E0004")
@@ -645,10 +645,11 @@ public class CaseDataBuilder {
 
     public CaseDataBuilder atStatePaymentSuccessful() {
         atStateClaimSubmitted();
-        paymentDetails = PaymentDetails.builder()
+        claimIssuedPaymentDetails = PaymentDetails.builder()
             .status(SUCCESS)
             .reference("RC-1604-0739-2145-4711")
             .build();
+        paymentReference = "12345";
         paymentSuccessfulDate = LocalDateTime.now();
         return this;
     }
@@ -903,7 +904,7 @@ public class CaseDataBuilder {
             .respondent1OrgRegistered(respondent1OrgRegistered)
             .respondentSolicitor1EmailAddress(respondentSolicitor1EmailAddress)
             .applicantSolicitor1ClaimStatementOfTruth(applicantSolicitor1ClaimStatementOfTruth)
-            .paymentDetails(paymentDetails)
+            .claimIssuedPaymentDetails(claimIssuedPaymentDetails)
             .claimFee(claimFee)
             .paymentReference(paymentReference)
             .applicantSolicitor1CheckEmail(applicantSolicitor1CheckEmail)

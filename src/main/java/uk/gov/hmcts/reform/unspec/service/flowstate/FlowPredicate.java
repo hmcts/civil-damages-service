@@ -28,8 +28,10 @@ public class FlowPredicate {
 
     public static final Predicate<CaseData> paymentFailed = caseData ->
         caseData.getPaymentSuccessfulDate() == null
-            && caseData.getPaymentDetails() != null
-            && caseData.getPaymentDetails().getStatus() == FAILED;
+            && (caseData.getPaymentDetails() != null
+            && caseData.getPaymentDetails().getStatus() == FAILED)
+        || (caseData.getClaimIssuedPaymentDetails() != null
+        && caseData.getClaimIssuedPaymentDetails().getStatus() == FAILED);
 
     public static final Predicate<CaseData> paymentSuccessful = caseData ->
         caseData.getPaymentSuccessfulDate() != null;
@@ -128,10 +130,6 @@ public class FlowPredicate {
         caseData.getApplicant1ProceedWithClaim() != null
             && caseData.getApplicant1ProceedWithClaim() == NO
             && caseData.getTakenOfflineDate() == null;
-
-    public static final Predicate<CaseData> claimWithdrawn = caseData ->
-        caseData.getWithdrawClaim() != null
-            && caseData.getCcdState() == CASE_DISMISSED;
 
     public static final Predicate<CaseData> claimDiscontinued = caseData ->
         caseData.getDiscontinueClaim() != null
