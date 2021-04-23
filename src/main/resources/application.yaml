@@ -99,6 +99,8 @@ notifications:
   respondentSolicitorClaimDismissed: "de0b10a2-37b7-423c-90a6-f08872d9d61e"
   claimantSolicitorCaseWillProgressOffline: "290461ee-7b1d-404d-9b19-e46b1f6458d1"
   claimantSolicitorAgreedExtensionDate: "83cd651c-50ba-4026-b597-d82877644fd2"
+  claimantSolicitorConfirmsToProceed: "5a27048a-ed18-4a7c-b33b-e7ff5b8279a6"
+  claimantSolicitorConfirmsNotToProceed: "891843df-f641-4c91-b5d4-d6a0899b722d"
   claimantSolicitorClaimContinuingOnline: "eacc12e2-c4b9-470c-bf49-23441bcd8386"
   applicantSolicitorEmail: civil.damages.claims+organisation.1.solicitor.1@gmail.com
   respondentSolicitorEmail: civil.damages.claims+organisation.2.solicitor.1@gmail.com

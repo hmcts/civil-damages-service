@@ -46,5 +46,11 @@ public class NotificationsProperties {
     private String claimantSolicitorAgreedExtensionDate;
 
     @NotEmpty
+    private String claimantSolicitorConfirmsToProceed;
+
+    @NotEmpty
+    private String claimantSolicitorConfirmsNotToProceed;
+
+    @NotEmpty
     private String claimantSolicitorClaimContinuingOnline;
 }
