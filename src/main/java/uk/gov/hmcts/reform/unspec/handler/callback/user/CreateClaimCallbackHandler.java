@@ -37,7 +37,6 @@ import uk.gov.hmcts.reform.unspec.validation.interfaces.ParticularsOfClaimValida
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -95,7 +94,8 @@ public class CreateClaimCallbackHandler extends CallbackHandler implements Parti
             .put(callbackKey(ABOUT_TO_START), this::emptyCallbackResponse)
             .put(callbackKey(MID, "eligibilityCheck"), this::eligibilityCheck)
             .put(callbackKey(MID, "applicant"), this::validateDateOfBirth)
-            .put(callbackKey(MID, "fee"), this::calculateFee)
+            .put(callbackKey(MID, "fee"), this::calculateFeeBackwardsCompatible)
+            .put(callbackKey(V_1, MID, "fee"), this::calculateFee)
             .put(callbackKey(MID, "idam-email"), this::getIdamEmail)
             .put(callbackKey(MID, "particulars-of-claim"), this::validateParticularsOfClaim)
             .put(callbackKey(MID, "appOrgPolicy"), this::validateApplicantSolicitorOrgPolicy)

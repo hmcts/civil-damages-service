@@ -355,7 +355,7 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
         }
 
         @Nested
-        class FeatureToggleDisabled {
+        class OldCode {
 
             @Test
             void shouldCalculateClaimFeeAndAddPbaNumbers_whenCalledAndOrgExistsInPrd() {
