@@ -925,13 +925,18 @@ class EventHistoryMapperTest {
 
     @ParameterizedTest
     @EnumSource(value = FlowState.Main.class, mode = EnumSource.Mode.EXCLUDE, names = {
+        "TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT",
+        "TAKEN_OFFLINE_UNREGISTERED_DEFENDANT",
+        "CLAIM_DETAILS_NOTIFIED",
+        "NOTIFICATION_ACKNOWLEDGED",
+        "NOTIFICATION_ACKNOWLEDGED_TIME_EXTENSION",
         "FULL_ADMISSION",
         "PART_ADMISSION",
         "COUNTER_CLAIM",
-        "TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT",
-        "TAKEN_OFFLINE_UNREGISTERED_DEFENDANT",
+        "FULL_DEFENCE",
         "FULL_DEFENCE_NOT_PROCEED",
-        "FULL_DEFENCE_PROCEED"
+        "FULL_DEFENCE_PROCEED",
+        "TAKEN_OFFLINE_PAST_APPLICANT_RESPONSE_DEADLINE"
     })
     void shouldBuildEmptyEventHistory_whenNoMappingsDefinedForStateFlow(FlowState.Main flowStateMain) {
         CaseData caseData = CaseDataBuilder.builder().atState(flowStateMain).build();
