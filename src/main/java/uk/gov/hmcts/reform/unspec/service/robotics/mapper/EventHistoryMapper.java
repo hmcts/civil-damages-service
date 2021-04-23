@@ -36,31 +36,31 @@ public class EventHistoryMapper {
             .forEach(state -> {
                 FlowState.Main flowState = (FlowState.Main) FlowState.fromFullName(state.getName());
                 switch (flowState) {
-                    case PROCEEDS_OFFLINE_UNREPRESENTED_DEFENDANT:
+                    case TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT:
                         buildUnrepresentedDefendant(builder, caseData);
                         break;
-                    case PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT:
+                    case TAKEN_OFFLINE_UNREGISTERED_DEFENDANT:
                         buildUnregisteredDefendant(builder, caseData);
                         break;
-                    case AWAITING_CASE_NOTIFICATION:
+                    case CLAIM_DETAILS_NOTIFIED:
                         buildClaimantHasNotifiedDefendant(builder, caseData);
                         break;
-                    case CLAIM_ACKNOWLEDGED:
+                    case NOTIFICATION_ACKNOWLEDGED:
                         buildAcknowledgementOfServiceReceived(builder, caseData);
                         break;
-                    case EXTENSION_REQUESTED:
+                    case NOTIFICATION_ACKNOWLEDGED_TIME_EXTENSION:
                         buildConsentExtensionFilingDefence(builder, caseData);
                         break;
-                    case RESPONDENT_FULL_ADMISSION:
+                    case FULL_ADMISSION:
                         buildRespondentFullAdmission(builder, caseData);
                         break;
-                    case RESPONDENT_PART_ADMISSION:
+                    case PART_ADMISSION:
                         buildRespondentPartAdmission(builder, caseData);
                         break;
-                    case RESPONDENT_COUNTER_CLAIM:
+                    case COUNTER_CLAIM:
                         buildRespondentCounterClaim(builder, caseData);
                         break;
-                    case RESPONDENT_FULL_DEFENCE:
+                    case FULL_DEFENCE:
                         buildRespondentFullDefence(builder, caseData);
                         break;
                     case FULL_DEFENCE_NOT_PROCEED:
@@ -82,7 +82,7 @@ public class EventHistoryMapper {
             Event.builder()
                 .eventSequence(1)
                 .eventCode("999")
-                .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
+                .dateReceived(caseData.getClaimNotificationDate().format(ISO_DATE))
                 .eventDetailsText("Claimant has notified defendant.")
                 .eventDetails(EventDetails.builder()
                                   .miscText("Claimant has notified defendant.")

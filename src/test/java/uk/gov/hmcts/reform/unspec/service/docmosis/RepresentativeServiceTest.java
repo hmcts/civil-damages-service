@@ -66,7 +66,7 @@ class RepresentativeServiceTest {
 
         @Test
         void shouldReturnValidOrganisationDetails_whenStateFlowIsNotProceedsOfflineUnrepresentedDefendant() {
-            CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseNotification().build();
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimIssued().build();
 
             Representative representative = representativeService.getRespondentRepresentative(caseData);
 
@@ -97,68 +97,33 @@ class RepresentativeServiceTest {
         @Test
         void shouldReturnValidOrganisationDetails_whenStateFlowIsProceedsOfflineUnrepresentedDefendant() {
             CaseData caseData = CaseDataBuilder.builder().atStateProceedsOfflineUnrepresentedDefendant().build();
-            var organisationDetails = caseData.getRespondentSolicitor1OrganisationDetails();
-            var organisationAddress = organisationDetails.getAddress();
 
             Representative representative = representativeService.getRespondentRepresentative(caseData);
 
             verifyNoInteractions(organisationService);
             assertThat(representative).extracting(
                 "organisationName", "phoneNumber", "dxAddress", "emailAddress").containsExactly(
-                organisationDetails.getOrganisationName(),
-                organisationDetails.getPhoneNumber(),
-                organisationDetails.getDx(),
-                organisationDetails.getEmail()
+                null,
+                null,
+                null,
+                null
             );
-            assertThat(representative).extracting("serviceAddress").extracting(
-                "AddressLine1",
-                "AddressLine2",
-                "AddressLine3",
-                "County",
-                "Country",
-                "PostCode"
-            ).containsExactly(
-                organisationAddress.getAddressLine1(),
-                organisationAddress.getAddressLine2(),
-                organisationAddress.getAddressLine3(),
-                organisationAddress.getCounty(),
-                organisationAddress.getCountry(),
-                organisationAddress.getPostCode()
-            );
+            assertThat(representative).extracting("serviceAddress").isNull();
 
         }
 
         @Test
         void shouldReturnEmptyRepresentative_whenNoRespondentSolicitor1OrganisationDetailsProvided() {
             CaseData caseData = CaseDataBuilder.builder().atStateProceedsOfflineUnrepresentedDefendant().build();
-            var organisationDetails = caseData.getRespondentSolicitor1OrganisationDetails();
-            var organisationAddress = organisationDetails.getAddress();
 
             Representative representative = representativeService.getRespondentRepresentative(caseData);
 
             verifyNoInteractions(organisationService);
             assertThat(representative).extracting(
                 "organisationName", "phoneNumber", "dxAddress", "emailAddress").containsExactly(
-                organisationDetails.getOrganisationName(),
-                organisationDetails.getPhoneNumber(),
-                organisationDetails.getDx(),
-                organisationDetails.getEmail()
+                null, null, null, null
             );
-            assertThat(representative).extracting("serviceAddress").extracting(
-                "AddressLine1",
-                "AddressLine2",
-                "AddressLine3",
-                "County",
-                "Country",
-                "PostCode"
-            ).containsExactly(
-                organisationAddress.getAddressLine1(),
-                organisationAddress.getAddressLine2(),
-                organisationAddress.getAddressLine3(),
-                organisationAddress.getCounty(),
-                organisationAddress.getCountry(),
-                organisationAddress.getPostCode()
-            );
+            assertThat(representative).extracting("serviceAddress").isNull();
 
         }
     }
