@@ -25,6 +25,7 @@ public class DefendantResponseApplicantNotificationHandler extends CallbackHandl
     private static final List<CaseEvent> EVENTS = List.of(NOTIFY_APPLICANT_SOLICITOR1_FOR_DEFENDANT_RESPONSE);
     public static final String TASK_ID = "DefendantResponseFullDefenceNotifyApplicantSolicitor1";
     private static final String REFERENCE_TEMPLATE = "defendant-response-applicant-notification-%s";
+    //TODO: CC to defendant
 
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;

@@ -26,6 +26,7 @@ public class DefendantResponseCaseHandedOfflineApplicantNotificationHandler exte
     private static final List<CaseEvent> EVENTS = List.of(NOTIFY_APPLICANT_SOLICITOR1_FOR_CASE_HANDED_OFFLINE);
     public static final String TASK_ID = "DefendantResponseCaseHandedOfflineNotifyApplicantSolicitor1";
     private static final String REFERENCE_TEMPLATE = "defendant-response-case-handed-offline-applicant-notification-%s";
+    //TODO: CC to defendant
 
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;

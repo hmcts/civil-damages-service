@@ -22,12 +22,13 @@ import static uk.gov.hmcts.reform.unspec.helpers.DateFormatHelper.formatLocalDat
 
 @Service
 @RequiredArgsConstructor
-public class InformAgreedExtensionDateApplicantNotificationHandler extends CallbackHandler implements NotificationData {
+public class AgreedExtensionDateApplicantNotificationHandler extends CallbackHandler implements NotificationData {
 
     private static final List<CaseEvent> EVENTS = List.of(NOTIFY_APPLICANT_SOLICITOR1_FOR_AGREED_EXTENSION_DATE);
+    //TODO: CC to defendant
 
-    public static final String TASK_ID = "InformAgreedExtensionDateNotifyApplicantSolicitor1";
-    private static final String REFERENCE_TEMPLATE = "inform-agreed-extension-date-applicant-notification-%s";
+    public static final String TASK_ID = "AgreedExtensionDateNotifyApplicantSolicitor1";
+    private static final String REFERENCE_TEMPLATE = "agreed-extension-date-applicant-notification-%s";
 
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;

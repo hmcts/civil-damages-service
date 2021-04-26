@@ -24,8 +24,9 @@ public class ClaimantResponseConfirmsToProceedRespondentNotificationHandler exte
 
     private static final List<CaseEvent> EVENTS = List.of(NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIMANT_CONFIRMS_TO_PROCEED);
 
-    public static final String TASK_ID = "ClaimantResponseConfirmsToProceedNotifyRespondentSolicitor1";
+    public static final String TASK_ID = "ClaimantConfirmsToProceedNotifyRespondentSolicitor1";
     private static final String REFERENCE_TEMPLATE = "claimant-confirms-to-proceed-respondent-notification-%s";
+    //TODO: CC to claimant
 
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;

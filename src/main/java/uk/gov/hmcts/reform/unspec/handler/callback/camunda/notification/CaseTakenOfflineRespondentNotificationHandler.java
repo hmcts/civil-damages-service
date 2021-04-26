@@ -63,7 +63,7 @@ public class CaseTakenOfflineRespondentNotificationHandler extends CallbackHandl
     public Map<String, String> addProperties(CaseData caseData) {
         return Map.of(
             CLAIM_REFERENCE_NUMBER, caseData.getLegacyCaseReference(),
-            REASON, "TODO: REASON"
+            REASON, "//TODO: scheduler moved as it is past applicant1ResponseDeadline"
         );
     }
 }
