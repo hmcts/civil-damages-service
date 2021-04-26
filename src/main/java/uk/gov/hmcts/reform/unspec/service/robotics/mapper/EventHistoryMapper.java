@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.unspec.service.robotics.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.unspec.enums.ReasonForProceedingOnPaper;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
+import uk.gov.hmcts.reform.unspec.model.ClaimProceedsInCaseman;
 import uk.gov.hmcts.reform.unspec.model.dq.DQ;
 import uk.gov.hmcts.reform.unspec.model.dq.RequestedCourt;
 import uk.gov.hmcts.reform.unspec.model.robotics.Event;
@@ -69,12 +71,66 @@ public class EventHistoryMapper {
                     case FULL_DEFENCE_PROCEED:
                         buildFullDefenceProceed(builder, caseData);
                         break;
+                    case TAKEN_OFFLINE_BY_STAFF:
+                        buildTakenOfflineByStaff(builder, caseData);
+                        break;
                     default:
                         break;
                 }
             });
 
         return builder.build();
+    }
+
+    private void buildTakenOfflineByStaff(EventHistory.EventHistoryBuilder builder, CaseData caseData) {
+        builder.miscellaneous(
+            Event.builder()
+                .eventSequence(prepareEventSequence(builder.build()))
+                .eventCode("999")
+                .dateReceived(caseData.getTakenOfflineByStaffDate().format(ISO_DATE))
+                .eventDetailsText(prepareTakenOfflineEventDetails(caseData))
+                .eventDetails(EventDetails.builder()
+                                  .miscText(prepareTakenOfflineEventDetails(caseData))
+                                  .build())
+                .build());
+    }
+
+    private int prepareEventSequence(EventHistory history) {
+        int currentSequence = 1;
+        currentSequence = getCurrentSequence(history.getMiscellaneous(), currentSequence);
+        currentSequence = getCurrentSequence(history.getAcknowledgementOfServiceReceived(), currentSequence);
+        currentSequence = getCurrentSequence(history.getConsentExtensionFilingDefence(), currentSequence);
+        currentSequence = getCurrentSequence(history.getDefenceFiled(), currentSequence);
+        currentSequence = getCurrentSequence(history.getDefenceAndCounterClaim(), currentSequence);
+        currentSequence = getCurrentSequence(history.getReceiptOfPartAdmission(), currentSequence);
+        currentSequence = getCurrentSequence(history.getReceiptOfAdmission(), currentSequence);
+        currentSequence = getCurrentSequence(history.getReplyToDefence(), currentSequence);
+        currentSequence = getCurrentSequence(history.getDirectionsQuestionnaireFiled(), currentSequence);
+        return currentSequence + 1;
+    }
+
+    private int getCurrentSequence(List<Event> events, int currentSequence) {
+        for (Event event : events) {
+            if (event.getEventSequence() != null && event.getEventSequence() > currentSequence) {
+                currentSequence = event.getEventSequence();
+            }
+        }
+        return currentSequence;
+    }
+
+    private String prepareTakenOfflineEventDetails(CaseData caseData) {
+        return format(
+            "RPA Reason: Manually moved offline for reason %s on date %s.",
+            prepareTakenOfflineByStaffReason(caseData.getClaimProceedsInCaseman()),
+            caseData.getClaimProceedsInCaseman().getDate().format(ISO_DATE)
+        );
+    }
+
+    private String prepareTakenOfflineByStaffReason(ClaimProceedsInCaseman claimProceedsInCaseman) {
+        if (claimProceedsInCaseman.getReason() == ReasonForProceedingOnPaper.OTHER) {
+            return claimProceedsInCaseman.getOther();
+        }
+        return claimProceedsInCaseman.getReason().name();
     }
 
     private void buildClaimantHasNotifiedDefendant(EventHistory.EventHistoryBuilder builder, CaseData caseData) {
