@@ -34,7 +34,7 @@ public class ResetRpaNotificationBusinessProcessHandler extends CallbackHandler 
     protected Map<String, Callback> callbacks() {
         return Map.of(
             callbackKey(ABOUT_TO_SUBMIT), this::resetBusinessProcess,
-            callbackKey(SUBMITTED), callbackParams -> SubmittedCallbackResponse.builder().build()
+            callbackKey(SUBMITTED), this::emptySubmittedCallbackResponse
         );
     }
 
