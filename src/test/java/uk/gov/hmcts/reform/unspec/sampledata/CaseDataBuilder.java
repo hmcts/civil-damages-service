@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.unspec.sampledata;
 
+import org.jetbrains.annotations.NotNull;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.unspec.enums.AllocatedTrack;
@@ -709,11 +710,16 @@ public class CaseDataBuilder {
 
     public CaseDataBuilder atStateTakenOfflineByStaff() {
         atStateClaimIssued();
+        return claimProceedsInCaseman();
+    }
+
+    public CaseDataBuilder claimProceedsInCaseman() {
         claimProceedsInCaseman = ClaimProceedsInCaseman.builder()
             .date(LocalDate.now())
             .reason(ReasonForProceedingOnPaper.APPLICATION)
             .build();
         takenOfflineByStaffDate = LocalDateTime.now();
+        this.ccdState = PROCEEDS_IN_HERITAGE_SYSTEM;
         return this;
     }
 

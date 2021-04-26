@@ -923,6 +923,49 @@ class EventHistoryMapperTest {
         }
     }
 
+    @Nested
+    class TakenOfflineByStaff {
+
+        @Test
+        void shouldPrepareExpectedEvents_whenClaimTakenOfflineAfterClaimIssued() {
+            CaseData caseData = CaseDataBuilder.builder()
+                .atState(FlowState.Main.CLAIM_ISSUED)
+                .claimProceedsInCaseman()
+                .build();
+
+            List<Event> expectedMiscellaneousEvents = List.of(
+                Event.builder()
+                    .eventSequence(1)
+                    .eventCode("999")
+                    .dateReceived(caseData.getTakenOfflineByStaffDate().format(ISO_DATE))
+                    .eventDetailsText(mapper.prepareTakenOfflineEventDetails(caseData))
+                    .eventDetails(EventDetails.builder()
+                                      .miscText(mapper.prepareTakenOfflineEventDetails(caseData))
+                                      .build())
+                    .build()
+            );
+
+            var eventHistory = mapper.buildEvents(caseData);
+
+            assertThat(eventHistory).isNotNull();
+            assertThat(eventHistory).extracting("miscellaneous").asList()
+                .containsExactly(expectedMiscellaneousEvents.get(0));
+
+            assertEmptyEvents(
+                eventHistory,
+                "defenceFiled",
+                "defenceAndCounterClaim",
+                "receiptOfPartAdmission",
+                "replyToDefence",
+                "directionsQuestionnaireFiled",
+                "receiptOfAdmission",
+                "acknowledgementOfServiceReceived",
+                "consentExtensionFilingDefence"
+            );
+        }
+
+    }
+
     @ParameterizedTest
     @EnumSource(value = FlowState.Main.class, mode = EnumSource.Mode.EXCLUDE, names = {
         "TAKEN_OFFLINE_UNREPRESENTED_DEFENDANT",

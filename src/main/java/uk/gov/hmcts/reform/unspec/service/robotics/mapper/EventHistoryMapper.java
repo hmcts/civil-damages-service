@@ -96,7 +96,7 @@ public class EventHistoryMapper {
     }
 
     private int prepareEventSequence(EventHistory history) {
-        int currentSequence = 1;
+        int currentSequence = 0;
         currentSequence = getCurrentSequence(history.getMiscellaneous(), currentSequence);
         currentSequence = getCurrentSequence(history.getAcknowledgementOfServiceReceived(), currentSequence);
         currentSequence = getCurrentSequence(history.getConsentExtensionFilingDefence(), currentSequence);
@@ -118,7 +118,7 @@ public class EventHistoryMapper {
         return currentSequence;
     }
 
-    private String prepareTakenOfflineEventDetails(CaseData caseData) {
+    public String prepareTakenOfflineEventDetails(CaseData caseData) {
         return format(
             "RPA Reason: Manually moved offline for reason %s on date %s.",
             prepareTakenOfflineByStaffReason(caseData.getClaimProceedsInCaseman()),
