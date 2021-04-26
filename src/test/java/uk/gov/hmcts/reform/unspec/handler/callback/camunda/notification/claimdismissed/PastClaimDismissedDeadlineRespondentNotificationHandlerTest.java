@@ -60,7 +60,7 @@ class PastClaimDismissedDeadlineRespondentNotificationHandlerTest {
                 EMAIL,
                 TEMPLATE_ID,
                 getExpectedMap(),
-                "respondent-claim-strike-out-notification-000LR001"
+                "claim-dismissed-past-claim-dismissed-deadline-respondent-notification-000LR001"
             );
         }
     }
