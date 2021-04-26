@@ -34,10 +34,22 @@ public class NotificationsProperties {
     private String respondentSolicitorEmail;
 
     @NotEmpty
-    private String applicantSolicitorClaimDismissed;
+    private String applicantSolicitorClaimDismissedPastDismissedDeadline;
 
     @NotEmpty
-    private String respondentSolicitorClaimDismissed;
+    private String respondentSolicitorClaimDismissedPastDismissedDeadline;
+
+    @NotEmpty
+    private String applicantSolicitorClaimDismissedPastClaimNotificationDeadline;
+
+    @NotEmpty
+    private String respondentSolicitorClaimDismissedPastClaimNotificationDeadline;
+
+    @NotEmpty
+    private String applicantSolicitorClaimDismissedPastClaimDetailsNotificationDeadline;
+
+    @NotEmpty
+    private String respondentSolicitorClaimDismissedPastClaimDetailsNotificationDeadline;
 
     @NotEmpty
     private String claimantSolicitorCaseWillProgressOffline;

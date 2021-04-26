@@ -52,7 +52,8 @@ public class DismissClaimCallbackHandler extends CallbackHandler {
         CaseData data = caseDetailsConverter.toCaseData(callbackParams.getRequest().getCaseDetails());
 
         CaseData.CaseDataBuilder caseDataBuilder = data.toBuilder()
-            .businessProcess(BusinessProcess.ready(DISMISS_CLAIM))
+            //TODO: merge on last CMC-1442 PR
+            //.businessProcess(BusinessProcess.ready(DISMISS_CLAIM))
             .claimDismissedDate(time.now());
 
         return AboutToStartOrSubmitCallbackResponse.builder()

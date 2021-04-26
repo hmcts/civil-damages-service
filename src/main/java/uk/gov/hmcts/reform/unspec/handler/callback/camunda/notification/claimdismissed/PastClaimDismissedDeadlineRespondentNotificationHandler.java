@@ -17,16 +17,16 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_APPLICANT_SOLICITOR1_CLAIM_DISMISSED;
+import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE;
 import static uk.gov.hmcts.reform.unspec.utils.PartyUtils.getPartyNameBasedOnType;
 
 @Service
 @RequiredArgsConstructor
-public class ApplicantClaimDismissedNotificationHandler extends CallbackHandler implements NotificationData {
+public class PastClaimDismissedDeadlineRespondentNotificationHandler extends CallbackHandler implements NotificationData {
 
-    private static final List<CaseEvent> EVENTS = List.of(NOTIFY_APPLICANT_SOLICITOR1_CLAIM_DISMISSED);
-    public static final String TASK_ID = "NotifyApplicantSolicitor1ClaimDismissed";
-    private static final String REFERENCE_TEMPLATE = "applicant-claim-strike-out-notification-%s";
+    private static final List<CaseEvent> EVENTS = List.of(NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE);
+    public static final String TASK_ID = "ClaimDismissedPastClaimDismissedDeadlineNotifyRespondentSolicitor1";
+    private static final String REFERENCE_TEMPLATE = "claim-dismissed-past-claim-dismissed-deadline-respondent-notification-%s";
 
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
@@ -34,7 +34,7 @@ public class ApplicantClaimDismissedNotificationHandler extends CallbackHandler 
     @Override
     protected Map<String, Callback> callbacks() {
         return Map.of(
-            callbackKey(ABOUT_TO_SUBMIT), this::notifyApplicantSolicitorOfClaimDismissed
+            callbackKey(ABOUT_TO_SUBMIT), this::notifyRespondentSolicitorOfClaimDismissedPastClaimDismissedDeadline
         );
     }
 
@@ -48,12 +48,12 @@ public class ApplicantClaimDismissedNotificationHandler extends CallbackHandler 
         return EVENTS;
     }
 
-    private CallbackResponse notifyApplicantSolicitorOfClaimDismissed(CallbackParams callbackParams) {
+    private CallbackResponse notifyRespondentSolicitorOfClaimDismissedPastClaimDismissedDeadline(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
 
         notificationService.sendMail(
-            notificationsProperties.getApplicantSolicitorEmail(),
-            notificationsProperties.getApplicantSolicitorClaimDismissed(),
+            notificationsProperties.getRespondentSolicitorEmail(),
+            notificationsProperties.getRespondentSolicitorClaimDismissedPastDismissedDeadline(),
             addProperties(caseData),
             String.format(REFERENCE_TEMPLATE, caseData.getLegacyCaseReference())
         );
@@ -65,7 +65,7 @@ public class ApplicantClaimDismissedNotificationHandler extends CallbackHandler 
     public Map<String, String> addProperties(CaseData caseData) {
         return Map.of(
             CLAIM_REFERENCE_NUMBER, caseData.getLegacyCaseReference(),
-            RESPONDENT_NAME, getPartyNameBasedOnType(caseData.getRespondent1()),
+            APPLICANT_NAME, getPartyNameBasedOnType(caseData.getApplicant1()),
             FRONTEND_BASE_URL_KEY, FRONTEND_BASE_URL
         );
     }

@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.config.properties.notification.NotificationsProperties;
-import uk.gov.hmcts.reform.unspec.handler.callback.camunda.notification.claimdismissed.ApplicantClaimDismissedNotificationHandler;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
 import uk.gov.hmcts.reform.unspec.sampledata.CallbackParamsBuilder;
 import uk.gov.hmcts.reform.unspec.sampledata.CaseDataBuilder;
@@ -22,11 +21,11 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 
 @SpringBootTest(classes = {
-    ApplicantClaimDismissedNotificationHandler.class,
+    PastClaimDismissedDeadlineApplicantNotificationHandler.class,
     NotificationsProperties.class,
     JacksonAutoConfiguration.class
 })
-class ApplicantClaimDismissedNotificationHandlerTest {
+class PastClaimDismissedDeadlineApplicantNotificationHandlerTest {
 
     public static final String TEMPLATE_ID = "template-id";
     public static final String EMAIL = "claimantsolicitor@example.com";
@@ -38,7 +37,7 @@ class ApplicantClaimDismissedNotificationHandlerTest {
     private NotificationsProperties notificationsProperties;
 
     @Autowired
-    private ApplicantClaimDismissedNotificationHandler handler;
+    private PastClaimDismissedDeadlineApplicantNotificationHandler handler;
 
     @Nested
     class AboutToSubmitCallback {

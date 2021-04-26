@@ -21,11 +21,11 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 
 @SpringBootTest(classes = {
-    RespondentClaimDismissedNotificationHandler.class,
+    PastClaimDismissedDeadlineRespondentNotificationHandler.class,
     NotificationsProperties.class,
     JacksonAutoConfiguration.class
 })
-class RespondentClaimDismissedNotificationHandlerTest {
+class PastClaimDismissedDeadlineRespondentNotificationHandlerTest {
 
     public static final String TEMPLATE_ID = "template-id";
     public static final String EMAIL = "respondentsolicitor@example.com";
@@ -37,7 +37,7 @@ class RespondentClaimDismissedNotificationHandlerTest {
     private NotificationsProperties notificationsProperties;
 
     @Autowired
-    private RespondentClaimDismissedNotificationHandler handler;
+    private PastClaimDismissedDeadlineRespondentNotificationHandler handler;
 
     @Nested
     class AboutToSubmitCallback {
