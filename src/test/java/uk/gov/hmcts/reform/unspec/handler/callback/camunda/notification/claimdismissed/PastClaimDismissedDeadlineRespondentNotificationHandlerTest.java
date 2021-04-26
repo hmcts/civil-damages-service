@@ -44,7 +44,8 @@ class PastClaimDismissedDeadlineRespondentNotificationHandlerTest {
 
         @BeforeEach
         void setup() {
-            when(notificationsProperties.getRespondentSolicitorClaimDismissed()).thenReturn(TEMPLATE_ID);
+            when(notificationsProperties.getRespondentSolicitorClaimDismissedPastDismissedDeadline())
+                .thenReturn(TEMPLATE_ID);
             when(notificationsProperties.getRespondentSolicitorEmail()).thenReturn(EMAIL);
         }
 

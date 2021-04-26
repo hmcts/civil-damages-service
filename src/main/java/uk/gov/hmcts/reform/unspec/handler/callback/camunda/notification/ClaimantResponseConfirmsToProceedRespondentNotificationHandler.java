@@ -20,9 +20,11 @@ import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_RESPONDENT_SO
 
 @Service
 @RequiredArgsConstructor
-public class ClaimantResponseConfirmsToProceedRespondentNotificationHandler extends CallbackHandler implements NotificationData {
+public class ClaimantResponseConfirmsToProceedRespondentNotificationHandler extends CallbackHandler
+    implements NotificationData {
 
-    private static final List<CaseEvent> EVENTS = List.of(NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIMANT_CONFIRMS_TO_PROCEED);
+    private static final List<CaseEvent> EVENTS = List.of(
+        NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIMANT_CONFIRMS_TO_PROCEED);
 
     public static final String TASK_ID = "ClaimantConfirmsToProceedNotifyRespondentSolicitor1";
     private static final String REFERENCE_TEMPLATE = "claimant-confirms-to-proceed-respondent-notification-%s";

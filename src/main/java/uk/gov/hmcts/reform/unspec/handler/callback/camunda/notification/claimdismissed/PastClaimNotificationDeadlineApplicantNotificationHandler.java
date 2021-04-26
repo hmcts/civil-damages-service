@@ -22,11 +22,14 @@ import static uk.gov.hmcts.reform.unspec.utils.PartyUtils.getPartyNameBasedOnTyp
 
 @Service
 @RequiredArgsConstructor
-public class PastClaimNotificationDeadlineApplicantNotificationHandler extends CallbackHandler implements NotificationData {
+public class PastClaimNotificationDeadlineApplicantNotificationHandler extends CallbackHandler
+    implements NotificationData {
 
-    private static final List<CaseEvent> EVENTS = List.of(NOTIFY_APPLICANT_SOLICITOR1_FOR_CLAIM_DISMISSED_PAST_CLAIM_NOTIFICATION_DEADLINE);
+    private static final List<CaseEvent> EVENTS = List.of(
+        NOTIFY_APPLICANT_SOLICITOR1_FOR_CLAIM_DISMISSED_PAST_CLAIM_NOTIFICATION_DEADLINE);
     public static final String TASK_ID = "ClaimDismissedPastClaimNotificationDeadlineNotifyApplicantSolicitor1";
-    private static final String REFERENCE_TEMPLATE = "claim-dismissed-past-claim-notification-deadline-applicant-notification-%s";
+    private static final String REFERENCE_TEMPLATE =
+        "claim-dismissed-past-claim-notification-deadline-applicant-notification-%s";
 
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
@@ -48,7 +51,8 @@ public class PastClaimNotificationDeadlineApplicantNotificationHandler extends C
         return EVENTS;
     }
 
-    private CallbackResponse notifyApplicantSolicitorOfClaimDismissedPastClaimNotificationDeadline(CallbackParams callbackParams) {
+    private CallbackResponse notifyApplicantSolicitorOfClaimDismissedPastClaimNotificationDeadline(
+        CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
 
         notificationService.sendMail(

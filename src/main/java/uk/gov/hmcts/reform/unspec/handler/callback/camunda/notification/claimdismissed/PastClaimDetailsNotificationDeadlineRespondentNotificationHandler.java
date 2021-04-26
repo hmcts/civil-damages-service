@@ -22,11 +22,14 @@ import static uk.gov.hmcts.reform.unspec.utils.PartyUtils.getPartyNameBasedOnTyp
 
 @Service
 @RequiredArgsConstructor
-public class PastClaimDetailsNotificationDeadlineRespondentNotificationHandler extends CallbackHandler implements NotificationData {
+public class PastClaimDetailsNotificationDeadlineRespondentNotificationHandler extends CallbackHandler
+    implements NotificationData {
 
-    private static final List<CaseEvent> EVENTS = List.of(NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIM_DISMISSED_PAST_CLAIM_DETAILS_NOTIFICATION_DEADLINE);
+    private static final List<CaseEvent> EVENTS = List.of(
+        NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIM_DISMISSED_PAST_CLAIM_DETAILS_NOTIFICATION_DEADLINE);
     public static final String TASK_ID = "ClaimDismissedPastClaimDetailsNotificationDeadlineNotifyRespondentSolicitor1";
-    private static final String REFERENCE_TEMPLATE = "claim-dismissed-past-claim-details-notification-deadline-respondent-notification-%s";
+    private static final String REFERENCE_TEMPLATE =
+        "claim-dismissed-past-claim-details-notification-deadline-respondent-notification-%s";
 
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
@@ -34,7 +37,8 @@ public class PastClaimDetailsNotificationDeadlineRespondentNotificationHandler e
     @Override
     protected Map<String, Callback> callbacks() {
         return Map.of(
-            callbackKey(ABOUT_TO_SUBMIT), this::notifyRespondentSolicitorOfClaimDismissedPastClaimDetailsNotificationDeadline
+            callbackKey(ABOUT_TO_SUBMIT),
+            this::notifyRespondentSolicitorOfClaimDismissedPastClaimDetailsNotificationDeadline
         );
     }
 
@@ -48,7 +52,8 @@ public class PastClaimDetailsNotificationDeadlineRespondentNotificationHandler e
         return EVENTS;
     }
 
-    private CallbackResponse notifyRespondentSolicitorOfClaimDismissedPastClaimDetailsNotificationDeadline(CallbackParams callbackParams) {
+    private CallbackResponse notifyRespondentSolicitorOfClaimDismissedPastClaimDetailsNotificationDeadline(
+        CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
 
         notificationService.sendMail(
