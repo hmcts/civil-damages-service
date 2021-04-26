@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.unspec.helpers.DateFormatHelper.formatLocalDat
 
 @Service
 @RequiredArgsConstructor
-public class ClaimContinuingOnlineNotificationHandler extends CallbackHandler
+public class ClaimContinuingOnlineApplicantNotificationHandler extends CallbackHandler
     implements NotificationData {
 
     private static final List<CaseEvent> EVENTS = List.of(NOTIFY_APPLICANT_SOLICITOR1_FOR_CLAIM_CONTINUING_ONLINE);
@@ -35,7 +35,7 @@ public class ClaimContinuingOnlineNotificationHandler extends CallbackHandler
     @Override
     protected Map<String, Callback> callbacks() {
         return Map.of(
-            callbackKey(ABOUT_TO_SUBMIT), this::notifyApplicantSolicitorClaimContinuingOnline
+            callbackKey(ABOUT_TO_SUBMIT), this::notifyApplicantSolicitorForClaimContinuingOnline
         );
     }
 
@@ -49,12 +49,12 @@ public class ClaimContinuingOnlineNotificationHandler extends CallbackHandler
         return EVENTS;
     }
 
-    private CallbackResponse notifyApplicantSolicitorClaimContinuingOnline(CallbackParams callbackParams) {
+    private CallbackResponse notifyApplicantSolicitorForClaimContinuingOnline(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
 
         notificationService.sendMail(
             notificationsProperties.getApplicantSolicitorEmail(),
-            notificationsProperties.getClaimantSolicitorCaseWillProgressOffline(),
+            notificationsProperties.getClaimantSolicitorClaimContinuingOnline(),
             addProperties(caseData),
             String.format(REFERENCE_TEMPLATE, caseData.getLegacyCaseReference())
         );
