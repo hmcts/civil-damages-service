@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.SUBMITTED;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.DISMISS_CLAIM;
 
@@ -35,7 +36,7 @@ public class DismissClaimCallbackHandler extends CallbackHandler {
     protected Map<String, Callback> callbacks() {
         return Map.of(
             callbackKey(ABOUT_TO_START), this::emptyCallbackResponse,
-            callbackKey(CallbackType.ABOUT_TO_SUBMIT), this::updateBusinessStatusToReady,
+            callbackKey(ABOUT_TO_SUBMIT), this::updateBusinessStatusToReady,
             callbackKey(SUBMITTED), this::emptySubmittedCallbackResponse
         );
     }

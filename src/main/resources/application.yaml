@@ -103,6 +103,7 @@ notifications:
   claimantSolicitorConfirmsNotToProceed: "891843df-f641-4c91-b5d4-d6a0899b722d"
   claimantSolicitorClaimContinuingOnline: "eacc12e2-c4b9-470c-bf49-23441bcd8386"
   solicitorCaseTakenOffline: "e523c5f9-1b12-4160-baf1-0c482d71b41d"
+  solicitorLitigationFriendAdded: "b659b48e-2585-4162-911e-4166b51c3d0e"
   applicantSolicitorEmail: civil.damages.claims+organisation.1.solicitor.1@gmail.com
   respondentSolicitorEmail: civil.damages.claims+organisation.2.solicitor.1@gmail.com
 
