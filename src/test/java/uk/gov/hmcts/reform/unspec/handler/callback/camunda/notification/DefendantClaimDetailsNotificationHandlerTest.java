@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.config.properties.notification.NotificationsProperties;
 import uk.gov.hmcts.reform.unspec.handler.callback.BaseCallbackHandlerTest;
@@ -46,7 +47,8 @@ class DefendantClaimDetailsNotificationHandlerTest extends BaseCallbackHandlerTe
         @Test
         void shouldNotifyRespondentSolicitor_whenInvoked() {
             CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseNotification().build();
-            CallbackParams params = CallbackParamsBuilder.builder().of(ABOUT_TO_SUBMIT, caseData).build();
+            CallbackParams params = CallbackParamsBuilder.builder().of(ABOUT_TO_SUBMIT, caseData).request(
+                CallbackRequest.builder().eventId("NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIM_DETAILS").build()).build();
 
             handler.handle(params);
 

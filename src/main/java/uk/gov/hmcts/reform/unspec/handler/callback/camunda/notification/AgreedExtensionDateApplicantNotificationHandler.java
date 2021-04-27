@@ -17,6 +17,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_APPLICANT_SOLICITOR1_FOR_AGREED_EXTENSION_DATE;
+import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_APPLICANT_SOLICITOR1_FOR_AGREED_EXTENSION_DATE_CC;
 import static uk.gov.hmcts.reform.unspec.helpers.DateFormatHelper.DATE;
 import static uk.gov.hmcts.reform.unspec.helpers.DateFormatHelper.formatLocalDate;
 
@@ -24,8 +25,9 @@ import static uk.gov.hmcts.reform.unspec.helpers.DateFormatHelper.formatLocalDat
 @RequiredArgsConstructor
 public class AgreedExtensionDateApplicantNotificationHandler extends CallbackHandler implements NotificationData {
 
-    private static final List<CaseEvent> EVENTS = List.of(NOTIFY_APPLICANT_SOLICITOR1_FOR_AGREED_EXTENSION_DATE);
-    //TODO: CC to defendant
+    private static final List<CaseEvent> EVENTS = List.of(
+        NOTIFY_APPLICANT_SOLICITOR1_FOR_AGREED_EXTENSION_DATE,
+        NOTIFY_APPLICANT_SOLICITOR1_FOR_AGREED_EXTENSION_DATE_CC);
 
     public static final String TASK_ID = "AgreedExtensionDateNotifyApplicantSolicitor1";
     private static final String REFERENCE_TEMPLATE = "agreed-extension-date-applicant-notification-%s";
@@ -52,9 +54,12 @@ public class AgreedExtensionDateApplicantNotificationHandler extends CallbackHan
 
     private CallbackResponse notifyApplicantSolicitorForAgreedExtensionDate(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
+        var recipient = callbackParams.getRequest().getEventId().endsWith("_CC")
+            ? notificationsProperties.getRespondentSolicitorEmail()
+            : notificationsProperties.getApplicantSolicitorEmail();
 
         notificationService.sendMail(
-            notificationsProperties.getApplicantSolicitorEmail(),
+            recipient,
             notificationsProperties.getClaimantSolicitorAgreedExtensionDate(),
             addProperties(caseData),
             String.format(REFERENCE_TEMPLATE, caseData.getLegacyCaseReference())

@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIM_DETAILS;
+import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIM_DETAILS_CC;
 import static uk.gov.hmcts.reform.unspec.helpers.DateFormatHelper.DATE;
 import static uk.gov.hmcts.reform.unspec.helpers.DateFormatHelper.formatLocalDate;
 import static uk.gov.hmcts.reform.unspec.utils.PartyUtils.getPartyNameBasedOnType;
@@ -26,8 +27,10 @@ import static uk.gov.hmcts.reform.unspec.utils.PartyUtils.getPartyNameBasedOnTyp
 @RequiredArgsConstructor
 public class DefendantClaimDetailsNotificationHandler extends CallbackHandler implements NotificationData {
 
-    private static final List<CaseEvent> EVENTS = List.of(NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIM_DETAILS);
-    //TODO: CC to claimant
+    private static final List<CaseEvent> EVENTS = List.of(
+        NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIM_DETAILS,
+        NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIM_DETAILS_CC);
+
     public static final String TASK_ID = "NotifyClaimDetailsRespondentSolicitor1";
     private static final String REFERENCE_TEMPLATE = "claim-details-respondent-notification-%s";
 
@@ -54,9 +57,12 @@ public class DefendantClaimDetailsNotificationHandler extends CallbackHandler im
 
     private CallbackResponse notifyRespondentSolicitorForClaimDetails(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
+        var recipient = callbackParams.getRequest().getEventId().endsWith("_CC")
+            ? notificationsProperties.getApplicantSolicitorEmail()
+            : caseData.getRespondentSolicitor1EmailAddress();
 
         notificationService.sendMail(
-            caseData.getRespondentSolicitor1EmailAddress(),
+            recipient,
             notificationsProperties.getRespondentSolicitorClaimDetailsEmailTemplate(),
             addProperties(caseData),
             String.format(REFERENCE_TEMPLATE, caseData.getLegacyCaseReference())

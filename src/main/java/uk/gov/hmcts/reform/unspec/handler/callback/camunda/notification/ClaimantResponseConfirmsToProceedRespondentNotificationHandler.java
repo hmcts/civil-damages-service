@@ -17,6 +17,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIMANT_CONFIRMS_TO_PROCEED;
+import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIMANT_CONFIRMS_TO_PROCEED_CC;
 
 @Service
 @RequiredArgsConstructor
@@ -24,11 +25,11 @@ public class ClaimantResponseConfirmsToProceedRespondentNotificationHandler exte
     implements NotificationData {
 
     private static final List<CaseEvent> EVENTS = List.of(
-        NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIMANT_CONFIRMS_TO_PROCEED);
+        NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIMANT_CONFIRMS_TO_PROCEED,
+        NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIMANT_CONFIRMS_TO_PROCEED_CC);
 
     public static final String TASK_ID = "ClaimantConfirmsToProceedNotifyRespondentSolicitor1";
     private static final String REFERENCE_TEMPLATE = "claimant-confirms-to-proceed-respondent-notification-%s";
-    //TODO: CC to claimant
 
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
@@ -52,9 +53,12 @@ public class ClaimantResponseConfirmsToProceedRespondentNotificationHandler exte
 
     private CallbackResponse notifyRespondentSolicitorForClaimantConfirmsToProceed(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
+        var recipient = callbackParams.getRequest().getEventId().endsWith("_CC")
+            ? notificationsProperties.getApplicantSolicitorEmail()
+            : notificationsProperties.getRespondentSolicitorEmail();
 
         notificationService.sendMail(
-            notificationsProperties.getRespondentSolicitorEmail(),
+            recipient,
             notificationsProperties.getClaimantSolicitorConfirmsToProceed(),
             addProperties(caseData),
             String.format(REFERENCE_TEMPLATE, caseData.getLegacyCaseReference())

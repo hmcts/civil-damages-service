@@ -17,13 +17,15 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_APPLICANT_SOLICITOR1_FOR_CLAIM_ACKNOWLEDGEMENT;
+import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_APPLICANT_SOLICITOR1_FOR_CLAIM_ACKNOWLEDGEMENT_CC;
 
 @Service
 @RequiredArgsConstructor
 public class AcknowledgeClaimApplicantNotificationHandler extends CallbackHandler implements NotificationData {
 
-    private static final List<CaseEvent> EVENTS = List.of(NOTIFY_APPLICANT_SOLICITOR1_FOR_CLAIM_ACKNOWLEDGEMENT);
-    //TODO: CC to defendant
+    private static final List<CaseEvent> EVENTS = List.of(
+        NOTIFY_APPLICANT_SOLICITOR1_FOR_CLAIM_ACKNOWLEDGEMENT,
+        NOTIFY_APPLICANT_SOLICITOR1_FOR_CLAIM_ACKNOWLEDGEMENT_CC);
 
     public static final String TASK_ID = "AcknowledgeClaimNotifyApplicantSolicitor1";
     private static final String REFERENCE_TEMPLATE = "acknowledge-claim-applicant-notification-%s";
@@ -50,9 +52,12 @@ public class AcknowledgeClaimApplicantNotificationHandler extends CallbackHandle
 
     private CallbackResponse notifyApplicantSolicitorForClaimAcknowledgement(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
+        var recipient = callbackParams.getRequest().getEventId().endsWith("_CC")
+            ? notificationsProperties.getRespondentSolicitorEmail()
+            : notificationsProperties.getApplicantSolicitorEmail();
 
         notificationService.sendMail(
-            notificationsProperties.getApplicantSolicitorEmail(),
+            recipient,
             notificationsProperties.getRespondentSolicitorAcknowledgeClaim(),
             addProperties(caseData),
             String.format(REFERENCE_TEMPLATE, caseData.getLegacyCaseReference())
