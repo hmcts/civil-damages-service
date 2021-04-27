@@ -67,15 +67,17 @@ public class CreateClaimCallbackHandler extends CallbackHandler implements Parti
         + "receive an email. The email will also include the date when you need to notify the defendant of the claim."
         + "\n\n You must notify the defendant of the claim within 4 months of the claim being issued. The exact "
         + "date when you must notify the claim details will be provided when you first notify "
-        + "the defendant of the claim.";
+        + "the defendant of the claim."
+        + "\n\n This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.";
 
     public static final String LIP_CONFIRMATION_BODY = "<br />Your claim will not be issued until payment is confirmed."
         + " Once payment is confirmed you will receive an email. The claim will then progress offline."
         + "\n\n To continue the claim you need to send the <a href=\"%s\" target=\"_blank\">sealed claim form</a>, "
-        + "a <a href=\"%s\" target=\"_blank\">response pack</a> and any supporting documents to "
+        + "a <a href=\"%3$s\" target=\"_blank\">response pack</a> and any supporting documents to "
         + "the defendant within 4 months. "
         + "\n\nOnce you have served the claim, send the Certificate of Service and supporting documents to the County"
-        + " Court Claims Centre.";
+        + " Court Claims Centre."
+        + "\n\n This is a new service - your <a href=\"%2$s\" target=\"_blank\">feedback</a> will help us to improve it.";
 
     private final ClaimIssueConfiguration claimIssueConfiguration;
     private final ReferenceNumberRepository referenceNumberRepository;
@@ -267,14 +269,17 @@ public class CreateClaimCallbackHandler extends CallbackHandler implements Parti
     private String getBody(CaseData caseData) {
         LocalDateTime serviceDeadline = LocalDate.now().plusDays(112).atTime(23, 59);
         String formattedServiceDeadline = formatLocalDateTime(serviceDeadline, DATE_TIME_AT);
+        String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
 
         return format(
             caseData.getRespondent1Represented() == NO || caseData.getRespondent1OrgRegistered() == NO
                 ? LIP_CONFIRMATION_BODY
                 : CONFIRMATION_SUMMARY,
             format("/cases/case-details/%s#CaseDocuments", caseData.getCcdCaseReference()),
+            surveyLink,
             claimIssueConfiguration.getResponsePackLink(),
             formattedServiceDeadline
+
         );
     }
 }
