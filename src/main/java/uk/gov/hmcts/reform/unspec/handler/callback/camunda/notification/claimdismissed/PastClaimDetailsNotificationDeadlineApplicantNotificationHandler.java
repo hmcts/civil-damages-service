@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_APPLICANT_SOLICITOR1_FOR_CLAIM_DISMISSED_PAST_CLAIM_DETAILS_NOTIFICATION_DEADLINE;
+import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_APPLICANT_SOLICITOR1_PAST_CLAIM_DETAILS_NOTIFICATION_DEADLINE;
 import static uk.gov.hmcts.reform.unspec.utils.PartyUtils.getPartyNameBasedOnType;
 
 @Service
@@ -26,7 +26,7 @@ public class PastClaimDetailsNotificationDeadlineApplicantNotificationHandler ex
     implements NotificationData {
 
     private static final List<CaseEvent> EVENTS = List.of(
-        NOTIFY_APPLICANT_SOLICITOR1_FOR_CLAIM_DISMISSED_PAST_CLAIM_DETAILS_NOTIFICATION_DEADLINE);
+        NOTIFY_APPLICANT_SOLICITOR1_PAST_CLAIM_DETAILS_NOTIFICATION_DEADLINE);
     public static final String TASK_ID = "ClaimDismissedPastClaimDetailsNotificationDeadlineNotifyApplicantSolicitor1";
     private static final String REFERENCE_TEMPLATE =
         "claim-dismissed-past-claim-details-notification-deadline-applicant-notification-%s";
