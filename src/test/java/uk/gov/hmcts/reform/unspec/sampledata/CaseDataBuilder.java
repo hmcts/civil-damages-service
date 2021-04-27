@@ -709,6 +709,47 @@ public class CaseDataBuilder {
 
     public CaseDataBuilder atStateTakenOfflineByStaff() {
         atStateClaimIssued();
+        takenOfflineByStaff();
+        return this;
+    }
+
+    public CaseDataBuilder atStateTakenOfflineByStaffAfterClaimNotified() {
+        atStateClaimNotified();
+        takenOfflineByStaff();
+        return this;
+    }
+
+    public CaseDataBuilder atStateTakenOfflineByStaffAfterClaimDetailsNotified() {
+        atStateClaimDetailsNotified();
+        takenOfflineByStaff();
+        return this;
+    }
+
+    public CaseDataBuilder atStateTakenOfflineByStaffAfterClaimDetailsNotifiedExtension() {
+        atStateClaimDetailsNotifiedTimeExtension();
+        takenOfflineByStaff();
+        return this;
+    }
+
+    public CaseDataBuilder atStateTakenOfflineByStaffAfterNotificationAcknowledged() {
+        atStateNotificationAcknowledged();
+        takenOfflineByStaff();
+        return this;
+    }
+
+    public CaseDataBuilder atStateTakenOfflineByStaffAfterDefendantResponse() {
+        atStateRespondentFullDefence();
+        takenOfflineByStaff();
+        return this;
+    }
+
+    public CaseDataBuilder atStateTakenOfflineByStaffAfterNotificationAcknowledgeExtension() {
+        atStateNotificationAcknowledgedTimeExtension();
+        takenOfflineByStaff();
+        return this;
+    }
+
+    private CaseDataBuilder takenOfflineByStaff() {
         claimProceedsInCaseman = ClaimProceedsInCaseman.builder()
             .date(LocalDate.now())
             .reason(ReasonForProceedingOnPaper.APPLICATION)
