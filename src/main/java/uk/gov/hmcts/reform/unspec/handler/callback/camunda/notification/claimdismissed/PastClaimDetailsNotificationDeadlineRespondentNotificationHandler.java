@@ -69,9 +69,7 @@ public class PastClaimDetailsNotificationDeadlineRespondentNotificationHandler e
     @Override
     public Map<String, String> addProperties(CaseData caseData) {
         return Map.of(
-            //TODO: update with new template properties
-            CLAIM_REFERENCE_NUMBER, caseData.getLegacyCaseReference(),
-            RESPONDENT_NAME, getPartyNameBasedOnType(caseData.getRespondent1())
+            CLAIM_REFERENCE_NUMBER, caseData.getLegacyCaseReference()
         );
     }
 }
