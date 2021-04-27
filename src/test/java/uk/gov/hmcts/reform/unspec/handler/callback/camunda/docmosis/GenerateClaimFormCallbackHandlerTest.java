@@ -79,7 +79,7 @@ class GenerateClaimFormCallbackHandlerTest extends BaseCallbackHandlerTest {
     class AboutToSubmitCallback {
 
         @Test
-        void shouldGenerateDocument() {
+        void shouldGenerateDocument_whenAboutToSubmitEventIsCalled() {
             CaseData caseData = CaseDataBuilder.builder().atStatePendingClaimIssued()
                 .build();
             CallbackParams params = callbackParamsOf(caseData, ABOUT_TO_SUBMIT);

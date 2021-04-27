@@ -12,7 +12,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.handler.callback.BaseCallbackHandlerTest;
-import uk.gov.hmcts.reform.unspec.helpers.CaseDetailsConverter;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
 import uk.gov.hmcts.reform.unspec.sampledata.CaseDataBuilder;
 import uk.gov.hmcts.reform.unspec.service.DeadlinesCalculator;
@@ -32,7 +31,6 @@ import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 @SpringBootTest(classes = {
     ClaimIssueCallbackHandler.class,
     JacksonAutoConfiguration.class,
-    CaseDetailsConverter.class,
     DeadlinesCalculator.class
 })
 class ClaimIssueCallbackHandlerTest extends BaseCallbackHandlerTest {
@@ -55,7 +53,7 @@ class ClaimIssueCallbackHandlerTest extends BaseCallbackHandlerTest {
     }
 
     @Test
-    void shouldAddClaimNotificationDeadline() {
+    void shouldAddClaimNotificationDeadline_whenClaimIsIssued() {
         CaseData caseData = CaseDataBuilder.builder().atStatePendingClaimIssued()
             .build();
         CallbackParams params = callbackParamsOf(caseData, ABOUT_TO_SUBMIT);

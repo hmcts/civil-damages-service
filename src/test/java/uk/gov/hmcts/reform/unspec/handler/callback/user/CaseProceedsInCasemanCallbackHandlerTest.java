@@ -91,11 +91,11 @@ class CaseProceedsInCasemanCallbackHandlerTest extends BaseCallbackHandlerTest {
 
     @Nested
     class AboutToSubmit {
-        private final LocalDateTime takenOfflineDate = LocalDateTime.now();
+        private final LocalDateTime takenOfflineByStaffDate = LocalDateTime.now();
 
         @BeforeEach
         void setup() {
-            when(time.now()).thenReturn(takenOfflineDate);
+            when(time.now()).thenReturn(takenOfflineByStaffDate);
         }
 
         @Test
@@ -106,7 +106,8 @@ class CaseProceedsInCasemanCallbackHandlerTest extends BaseCallbackHandlerTest {
             AboutToStartOrSubmitCallbackResponse response =
                 (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
 
-            assertThat(response.getData()).containsEntry("takenOfflineDate", takenOfflineDate.format(ISO_DATE_TIME));
+            assertThat(response.getData())
+                .containsEntry("takenOfflineByStaffDate", takenOfflineByStaffDate.format(ISO_DATE_TIME));
         }
     }
 }

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.unspec.service.robotics.mapper;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -930,8 +929,7 @@ class EventHistoryMapperTest {
         @Test
         void shouldPrepareExpectedEvents_whenClaimTakenOfflineAfterClaimIssued() {
             CaseData caseData = CaseDataBuilder.builder()
-                .atState(FlowState.Main.CLAIM_ISSUED)
-                .claimProceedsInCaseman()
+                .atStateTakenOfflineByStaff()
                 .build();
 
             List<Event> expectedMiscellaneousEvents = List.of(
@@ -966,11 +964,9 @@ class EventHistoryMapperTest {
         }
 
         @Test
-        @Disabled
         void shouldPrepareExpectedEvents_whenClaimTakenOfflineAfterClaimNotified() {
             CaseData caseData = CaseDataBuilder.builder()
-                .atStateClaimNotified()
-                .claimProceedsInCaseman()
+                .atStateTakenOfflineByStaffAfterClaimNotified()
                 .build();
 
             List<Event> expectedMiscellaneousEvents = List.of(

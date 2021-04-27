@@ -145,8 +145,42 @@ public class FlowPredicate {
     public static final Predicate<CaseData> takenOfflineByStaff = caseData ->
         caseData.getTakenOfflineByStaffDate() != null;
 
-    public static final Predicate<CaseData> caseProceedsInCaseman = caseData ->
-        caseData.getClaimProceedsInCaseman() != null;
+    public static final Predicate<CaseData> takenOfflineByStaffAfterClaimIssue = caseData ->
+        caseData.getTakenOfflineByStaffDate() != null
+            && caseData.getClaimNotificationDate() == null
+            && caseData.getClaimDetailsNotificationDate() == null
+            && caseData.getRespondent1AcknowledgeNotificationDate() == null
+            && caseData.getRespondent1ResponseDate() == null;
+
+    public static final Predicate<CaseData> takenOfflineByStaffAfterClaimNotified = caseData ->
+        caseData.getTakenOfflineByStaffDate() != null
+            && caseData.getClaimDetailsNotificationDate() == null
+            && caseData.getRespondent1AcknowledgeNotificationDate() == null
+            && caseData.getRespondent1ResponseDate() == null;
+
+    public static final Predicate<CaseData> takenOfflineByStaffAfterClaimDetailsNotified = caseData ->
+        caseData.getTakenOfflineByStaffDate() != null
+            && caseData.getRespondent1AcknowledgeNotificationDate() == null
+            && caseData.getRespondent1TimeExtensionDate() == null
+            && caseData.getRespondent1ResponseDate() == null;
+
+    public static final Predicate<CaseData> takenOfflineByStaffAfterClaimDetailsNotifiedExtension = caseData ->
+        caseData.getTakenOfflineByStaffDate() != null
+            && caseData.getRespondent1AcknowledgeNotificationDate() == null
+            && caseData.getRespondent1TimeExtensionDate() != null
+            && caseData.getRespondent1ResponseDate() == null;
+
+    public static final Predicate<CaseData> takenOfflineByStaffAfterNotificationAcknowledgedTimeExtension = caseData ->
+        caseData.getTakenOfflineByStaffDate() != null
+            && caseData.getRespondent1AcknowledgeNotificationDate() != null
+            && caseData.getRespondent1TimeExtensionDate() != null
+            && caseData.getRespondent1ResponseDate() == null;
+
+    public static final Predicate<CaseData> takenOfflineByStaffAfterNotificationAcknowledged = caseData ->
+        caseData.getTakenOfflineByStaffDate() != null
+            && caseData.getRespondent1AcknowledgeNotificationDate() != null
+            && caseData.getRespondent1TimeExtensionDate() == null
+            && caseData.getRespondent1ResponseDate() == null;
 
     public static final Predicate<CaseData> caseDismissed = caseData ->
         caseData.getClaimDismissedDate() != null && caseData.getRespondent1ClaimResponseIntentionType() == null;

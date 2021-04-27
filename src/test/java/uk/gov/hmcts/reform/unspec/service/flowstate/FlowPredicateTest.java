@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.applicantOutOfTime;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseDismissed;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseDismissedAfterClaimAcknowledged;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseProceedsInCaseman;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimDetailsNotified;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimDetailsNotifiedTimeExtension;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimIssued;
@@ -41,6 +40,13 @@ import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.payment
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.pendingClaimIssued;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.respondent1NotRepresented;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.respondent1OrgNotRegistered;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.takenOfflineByStaff;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.takenOfflineByStaffAfterClaimDetailsNotified;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.takenOfflineByStaffAfterClaimDetailsNotifiedExtension;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.takenOfflineByStaffAfterClaimIssue;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.takenOfflineByStaffAfterClaimNotified;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.takenOfflineByStaffAfterNotificationAcknowledged;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.takenOfflineByStaffAfterNotificationAcknowledgedTimeExtension;
 
 class FlowPredicateTest {
 
@@ -387,18 +393,57 @@ class FlowPredicateTest {
     }
 
     @Nested
-    class ClaimProceedsInCaseman {
+    class ClaimTakenOfflineByStaff {
 
         @Test
-        void shouldReturnTrue_whenCaseDataAtStateCaseProceedsInCaseman() {
+        void shouldReturnTrue_whenCaseDataAtStateTakenOfflineAfterClaimIssue() {
             CaseData caseData = CaseDataBuilder.builder().atStateTakenOfflineByStaff().build();
-            assertTrue(caseProceedsInCaseman.test(caseData));
+            assertTrue(takenOfflineByStaffAfterClaimIssue.test(caseData));
+        }
+
+        @Test
+        void shouldReturnTrue_whenCaseDataAtStateTakenOfflineAfterClaimNotified() {
+            CaseData caseData = CaseDataBuilder.builder().atStateTakenOfflineByStaffAfterClaimNotified().build();
+            assertTrue(takenOfflineByStaffAfterClaimNotified.test(caseData));
+        }
+
+        @Test
+        void shouldReturnTrue_whenCaseDataAtStateTakenOfflineAfterClaimDetailsNotified() {
+            CaseData caseData = CaseDataBuilder.builder().atStateTakenOfflineByStaffAfterClaimDetailsNotified().build();
+            assertTrue(takenOfflineByStaffAfterClaimDetailsNotified.test(caseData));
+        }
+
+        @Test
+        void shouldReturnTrue_whenCaseDataAtStateTakenOfflineAfterClaimDetailsNotifiedExtension() {
+            CaseData caseData = CaseDataBuilder.builder().atStateTakenOfflineByStaffAfterClaimDetailsNotifiedExtension()
+                .build();
+            assertTrue(takenOfflineByStaffAfterClaimDetailsNotifiedExtension.test(caseData));
+        }
+
+        @Test
+        void shouldReturnTrue_whenCaseDataAtStateTakenOfflineAfterNotificationAcknowledged() {
+            CaseData caseData = CaseDataBuilder.builder().atStateTakenOfflineByStaffAfterNotificationAcknowledged()
+                .build();
+            assertTrue(takenOfflineByStaffAfterNotificationAcknowledged.test(caseData));
+        }
+
+        @Test
+        void shouldReturnTrue_whenCaseDataAtStateTakenOfflineAfterNotificationAcknowledgedExtnesion() {
+            CaseData caseData = CaseDataBuilder.builder()
+                .atStateTakenOfflineByStaffAfterNotificationAcknowledgeExtension().build();
+            assertTrue(takenOfflineByStaffAfterNotificationAcknowledgedTimeExtension.test(caseData));
+        }
+
+        @Test
+        void shouldReturnTrue_whenCaseDataAtStateTakenOfflineAfterDefendantResponse() {
+            CaseData caseData = CaseDataBuilder.builder().atStateTakenOfflineByStaffAfterDefendantResponse().build();
+            assertTrue(takenOfflineByStaff.test(caseData));
         }
 
         @Test
         void shouldReturnFalse_whenCaseDataNotAtStateProceedsOffline() {
             CaseData caseData = CaseDataBuilder.builder().atStateApplicantRespondToDefenceAndProceed().build();
-            assertFalse(caseProceedsInCaseman.test(caseData));
+            assertFalse(takenOfflineByStaff.test(caseData));
         }
     }
 

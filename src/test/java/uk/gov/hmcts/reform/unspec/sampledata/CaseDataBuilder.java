@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.unspec.sampledata;
 
-import org.jetbrains.annotations.NotNull;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.unspec.enums.AllocatedTrack;
@@ -710,16 +709,52 @@ public class CaseDataBuilder {
 
     public CaseDataBuilder atStateTakenOfflineByStaff() {
         atStateClaimIssued();
-        return claimProceedsInCaseman();
+        takenOfflineByStaff();
+        return this;
     }
 
-    public CaseDataBuilder claimProceedsInCaseman() {
+    public CaseDataBuilder atStateTakenOfflineByStaffAfterClaimNotified() {
+        atStateClaimNotified();
+        takenOfflineByStaff();
+        return this;
+    }
+
+    public CaseDataBuilder atStateTakenOfflineByStaffAfterClaimDetailsNotified() {
+        atStateClaimDetailsNotified();
+        takenOfflineByStaff();
+        return this;
+    }
+
+    public CaseDataBuilder atStateTakenOfflineByStaffAfterClaimDetailsNotifiedExtension() {
+        atStateClaimDetailsNotifiedTimeExtension();
+        takenOfflineByStaff();
+        return this;
+    }
+
+    public CaseDataBuilder atStateTakenOfflineByStaffAfterNotificationAcknowledged() {
+        atStateNotificationAcknowledged();
+        takenOfflineByStaff();
+        return this;
+    }
+
+    public CaseDataBuilder atStateTakenOfflineByStaffAfterDefendantResponse() {
+        atStateRespondentFullDefence();
+        takenOfflineByStaff();
+        return this;
+    }
+
+    public CaseDataBuilder atStateTakenOfflineByStaffAfterNotificationAcknowledgeExtension() {
+        atStateNotificationAcknowledgedTimeExtension();
+        takenOfflineByStaff();
+        return this;
+    }
+
+    private CaseDataBuilder takenOfflineByStaff() {
         claimProceedsInCaseman = ClaimProceedsInCaseman.builder()
             .date(LocalDate.now())
             .reason(ReasonForProceedingOnPaper.APPLICATION)
             .build();
         takenOfflineByStaffDate = LocalDateTime.now();
-        ccdState = PROCEEDS_IN_HERITAGE_SYSTEM;
         return this;
     }
 
