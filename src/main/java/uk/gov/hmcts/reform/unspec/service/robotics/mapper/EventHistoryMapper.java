@@ -44,7 +44,7 @@ public class EventHistoryMapper {
                     case TAKEN_OFFLINE_UNREGISTERED_DEFENDANT:
                         buildUnregisteredDefendant(builder, caseData);
                         break;
-                    case CLAIM_DETAILS_NOTIFIED:
+                    case CLAIM_NOTIFIED:
                         buildClaimantHasNotifiedDefendant(builder, caseData);
                         break;
                     case NOTIFICATION_ACKNOWLEDGED:

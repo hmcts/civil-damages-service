@@ -719,7 +719,7 @@ public class CaseDataBuilder {
             .reason(ReasonForProceedingOnPaper.APPLICATION)
             .build();
         takenOfflineByStaffDate = LocalDateTime.now();
-        this.ccdState = PROCEEDS_IN_HERITAGE_SYSTEM;
+        ccdState = PROCEEDS_IN_HERITAGE_SYSTEM;
         return this;
     }
 
