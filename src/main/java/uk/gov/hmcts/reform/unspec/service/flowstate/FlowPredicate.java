@@ -5,8 +5,6 @@ import uk.gov.hmcts.reform.unspec.model.CaseData;
 import java.time.LocalDateTime;
 import java.util.function.Predicate;
 
-import static uk.gov.hmcts.reform.unspec.enums.CaseState.CASE_DISMISSED;
-import static uk.gov.hmcts.reform.unspec.enums.CaseState.PROCEEDS_IN_HERITAGE_SYSTEM;
 import static uk.gov.hmcts.reform.unspec.enums.PaymentStatus.FAILED;
 import static uk.gov.hmcts.reform.unspec.enums.RespondentResponseType.COUNTER_CLAIM;
 import static uk.gov.hmcts.reform.unspec.enums.RespondentResponseType.FULL_ADMISSION;
@@ -30,8 +28,8 @@ public class FlowPredicate {
         caseData.getPaymentSuccessfulDate() == null
             && (caseData.getPaymentDetails() != null
             && caseData.getPaymentDetails().getStatus() == FAILED)
-        || (caseData.getClaimIssuedPaymentDetails() != null
-        && caseData.getClaimIssuedPaymentDetails().getStatus() == FAILED);
+            || (caseData.getClaimIssuedPaymentDetails() != null
+            && caseData.getClaimIssuedPaymentDetails().getStatus() == FAILED);
 
     public static final Predicate<CaseData> paymentSuccessful = caseData ->
         caseData.getPaymentSuccessfulDate() != null;
@@ -49,7 +47,7 @@ public class FlowPredicate {
 
     public static final Predicate<CaseData> claimDetailsNotifiedTimeExtension = caseData ->
         caseData.getRespondent1TimeExtensionDate() != null
-        && caseData.getRespondent1AcknowledgeNotificationDate() == null;
+            && caseData.getRespondent1AcknowledgeNotificationDate() == null;
 
     public static final Predicate<CaseData> claimDetailsNotified = caseData ->
         caseData.getClaimDetailsNotificationDate() != null;
@@ -59,7 +57,7 @@ public class FlowPredicate {
 
     public static final Predicate<CaseData> notificationAcknowledgedTimeExtension = caseData ->
         caseData.getRespondent1TimeExtensionDate() != null
-        && caseData.getRespondent1AcknowledgeNotificationDate() != null;
+            && caseData.getRespondent1AcknowledgeNotificationDate() != null;
 
     public static final Predicate<CaseData> fullDefence = caseData ->
         caseData.getRespondent1ResponseDate() != null
@@ -130,14 +128,6 @@ public class FlowPredicate {
         caseData.getApplicant1ProceedWithClaim() != null
             && caseData.getApplicant1ProceedWithClaim() == NO
             && caseData.getTakenOfflineDate() == null;
-
-    public static final Predicate<CaseData> claimDiscontinued = caseData ->
-        caseData.getDiscontinueClaim() != null
-            && caseData.getCcdState() == CASE_DISMISSED;
-
-    // update with dateClaimTakenOffline date when exists
-    public static final Predicate<CaseData> claimTakenOffline = caseData ->
-        caseData.getCcdState() == PROCEEDS_IN_HERITAGE_SYSTEM;
 
     public static final Predicate<CaseData> takenOfflineBySystem = caseData ->
         caseData.getTakenOfflineDate() != null;
