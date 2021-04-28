@@ -75,7 +75,7 @@ class ClaimantResponseConfirmsNotToProceedRespondentNotificationHandlerTest exte
             handler.handle(params);
 
             verify(notificationService).sendMail(
-                "applicantsolicitor@example.com",
+                "claimantsolicitor@example.com",
                 "template-id",
                 getNotificationDataMap(caseData),
                 "claimant-confirms-not-to-proceed-respondent-notification-000LR001"
