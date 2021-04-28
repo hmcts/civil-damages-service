@@ -290,7 +290,7 @@ class RespondToDefenceCallbackHandlerTest extends BaseCallbackHandlerTest {
 
             assertThat(response).usingRecursiveComparison().isEqualTo(
                 SubmittedCallbackResponse.builder()
-                    .confirmationHeader(format("# You've chosen to proceed with the claim%n## Claim number: 000LR001"))
+                    .confirmationHeader(format("# You've chosen to proceed with the claim%n## Claim number: 000DC001"))
                     .confirmationBody(format(
                         "<br />We'll review the case and contact you to tell you what to do next.%n%n"
                             + "[Download directions questionnaire](http://www.google.com)"))
@@ -310,7 +310,7 @@ class RespondToDefenceCallbackHandlerTest extends BaseCallbackHandlerTest {
             assertThat(response).usingRecursiveComparison().isEqualTo(
                 SubmittedCallbackResponse.builder()
                     .confirmationHeader(format("# You've chosen not to proceed with the claim%n## Claim number:"
-                                                   + " 000LR001"))
+                                                   + " 000DC001"))
                     .confirmationBody("<br />")
                     .build());
         }
