@@ -963,8 +963,12 @@ class EventHistoryMapperTest {
             );
         }
 
-        @Test
-        void shouldPrepareExpectedEvents_whenClaimTakenOfflineAfterClaimNotified() {
+        @ParameterizedTest
+        @EnumSource(value = FlowState.Main.class,
+            names = {"CLAIM_NOTIFIED", "CLAIM_DETAILS_NOTIFIED"},
+            mode = EnumSource.Mode.INCLUDE
+        )
+        void shouldPrepareExpectedEvents_whenClaimTakenOfflineAfterClaimOrDetailsNotified() {
             CaseData caseData = CaseDataBuilder.builder()
                 .atStateTakenOfflineByStaffAfterClaimNotified()
                 .build();
@@ -1017,6 +1021,7 @@ class EventHistoryMapperTest {
         "CLAIM_DETAILS_NOTIFIED",
         "NOTIFICATION_ACKNOWLEDGED",
         "NOTIFICATION_ACKNOWLEDGED_TIME_EXTENSION",
+        "CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION",
         "FULL_ADMISSION",
         "PART_ADMISSION",
         "COUNTER_CLAIM",

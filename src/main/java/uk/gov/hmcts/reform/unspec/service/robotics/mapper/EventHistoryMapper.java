@@ -51,6 +51,7 @@ public class EventHistoryMapper {
                         buildAcknowledgementOfServiceReceived(builder, caseData);
                         break;
                     case NOTIFICATION_ACKNOWLEDGED_TIME_EXTENSION:
+                    case CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION:
                         buildConsentExtensionFilingDefence(builder, caseData);
                         break;
                     case FULL_ADMISSION:

@@ -704,6 +704,7 @@ public class CaseDataBuilder {
         atStateClaimDetailsNotified();
         respondent1ResponseDeadline = RESPONSE_DEADLINE;
         respondent1TimeExtensionDate = LocalDateTime.now();
+        respondentSolicitor1AgreedDeadlineExtension = LocalDate.now();
         return this;
     }
 
