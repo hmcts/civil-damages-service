@@ -58,7 +58,7 @@ class CaseProceedsInCasemanApplicantNotificationHandlerTest extends BaseCallback
                 "claimantsolicitor@example.com",
                 "template-id",
                 getNotificationDataMap(caseData),
-                "case-proceeds-in-caseman-applicant-notification-000LR001"
+                "case-proceeds-in-caseman-applicant-notification-000DC001"
             );
         }
 

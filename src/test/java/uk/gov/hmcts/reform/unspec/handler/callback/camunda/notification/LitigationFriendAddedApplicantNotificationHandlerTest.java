@@ -58,7 +58,7 @@ class LitigationFriendAddedApplicantNotificationHandlerTest extends BaseCallback
                 "claimantsolicitor@example.com",
                 "template-id",
                 getNotificationDataMap(caseData),
-                "litigation-friend-added-applicant-notification-000LR001"
+                "litigation-friend-added-applicant-notification-000DC001"
             );
         }
 

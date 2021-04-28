@@ -61,7 +61,7 @@ class CreateClaimRespondentNotificationHandlerTest extends BaseCallbackHandlerTe
                 "civilunspecified@gmail.com",
                 "template-id",
                 getExpectedMap(),
-                "create-claim-respondent-notification-000LR001"
+                "create-claim-respondent-notification-000DC001"
             );
         }
 

@@ -61,7 +61,7 @@ class ClaimantResponseConfirmsToProceedRespondentNotificationHandlerTest extends
                 "defendantsolicitor@example.com",
                 "template-id",
                 getNotificationDataMap(caseData),
-                "claimant-confirms-to-proceed-respondent-notification-000LR001"
+                "claimant-confirms-to-proceed-respondent-notification-000DC001"
             );
         }
 
@@ -78,7 +78,7 @@ class ClaimantResponseConfirmsToProceedRespondentNotificationHandlerTest extends
                 "claimantsolicitor@example.com",
                 "template-id",
                 getNotificationDataMap(caseData),
-                "claimant-confirms-to-proceed-respondent-notification-000LR001"
+                "claimant-confirms-to-proceed-respondent-notification-000DC001"
             );
         }
 

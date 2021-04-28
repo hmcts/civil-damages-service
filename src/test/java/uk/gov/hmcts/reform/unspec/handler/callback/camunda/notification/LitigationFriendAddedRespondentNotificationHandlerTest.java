@@ -58,7 +58,7 @@ class LitigationFriendAddedRespondentNotificationHandlerTest extends BaseCallbac
                 "defendantsolicitor@example.com",
                 "template-id",
                 getNotificationDataMap(caseData),
-                "litigation-friend-added-respondent-notification-000LR001"
+                "litigation-friend-added-respondent-notification-000DC001"
             );
         }
 

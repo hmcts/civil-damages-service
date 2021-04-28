@@ -76,7 +76,7 @@ class DefendantResponseApplicantNotificationHandlerTest extends BaseCallbackHand
                 "defendantsolicitor@example.com",
                 "template-id",
                 Map.of(CLAIM_REFERENCE_NUMBER, LEGACY_CASE_REFERENCE),
-                "defendant-response-applicant-notification-000LR001"
+                "defendant-response-applicant-notification-000DC001"
             );
         }
     }

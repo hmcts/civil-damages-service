@@ -60,14 +60,14 @@ class PastClaimNotificationDeadlineApplicantNotificationHandlerTest {
                 EMAIL,
                 TEMPLATE_ID,
                 getExpectedMap(),
-                "claim-dismissed-past-claim-notification-deadline-applicant-notification-000LR001"
+                "claim-dismissed-past-claim-notification-deadline-applicant-notification-000DC001"
             );
         }
     }
 
     private Map<String, String> getExpectedMap() {
         return Map.of(
-            "claimReferenceNumber", "000LR001",
+            "claimReferenceNumber", "000DC001",
             "defendantName", "Mr. Sole Trader"
         );
     }

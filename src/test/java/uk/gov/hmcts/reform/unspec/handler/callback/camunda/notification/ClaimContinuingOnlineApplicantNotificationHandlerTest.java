@@ -65,7 +65,7 @@ class ClaimContinuingOnlineApplicantNotificationHandlerTest extends BaseCallback
                 "claimantsolicitor@example.com",
                 "template-id",
                 getNotificationDataMap(caseData),
-                "claim-continuing-online-notification-000LR001"
+                "claim-continuing-online-notification-000DC001"
             );
         }
 

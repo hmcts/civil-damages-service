@@ -63,7 +63,7 @@ class AgreedExtensionDateApplicantNotificationHandlerTest extends BaseCallbackHa
                 "claimantsolicitor@example.com",
                 "template-id",
                 getNotificationDataMap(caseData),
-                "agreed-extension-date-applicant-notification-000LR001"
+                "agreed-extension-date-applicant-notification-000DC001"
             );
         }
 
@@ -80,7 +80,7 @@ class AgreedExtensionDateApplicantNotificationHandlerTest extends BaseCallbackHa
                 "defendantsolicitor@example.com",
                 "template-id",
                 getNotificationDataMap(caseData),
-                "agreed-extension-date-applicant-notification-000LR001"
+                "agreed-extension-date-applicant-notification-000DC001"
             );
         }
 

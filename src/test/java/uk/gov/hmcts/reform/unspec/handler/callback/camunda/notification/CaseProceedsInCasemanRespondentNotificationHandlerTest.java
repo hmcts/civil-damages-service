@@ -58,7 +58,7 @@ class CaseProceedsInCasemanRespondentNotificationHandlerTest extends BaseCallbac
                 "defendantsolicitor@example.com",
                 "template-id",
                 getNotificationDataMap(caseData),
-                "case-proceeds-in-caseman-respondent-notification-000LR001"
+                "case-proceeds-in-caseman-respondent-notification-000DC001"
             );
         }
 

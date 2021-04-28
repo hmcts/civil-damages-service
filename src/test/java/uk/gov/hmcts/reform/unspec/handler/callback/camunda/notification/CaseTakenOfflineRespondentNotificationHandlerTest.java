@@ -58,7 +58,7 @@ class CaseTakenOfflineRespondentNotificationHandlerTest extends BaseCallbackHand
                 "defendantsolicitor@example.com",
                 "template-id",
                 getNotificationDataMap(caseData),
-                "case-taken-offline-respondent-notification-000LR001"
+                "case-taken-offline-respondent-notification-000DC001"
             );
         }
 
