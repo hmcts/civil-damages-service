@@ -69,6 +69,23 @@ class AgreedExtensionDateApplicantNotificationHandlerTest extends BaseCallbackHa
             );
         }
 
+        @Test
+        void shouldNotifyRespondentSolicitor_whenInvokedWithCcEvent() {
+            CaseData caseData = CaseDataBuilder.builder().atStateExtensionRequested().build();
+            CallbackParams params = CallbackParamsBuilder.builder().of(ABOUT_TO_SUBMIT, caseData).request(
+                CallbackRequest.builder().eventId("NOTIFY_APPLICANT_SOLICITOR1_FOR_AGREED_EXTENSION_DATE_CC").build())
+                .build();
+
+            handler.handle(params);
+
+            verify(notificationService).sendMail(
+                "defendantsolicitor@example.com",
+                "template-id",
+                getNotificationDataMap(caseData),
+                "agreed-extension-date-applicant-notification-000LR001"
+            );
+        }
+
         @NotNull
         private Map<String, String> getNotificationDataMap(CaseData caseData) {
             return Map.of(

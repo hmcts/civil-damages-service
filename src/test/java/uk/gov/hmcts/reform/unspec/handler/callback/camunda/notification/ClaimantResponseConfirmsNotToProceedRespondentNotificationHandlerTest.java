@@ -67,6 +67,23 @@ class ClaimantResponseConfirmsNotToProceedRespondentNotificationHandlerTest exte
             );
         }
 
+        @Test
+        void shouldNotifyApplicantSolicitor_whenInvokedWithCcEvent() {
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimCreated().build();
+            CallbackParams params = CallbackParamsBuilder.builder().of(ABOUT_TO_SUBMIT, caseData).request(
+                CallbackRequest.builder().eventId("NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIMANT_CONFIRMS_NOT_TO_PROCEED_CC").build())
+                .build();
+
+            handler.handle(params);
+
+            verify(notificationService).sendMail(
+                "applicantsolicitor@example.com",
+                "template-id",
+                getNotificationDataMap(caseData),
+                "claimant-confirms-not-to-proceed-respondent-notification-000LR001"
+            );
+        }
+
         @NotNull
         private Map<String, String> getNotificationDataMap(CaseData caseData) {
             return Map.of(

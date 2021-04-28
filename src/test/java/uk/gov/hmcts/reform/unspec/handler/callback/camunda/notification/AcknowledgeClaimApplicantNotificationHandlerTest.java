@@ -67,6 +67,23 @@ class AcknowledgeClaimApplicantNotificationHandlerTest extends BaseCallbackHandl
             );
         }
 
+        @Test
+        void shouldNotifyRespondentSolicitor_whenInvokedWithCcEvent() {
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimCreated().build();
+            CallbackParams params = CallbackParamsBuilder.builder().of(ABOUT_TO_SUBMIT, caseData).request(
+                CallbackRequest.builder().eventId("NOTIFY_APPLICANT_SOLICITOR1_FOR_CLAIM_ACKNOWLEDGEMENT_CC").build())
+                .build();
+
+            handler.handle(params);
+
+            verify(notificationService).sendMail(
+                "defendantsolicitor@example.com",
+                "template-id",
+                getNotificationDataMap(caseData),
+                "acknowledge-claim-applicant-notification-000LR001"
+            );
+        }
+
         @NotNull
         private Map<String, String> getNotificationDataMap(CaseData caseData) {
             return Map.of(

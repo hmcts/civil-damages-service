@@ -62,5 +62,22 @@ class DefendantResponseApplicantNotificationHandlerTest extends BaseCallbackHand
                 "defendant-response-applicant-notification-000LR001"
             );
         }
+
+        @Test
+        void shouldNotifyRespondentSolicitor_whenInvokedWithCcEvent() {
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimAcknowledge().build();
+            CallbackParams params = CallbackParamsBuilder.builder().of(ABOUT_TO_SUBMIT, caseData).request(
+                CallbackRequest.builder().eventId("NOTIFY_APPLICANT_SOLICITOR1_FOR_DEFENDANT_RESPONSE_CC").build())
+                .build();
+
+            handler.handle(params);
+
+            verify(notificationService).sendMail(
+                "defendantsolicitor@example.com",
+                "template-id",
+                Map.of(CLAIM_REFERENCE_NUMBER, LEGACY_CASE_REFERENCE),
+                "defendant-response-applicant-notification-000LR001"
+            );
+        }
     }
 }
