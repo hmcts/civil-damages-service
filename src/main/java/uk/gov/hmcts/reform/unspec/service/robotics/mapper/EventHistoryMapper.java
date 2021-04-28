@@ -150,14 +150,14 @@ public class EventHistoryMapper {
     private void buildFullDefenceProceed(EventHistory.EventHistoryBuilder builder, CaseData caseData) {
         builder.replyToDefence(List.of(
             Event.builder()
-                .eventSequence(6)
+                .eventSequence(prepareEventSequence(builder.build()))
                 .eventCode("66")
                 .dateReceived(caseData.getApplicant1ResponseDate().format(ISO_DATE))
                 .litigiousPartyID(APPLICANT_ID)
                 .build())
         ).directionsQuestionnaire(
             Event.builder()
-                .eventSequence(7)
+                .eventSequence(prepareEventSequence(builder.build()))
                 .eventCode("197")
                 .dateReceived(caseData.getApplicant1ResponseDate().format(ISO_DATE))
                 .litigiousPartyID(APPLICANT_ID)
@@ -172,7 +172,7 @@ public class EventHistoryMapper {
                 ))
                 .build()
         ).miscellaneous(Event.builder()
-                            .eventSequence(8)
+                            .eventSequence(prepareEventSequence(builder.build()))
                             .eventCode("999")
                             .dateReceived(caseData.getApplicant1ResponseDate().format(ISO_DATE))
                             .eventDetailsText("RPA Reason: Applicant proceeds.")
@@ -203,7 +203,7 @@ public class EventHistoryMapper {
 
     private void buildFullDefenceNotProceed(EventHistory.EventHistoryBuilder builder, CaseData caseData) {
         builder.miscellaneous(Event.builder()
-                                  .eventSequence(6)
+                                  .eventSequence(prepareEventSequence(builder.build()))
                                   .eventCode("999")
                                   .dateReceived(caseData.getApplicant1ResponseDate().format(ISO_DATE))
                                   .eventDetailsText("RPA Reason: Claimant intends not to proceed.")
@@ -218,7 +218,7 @@ public class EventHistoryMapper {
             .defenceFiled(
                 List.of(
                     Event.builder()
-                        .eventSequence(4)
+                        .eventSequence(prepareEventSequence(builder.build()))
                         .eventCode("50")
                         .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
                         .litigiousPartyID(RESPONDENT_ID)
@@ -227,7 +227,7 @@ public class EventHistoryMapper {
             .clearDirectionsQuestionnaireFiled()
             .directionsQuestionnaire(
                 Event.builder()
-                    .eventSequence(5)
+                    .eventSequence(prepareEventSequence(builder.build()))
                     .eventCode("197")
                     .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
                     .litigiousPartyID(RESPONDENT_ID)
@@ -301,13 +301,13 @@ public class EventHistoryMapper {
 
     private void buildRespondentFullAdmission(EventHistory.EventHistoryBuilder builder, CaseData caseData) {
         builder.receiptOfAdmission(List.of(Event.builder()
-                                               .eventSequence(4)
+                                               .eventSequence(prepareEventSequence(builder.build()))
                                                .eventCode("40")
                                                .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
                                                .litigiousPartyID("002")
                                                .build())
         ).miscellaneous(Event.builder()
-                            .eventSequence(5)
+                            .eventSequence(prepareEventSequence(builder.build()))
                             .eventCode("999")
                             .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
                             .eventDetailsText("RPA Reason: Defendant fully admits.")
@@ -321,14 +321,14 @@ public class EventHistoryMapper {
         builder.receiptOfPartAdmission(
             List.of(
                 Event.builder()
-                    .eventSequence(4)
+                    .eventSequence(prepareEventSequence(builder.build()))
                     .eventCode("60")
                     .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
                     .litigiousPartyID("002")
                     .build()
             )
         ).miscellaneous(Event.builder()
-                            .eventSequence(5)
+                            .eventSequence(prepareEventSequence(builder.build()))
                             .eventCode("999")
                             .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
                             .eventDetailsText("RPA Reason: Defendant partial admission.")
@@ -342,14 +342,14 @@ public class EventHistoryMapper {
         builder.defenceAndCounterClaim(
             List.of(
                 Event.builder()
-                    .eventSequence(4)
+                    .eventSequence(prepareEventSequence(builder.build()))
                     .eventCode("52")
                     .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
                     .litigiousPartyID("002")
                     .build()
             )
         ).miscellaneous(Event.builder()
-                            .eventSequence(5)
+                            .eventSequence(prepareEventSequence(builder.build()))
                             .eventCode("999")
                             .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
                             .eventDetailsText("RPA Reason: Defendant rejects and counter claims.")
