@@ -60,14 +60,14 @@ class PastClaimDismissedDeadlineApplicantNotificationHandlerTest {
                 EMAIL,
                 TEMPLATE_ID,
                 getExpectedMap(),
-                "claim-dismissed-past-claim-dismissed-deadline-applicant-notification-000LR001"
+                "claim-dismissed-past-claim-dismissed-deadline-applicant-notification-000DC001"
             );
         }
     }
 
     private Map<String, String> getExpectedMap() {
         return Map.of(
-            "claimReferenceNumber", "000LR001",
+            "claimReferenceNumber", "000DC001",
             "frontendBaseUrl", "https://www.MyHMCTS.gov.uk",
             "defendantName", "Mr. Sole Trader"
         );
