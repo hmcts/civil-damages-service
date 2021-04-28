@@ -367,7 +367,7 @@ public class EventHistoryMapper {
         builder.consentExtensionFilingDefence(
             List.of(
                 Event.builder()
-                    .eventSequence(3)
+                    .eventSequence(prepareEventSequence(builder.build()))
                     .eventCode("45")
                     .dateReceived(dateReceived.format(ISO_DATE))
                     .litigiousPartyID("002")
