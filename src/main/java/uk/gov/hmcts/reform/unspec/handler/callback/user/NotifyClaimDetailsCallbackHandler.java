@@ -38,7 +38,8 @@ public class NotifyClaimDetailsCallbackHandler extends CallbackHandler implement
     private static final List<CaseEvent> EVENTS = Collections.singletonList(NOTIFY_DEFENDANT_OF_CLAIM_DETAILS);
     private static final String CONFIRMATION_SUMMARY = "<br />The defendant legal representative's organisation has"
         + " been notified of the claim details.\n\n"
-        + "They must respond by %s. Your account will be updated and you will be sent an email.";
+        + "They must respond by %s. Your account will be updated and you will be sent an email."
+        + "\n\n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.";
 
     private final ObjectMapper objectMapper;
     private final Time time;
@@ -79,8 +80,9 @@ public class NotifyClaimDetailsCallbackHandler extends CallbackHandler implement
     private SubmittedCallbackResponse buildConfirmation(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
         String formattedDeadline = formatLocalDateTime(caseData.getRespondent1ResponseDeadline(), DATE_TIME_AT);
+        String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
 
-        String body = format(CONFIRMATION_SUMMARY, formattedDeadline);
+        String body = format(CONFIRMATION_SUMMARY, formattedDeadline, surveyLink);
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(String.format(

@@ -127,7 +127,8 @@ class NotifyClaimDetailsCallbackHandlerTest extends BaseCallbackHandlerTest {
 
             private static final String CONFIRMATION_SUMMARY = "<br />The defendant legal representative's organisation"
                 + " has been notified of the claim details.\n\n"
-                + "They must respond by %s. Your account will be updated and you will be sent an email.";
+                + "They must respond by %s. Your account will be updated and you will be sent an email."
+                + "\n\n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.";
 
             @Test
             void shouldReturnExpectedSubmittedCallbackResponse_whenInvoked() {
@@ -135,8 +136,9 @@ class NotifyClaimDetailsCallbackHandlerTest extends BaseCallbackHandlerTest {
                 CallbackParams params = callbackParamsOf(caseData, SUBMITTED);
                 SubmittedCallbackResponse response = (SubmittedCallbackResponse) handler.handle(params);
 
+                String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
                 String formattedDeadline = formatLocalDateTime(RESPONSE_DEADLINE, DATE_TIME_AT);
-                String confirmationBody = format(CONFIRMATION_SUMMARY, formattedDeadline);
+                String confirmationBody = format(CONFIRMATION_SUMMARY, formattedDeadline, surveyLink);
 
                 assertThat(response).usingRecursiveComparison().isEqualTo(
                     SubmittedCallbackResponse.builder()

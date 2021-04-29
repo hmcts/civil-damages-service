@@ -144,11 +144,13 @@ class InformAgreedExtensionDateCallbackHandlerTest extends BaseCallbackHandlerTe
     @Nested
     class SubmittedCallback {
 
-        private static final String BODY = "<br />What happens next.%n%n You must respond to the claimant by %s";
+        private static final String BODY = "<br />What happens next%n%n You must respond to the claimant by %s"
+            + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.";
 
         @Test
         void shouldReturnExpectedResponse_whenInvoked() {
             LocalDateTime responseDeadline = now().atTime(END_OF_BUSINESS_DAY);
+            String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Defendant/";
             CaseData caseData = CaseDataBuilder.builder()
                 .respondent1ResponseDeadline(responseDeadline)
                 .build();
@@ -159,7 +161,8 @@ class InformAgreedExtensionDateCallbackHandlerTest extends BaseCallbackHandlerTe
             assertThat(response).isEqualTo(
                 SubmittedCallbackResponse.builder()
                     .confirmationHeader("# Extension deadline submitted")
-                    .confirmationBody(format(BODY, formatLocalDateTime(responseDeadline, DATE_TIME_AT)))
+                    .confirmationBody(format(BODY, formatLocalDateTime(responseDeadline, DATE_TIME_AT),
+                                             surveyLink))
                     .build());
         }
     }

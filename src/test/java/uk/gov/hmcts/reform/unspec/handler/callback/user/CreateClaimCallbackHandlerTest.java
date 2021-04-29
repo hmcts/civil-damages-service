@@ -91,10 +91,11 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
         + " until payment is confirmed."
         + " Once payment is confirmed you will receive an email. The claim will then progress offline."
         + "\n\n To continue the claim you need to send the <a href=\"%s\" target=\"_blank\">sealed claim form</a>, "
-        + "a <a href=\"%s\" target=\"_blank\">response pack</a> and any supporting documents to "
+        + "a <a href=\"%3$s\" target=\"_blank\">response pack</a> and any supporting documents to "
         + "the defendant within 4 months. "
         + "\n\nOnce you have served the claim, send the Certificate of Service and supporting documents to the County"
-        + " Court Claims Centre.";
+        + " Court Claims Centre."
+        + "\n\n<br/><br/>This is a new service - your <a href=\"%2$s\" target=\"_blank\">feedback</a> will help us to improve it.";
 
     @MockBean
     private Time time;
@@ -770,12 +771,14 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                 CaseData caseData = CaseDataBuilder.builder().atStateProceedsOfflineUnrepresentedDefendant().build();
                 CallbackParams params = callbackParamsOf(caseData, SUBMITTED);
                 SubmittedCallbackResponse response = (SubmittedCallbackResponse) handler.handle(params);
+                String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
 
                 LocalDateTime serviceDeadline = now().plusDays(112).atTime(23, 59);
 
                 String body = format(
                     LIP_CONFIRMATION_BODY,
                     format("/cases/case-details/%s#CaseDocuments", CASE_ID),
+                    surveyLink,
                     responsePackLink,
                     formatLocalDateTime(serviceDeadline, DATE_TIME_AT)
                 );
@@ -799,10 +802,12 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                 CaseData caseData = CaseDataBuilder.builder().atStateClaimCreated().build();
                 CallbackParams params = callbackParamsOf(caseData, SUBMITTED);
                 SubmittedCallbackResponse response = (SubmittedCallbackResponse) handler.handle(params);
+                String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
 
                 String body = format(
                     CONFIRMATION_SUMMARY,
-                    format("/cases/case-details/%s#CaseDocuments", CASE_ID)
+                    format("/cases/case-details/%s#CaseDocuments", CASE_ID),
+                    surveyLink
                 );
 
                 assertThat(response).usingRecursiveComparison().isEqualTo(
@@ -827,6 +832,7 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                     .build();
                 CallbackParams params = callbackParamsOf(caseData, SUBMITTED);
                 SubmittedCallbackResponse response = (SubmittedCallbackResponse) handler.handle(params);
+                String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
 
                 assertThat(response).usingRecursiveComparison().isEqualTo(
                     SubmittedCallbackResponse.builder()
@@ -835,6 +841,7 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                         .confirmationBody(format(
                             LIP_CONFIRMATION_SCREEN,
                             format("/cases/case-details/%s#CaseDocuments", CASE_ID),
+                            surveyLink,
                             responsePackLink
                         ))
                         .build());

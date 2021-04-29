@@ -275,13 +275,15 @@ class RespondToDefenceCallbackHandlerTest extends BaseCallbackHandlerTest {
             CallbackParams params = callbackParamsOf(caseData, SUBMITTED);
 
             SubmittedCallbackResponse response = (SubmittedCallbackResponse) handler.handle(params);
+            String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
 
             assertThat(response).usingRecursiveComparison().isEqualTo(
                 SubmittedCallbackResponse.builder()
                     .confirmationHeader(format("# You've chosen to proceed with the claim%n## Claim number: 000LR001"))
                     .confirmationBody(format(
                         "<br />We'll review the case and contact you to tell you what to do next.%n%n"
-                            + "[Download directions questionnaire](http://www.google.com)"))
+                            + "[Download directions questionnaire](http://www.google.com)"
+                            + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.", surveyLink))
                     .build());
         }
 
@@ -294,12 +296,15 @@ class RespondToDefenceCallbackHandlerTest extends BaseCallbackHandlerTest {
             CallbackParams params = callbackParamsOf(caseData, SUBMITTED);
 
             SubmittedCallbackResponse response = (SubmittedCallbackResponse) handler.handle(params);
+            String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
 
             assertThat(response).usingRecursiveComparison().isEqualTo(
                 SubmittedCallbackResponse.builder()
                     .confirmationHeader(format("# You've chosen not to proceed with the claim%n## Claim number:"
                                                    + " 000LR001"))
-                    .confirmationBody("<br />")
+                    .confirmationBody(format("<br />"
+                                                 + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
+                                             surveyLink))
                     .build());
         }
     }

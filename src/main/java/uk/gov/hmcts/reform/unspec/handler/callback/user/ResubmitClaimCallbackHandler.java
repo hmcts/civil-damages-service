@@ -57,10 +57,13 @@ public class ResubmitClaimCallbackHandler extends CallbackHandler {
     }
 
     private SubmittedCallbackResponse buildConfirmation(CallbackParams callbackParams) {
+        String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Claim pending")
             .confirmationBody(String.format("## What happens next %n "
-                                                + "You claim will be processed. Wait for us to contact you."))
+                                                + "You claim will be processed. Wait for us to contact you."
+                                                + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
+                                            surveyLink))
             .build();
     }
 }

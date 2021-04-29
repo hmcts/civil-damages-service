@@ -39,12 +39,17 @@ public class AddOrAmendClaimDocumentsCallbackHandler extends CallbackHandler imp
     }
 
     private SubmittedCallbackResponse buildConfirmation(CallbackParams callbackParams) {
+        String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(String.format(
                 "# Documents uploaded successfully%n## Claim number: %s",
                 callbackParams.getCaseData().getLegacyCaseReference()
             ))
-            .confirmationBody("<br />")
+            .confirmationBody(String.format(
+                "<br />"
+                    + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
+                surveyLink))
             .build();
     }
 }

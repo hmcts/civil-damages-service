@@ -84,10 +84,12 @@ public class InformAgreedExtensionDateCallbackHandler extends CallbackHandler {
     private SubmittedCallbackResponse buildConfirmation(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
         LocalDateTime responseDeadline = caseData.getRespondent1ResponseDeadline();
+        String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Defendant/";
 
         String body = format(
-            "<br />What happens next.%n%n You must respond to the claimant by %s",
-            formatLocalDateTime(responseDeadline, DATE_TIME_AT)
+            "<br />What happens next%n%n You must respond to the claimant by %s"
+                + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
+            formatLocalDateTime(responseDeadline, DATE_TIME_AT), surveyLink
         );
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Extension deadline submitted")

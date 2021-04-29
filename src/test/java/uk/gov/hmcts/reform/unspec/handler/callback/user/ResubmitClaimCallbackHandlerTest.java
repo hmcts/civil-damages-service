@@ -59,12 +59,15 @@ class ResubmitClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
             CaseData caseData = CaseDataBuilder.builder().atStateClaimCreated().respondent1Represented(NO).build();
             CallbackParams params = callbackParamsOf(caseData, SUBMITTED);
             SubmittedCallbackResponse response = (SubmittedCallbackResponse) handler.handle(params);
+            String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
 
             assertThat(response).usingRecursiveComparison().isEqualTo(
                 SubmittedCallbackResponse.builder()
                     .confirmationHeader("# Claim pending")
                     .confirmationBody(String.format("## What happens next %n "
-                                                        + "You claim will be processed. Wait for us to contact you."))
+                                                        + "You claim will be processed. Wait for us to contact you."
+                                                        + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
+                                                    surveyLink))
                     .build());
         }
     }

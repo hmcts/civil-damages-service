@@ -113,14 +113,18 @@ public class RespondToDefenceCallbackHandler extends CallbackHandler implements 
 
     private String getBody(YesOrNo proceeding) {
         String dqLink = "http://www.google.com";
+        String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
 
         if (proceeding == YES) {
             return format(
                 "<br />We'll review the case and contact you to tell you what to do next.%n%n"
-                    + "[Download directions questionnaire](%s)",
-                dqLink
+                    + "[Download directions questionnaire](%s)"
+                    + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
+                dqLink, surveyLink
             );
         }
-        return "<br />";
+        return format("<br />"
+                          + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
+            surveyLink);
     }
 }

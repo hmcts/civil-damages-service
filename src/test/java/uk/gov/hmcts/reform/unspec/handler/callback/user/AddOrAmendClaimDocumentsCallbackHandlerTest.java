@@ -76,11 +76,15 @@ class AddOrAmendClaimDocumentsCallbackHandlerTest extends BaseCallbackHandlerTes
                 CaseData caseData = CaseDataBuilder.builder().atStateClaimCreated().build();
                 CallbackParams params = callbackParamsOf(caseData, SUBMITTED);
                 SubmittedCallbackResponse response = (SubmittedCallbackResponse) handler.handle(params);
+                String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
 
                 assertThat(response).usingRecursiveComparison().isEqualTo(
                     SubmittedCallbackResponse.builder()
                         .confirmationHeader(format("# Documents uploaded successfully%n## Claim number: 000LR001"))
-                        .confirmationBody("<br />")
+                        .confirmationBody(String.format(
+                            "<br />"
+                                + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
+                            surveyLink))
                         .build());
             }
         }
