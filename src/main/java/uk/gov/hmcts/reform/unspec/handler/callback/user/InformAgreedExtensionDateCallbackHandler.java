@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.unspec.callback.Callback;
 import uk.gov.hmcts.reform.unspec.callback.CallbackHandler;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.callback.CaseEvent;
+import uk.gov.hmcts.reform.unspec.config.ExitSurveyConfiguration;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
 import uk.gov.hmcts.reform.unspec.service.DeadlinesCalculator;
 import uk.gov.hmcts.reform.unspec.service.Time;
@@ -36,6 +37,7 @@ public class InformAgreedExtensionDateCallbackHandler extends CallbackHandler {
 
     private static final List<CaseEvent> EVENTS = List.of(INFORM_AGREED_EXTENSION_DATE);
 
+    private final ExitSurveyConfiguration exitSurveyConfiguration;
     private final DeadlineExtensionValidator validator;
     private final ObjectMapper objectMapper;
     private final DeadlinesCalculator deadlinesCalculator;
@@ -84,12 +86,11 @@ public class InformAgreedExtensionDateCallbackHandler extends CallbackHandler {
     private SubmittedCallbackResponse buildConfirmation(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
         LocalDateTime responseDeadline = caseData.getRespondent1ResponseDeadline();
-        String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Defendant/";
 
         String body = format(
             "<br />What happens next%n%n You must respond to the claimant by %s"
                 + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
-            formatLocalDateTime(responseDeadline, DATE_TIME_AT), surveyLink
+            formatLocalDateTime(responseDeadline, DATE_TIME_AT), exitSurveyConfiguration.getDefendantSurvey()
         );
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Extension deadline submitted")

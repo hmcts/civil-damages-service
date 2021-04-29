@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.unspec.callback.Callback;
 import uk.gov.hmcts.reform.unspec.callback.CallbackHandler;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.callback.CaseEvent;
+import uk.gov.hmcts.reform.unspec.config.ExitSurveyConfiguration;
 import uk.gov.hmcts.reform.unspec.model.BusinessProcess;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
 
@@ -31,6 +32,7 @@ public class ResubmitClaimCallbackHandler extends CallbackHandler {
 
     private static final List<CaseEvent> EVENTS = Collections.singletonList(RESUBMIT_CLAIM);
 
+    private final ExitSurveyConfiguration exitSurveyConfiguration;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -57,13 +59,12 @@ public class ResubmitClaimCallbackHandler extends CallbackHandler {
     }
 
     private SubmittedCallbackResponse buildConfirmation(CallbackParams callbackParams) {
-        String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Claim pending")
             .confirmationBody(String.format("## What happens next %n "
                                                 + "You claim will be processed. Wait for us to contact you."
                                                 + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
-                                            surveyLink))
+                                            exitSurveyConfiguration.getClaimantSurvey()))
             .build();
     }
 }

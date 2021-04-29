@@ -112,6 +112,11 @@ launchdarkly:
 testing:
   support:
     enabled: ${TESTING_SUPPORT_ENABLED:false}
+
+exitsurvey:
+  claimant: "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/"
+  defendant: "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Defendant/"
+
 ---
 
 spring:

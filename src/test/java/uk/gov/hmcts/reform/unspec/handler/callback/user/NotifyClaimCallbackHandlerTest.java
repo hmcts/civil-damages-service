@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.callback.CallbackType;
+import uk.gov.hmcts.reform.unspec.config.ExitSurveyConfiguration;
 import uk.gov.hmcts.reform.unspec.handler.callback.BaseCallbackHandlerTest;
 import uk.gov.hmcts.reform.unspec.helpers.CaseDetailsConverter;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
@@ -37,6 +39,7 @@ import static uk.gov.hmcts.reform.unspec.service.DeadlinesCalculator.END_OF_BUSI
 
 @SpringBootTest(classes = {
     NotifyClaimCallbackHandler.class,
+    ExitSurveyConfiguration.class,
     JacksonAutoConfiguration.class,
     CaseDetailsConverter.class
 })
@@ -54,6 +57,9 @@ class NotifyClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
     private final LocalDateTime notificationDate = LocalDateTime.now();
     private final LocalDateTime deadline = notificationDate.toLocalDate().atTime(END_OF_BUSINESS_DAY);
+
+    @Value("${exitsurvey.claimant}")
+    private String claimantSurvey;
 
     @BeforeEach
     void setup() {
@@ -122,10 +128,9 @@ class NotifyClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
             CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseDetailsNotification().build();
             CallbackParams params = callbackParamsOf(caseData, SUBMITTED);
             SubmittedCallbackResponse response = (SubmittedCallbackResponse) handler.handle(params);
-            String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
 
             String formattedDeadline = formatLocalDateTime(DEADLINE, DATE_TIME_AT);
-            String confirmationBody = String.format(CONFIRMATION_BODY, formattedDeadline, surveyLink);
+            String confirmationBody = String.format(CONFIRMATION_BODY, formattedDeadline, claimantSurvey);
 
             assertThat(response).usingRecursiveComparison().isEqualTo(
                 SubmittedCallbackResponse.builder()

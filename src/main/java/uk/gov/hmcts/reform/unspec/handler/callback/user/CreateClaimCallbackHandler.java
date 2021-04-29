@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.unspec.callback.CallbackHandler;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.callback.CaseEvent;
 import uk.gov.hmcts.reform.unspec.config.ClaimIssueConfiguration;
+import uk.gov.hmcts.reform.unspec.config.ExitSurveyConfiguration;
 import uk.gov.hmcts.reform.unspec.enums.YesOrNo;
 import uk.gov.hmcts.reform.unspec.launchdarkly.OnBoardingOrganisationControlService;
 import uk.gov.hmcts.reform.unspec.model.BusinessProcess;
@@ -81,6 +82,7 @@ public class CreateClaimCallbackHandler extends CallbackHandler implements Parti
         + "\n\n<br/><br/>This is a new service - your <a href=\"%2$s\" target=\"_blank\">feedback</a> will help us to improve it.";
 
     private final ClaimIssueConfiguration claimIssueConfiguration;
+    private final ExitSurveyConfiguration exitSurveyConfiguration;
     private final ReferenceNumberRepository referenceNumberRepository;
     private final DateOfBirthValidator dateOfBirthValidator;
     private final FeesService feesService;
@@ -283,7 +285,7 @@ public class CreateClaimCallbackHandler extends CallbackHandler implements Parti
                 ? LIP_CONFIRMATION_BODY
                 : CONFIRMATION_SUMMARY,
             format("/cases/case-details/%s#CaseDocuments", caseData.getCcdCaseReference()),
-            surveyLink,
+            exitSurveyConfiguration.getClaimantSurvey(),
             claimIssueConfiguration.getResponsePackLink(),
             formattedServiceDeadline
 

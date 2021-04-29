@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.unspec.callback.Callback;
 import uk.gov.hmcts.reform.unspec.callback.CallbackHandler;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.callback.CaseEvent;
+import uk.gov.hmcts.reform.unspec.config.ExitSurveyConfiguration;
 import uk.gov.hmcts.reform.unspec.enums.AllocatedTrack;
 import uk.gov.hmcts.reform.unspec.model.BusinessProcess;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
@@ -46,6 +47,7 @@ public class RespondToClaimCallbackHandler extends CallbackHandler implements Ex
 
     private static final List<CaseEvent> EVENTS = Collections.singletonList(DEFENDANT_RESPONSE);
 
+    private final ExitSurveyConfiguration exitSurveyConfiguration;
     private final DateOfBirthValidator dateOfBirthValidator;
     private final UnavailableDateValidator unavailableDateValidator;
     private final ObjectMapper objectMapper;
@@ -132,12 +134,11 @@ public class RespondToClaimCallbackHandler extends CallbackHandler implements Ex
         CaseData caseData = callbackParams.getCaseData();
         LocalDateTime responseDeadline = caseData.getApplicant1ResponseDeadline();
         String claimNumber = caseData.getLegacyCaseReference();
-        String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Defendant/";
 
         String body = format(
             "<br />The claimant has until %s to proceed. We will let you know when they respond."
                 + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
-            formatLocalDateTime(responseDeadline, DATE), surveyLink
+            formatLocalDateTime(responseDeadline, DATE), exitSurveyConfiguration.getDefendantSurvey()
         );
 
         return SubmittedCallbackResponse.builder()

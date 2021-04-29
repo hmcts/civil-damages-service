@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.prd.model.Organisation;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.config.ClaimIssueConfiguration;
+import uk.gov.hmcts.reform.unspec.config.ExitSurveyConfiguration;
 import uk.gov.hmcts.reform.unspec.config.MockDatabaseConfiguration;
 import uk.gov.hmcts.reform.unspec.handler.callback.BaseCallbackHandlerTest;
 import uk.gov.hmcts.reform.unspec.helpers.CaseDetailsConverter;
@@ -77,6 +78,7 @@ import static uk.gov.hmcts.reform.unspec.utils.PartyUtils.getPartyNameBasedOnTyp
     JacksonAutoConfiguration.class,
     CaseDetailsConverter.class,
     ClaimIssueConfiguration.class,
+    ExitSurveyConfiguration.class,
     MockDatabaseConfiguration.class,
     ValidationAutoConfiguration.class,
     DateOfBirthValidator.class,
@@ -117,6 +119,9 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
     @Value("${unspecified.response-pack-url}")
     private String responsePackLink;
+
+    @Value("${exitsurvey.claimant}")
+    private String claimantSurvey;
 
     @Nested
     class AboutToStartCallback {
@@ -781,14 +786,13 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                 CaseData caseData = CaseDataBuilder.builder().atStateProceedsOfflineUnrepresentedDefendant().build();
                 CallbackParams params = callbackParamsOf(caseData, SUBMITTED);
                 SubmittedCallbackResponse response = (SubmittedCallbackResponse) handler.handle(params);
-                String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
 
                 LocalDateTime serviceDeadline = now().plusDays(112).atTime(23, 59);
 
                 String body = format(
                     LIP_CONFIRMATION_BODY,
                     format("/cases/case-details/%s#CaseDocuments", CASE_ID),
-                    surveyLink,
+                    claimantSurvey,
                     responsePackLink,
                     formatLocalDateTime(serviceDeadline, DATE_TIME_AT)
                 );
@@ -812,12 +816,11 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                 CaseData caseData = CaseDataBuilder.builder().atStateClaimCreated().build();
                 CallbackParams params = callbackParamsOf(caseData, SUBMITTED);
                 SubmittedCallbackResponse response = (SubmittedCallbackResponse) handler.handle(params);
-                String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
 
                 String body = format(
                     CONFIRMATION_SUMMARY,
                     format("/cases/case-details/%s#CaseDocuments", CASE_ID),
-                    surveyLink
+                    claimantSurvey
                 );
 
                 assertThat(response).usingRecursiveComparison().isEqualTo(
@@ -842,7 +845,6 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                     .build();
                 CallbackParams params = callbackParamsOf(caseData, SUBMITTED);
                 SubmittedCallbackResponse response = (SubmittedCallbackResponse) handler.handle(params);
-                String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
 
                 assertThat(response).usingRecursiveComparison().isEqualTo(
                     SubmittedCallbackResponse.builder()
@@ -851,7 +853,7 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                         .confirmationBody(format(
                             LIP_CONFIRMATION_SCREEN,
                             format("/cases/case-details/%s#CaseDocuments", CASE_ID),
-                            surveyLink,
+                            claimantSurvey,
                             responsePackLink
                         ))
                         .build());

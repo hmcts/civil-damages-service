@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.unspec.callback.Callback;
 import uk.gov.hmcts.reform.unspec.callback.CallbackHandler;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.callback.CaseEvent;
+import uk.gov.hmcts.reform.unspec.config.ExitSurveyConfiguration;
 import uk.gov.hmcts.reform.unspec.model.BusinessProcess;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
 import uk.gov.hmcts.reform.unspec.service.DeadlinesCalculator;
@@ -41,6 +42,7 @@ public class NotifyClaimDetailsCallbackHandler extends CallbackHandler implement
         + "They must respond by %s. Your account will be updated and you will be sent an email."
         + "\n\n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.";
 
+    private final ExitSurveyConfiguration exitSurveyConfiguration;
     private final ObjectMapper objectMapper;
     private final Time time;
     private final DeadlinesCalculator deadlinesCalculator;
@@ -80,9 +82,8 @@ public class NotifyClaimDetailsCallbackHandler extends CallbackHandler implement
     private SubmittedCallbackResponse buildConfirmation(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
         String formattedDeadline = formatLocalDateTime(caseData.getRespondent1ResponseDeadline(), DATE_TIME_AT);
-        String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
 
-        String body = format(CONFIRMATION_SUMMARY, formattedDeadline, surveyLink);
+        String body = format(CONFIRMATION_SUMMARY, formattedDeadline, exitSurveyConfiguration.getClaimantSurvey());
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(String.format(
