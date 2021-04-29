@@ -357,7 +357,7 @@ class RespondToClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
             assertThat(response).usingRecursiveComparison().isEqualTo(
                 SubmittedCallbackResponse.builder()
-                    .confirmationHeader(format("# You've submitted your response%n## Claim number: 000LR001"))
+                    .confirmationHeader(format("# You've submitted your response%n## Claim number: 000DC001"))
                     .confirmationBody(format(
                         "<br />The claimant has until %s to proceed. We will let you know when they respond."
                             + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",

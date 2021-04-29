@@ -80,7 +80,7 @@ class AddOrAmendClaimDocumentsCallbackHandlerTest extends BaseCallbackHandlerTes
 
                 assertThat(response).usingRecursiveComparison().isEqualTo(
                     SubmittedCallbackResponse.builder()
-                        .confirmationHeader(format("# Documents uploaded successfully%n## Claim number: 000LR001"))
+                        .confirmationHeader(format("# Documents uploaded successfully%n## Claim number: 000DC001"))
                         .confirmationBody(String.format(
                             "<br />"
                                 + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
