@@ -133,8 +133,7 @@ public class RespondToDefenceCallbackHandler extends CallbackHandler implements 
                 dqLink, exitSurveyConfiguration.getClaimantSurvey()
             );
         }
-        return format("<br />"
-                          + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
+        return format("%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
             exitSurveyConfiguration.getClaimantSurvey());
     }
 }

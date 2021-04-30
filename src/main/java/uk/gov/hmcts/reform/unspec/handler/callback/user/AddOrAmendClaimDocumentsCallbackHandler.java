@@ -47,8 +47,7 @@ public class AddOrAmendClaimDocumentsCallbackHandler extends CallbackHandler imp
                 callbackParams.getCaseData().getLegacyCaseReference()
             ))
             .confirmationBody(String.format(
-                "<br />"
-                    + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
+                "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
                 exitSurveyConfiguration.getClaimantSurvey()))
             .build();
     }

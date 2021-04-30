@@ -318,8 +318,7 @@ class RespondToDefenceCallbackHandlerTest extends BaseCallbackHandlerTest {
                 SubmittedCallbackResponse.builder()
                     .confirmationHeader(format("# You've chosen not to proceed with the claim%n## Claim number:"
                                                    + " 000DC001"))
-                    .confirmationBody(format("<br />"
-                                                 + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
+                    .confirmationBody(format("%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
                                              claimantSurvey))
                     .build());
         }
