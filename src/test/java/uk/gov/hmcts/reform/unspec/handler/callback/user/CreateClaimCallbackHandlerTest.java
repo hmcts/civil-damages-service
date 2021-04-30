@@ -92,12 +92,12 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
     public static final String LIP_CONFIRMATION_SCREEN = "<br />Your claim will not be issued"
         + " until payment is confirmed."
         + " Once payment is confirmed you will receive an email. The claim will then progress offline."
-        + "\n\n To continue the claim you need to send the <a href=\"%s\" target=\"_blank\">sealed claim form</a>, "
+        + "%n%nTo continue the claim you need to send the <a href=\"%s\" target=\"_blank\">sealed claim form</a>, "
         + "a <a href=\"%3$s\" target=\"_blank\">response pack</a> and any supporting documents to "
         + "the defendant within 4 months. "
-        + "\n\nOnce you have served the claim, send the Certificate of Service and supporting documents to the County"
+        + "%n%nOnce you have served the claim, send the Certificate of Service and supporting documents to the County"
         + " Court Claims Centre."
-        + "\n\n<br/><br/>This is a new service - your <a href=\"%2$s\" target=\"_blank\">feedback</a> will help us to improve it.";
+        + "%n%n<br/><br/>This is a new service - your <a href=\"%2$s\" target=\"_blank\">feedback</a> will help us to improve it.";
 
     @MockBean
     private Time time;

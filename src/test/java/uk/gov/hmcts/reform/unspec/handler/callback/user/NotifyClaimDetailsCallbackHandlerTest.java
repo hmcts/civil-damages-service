@@ -132,9 +132,9 @@ class NotifyClaimDetailsCallbackHandlerTest extends BaseCallbackHandlerTest {
         class SubmittedCallback {
 
             private static final String CONFIRMATION_SUMMARY = "<br />The defendant legal representative's organisation"
-                + " has been notified of the claim details.\n\n"
+                + " has been notified of the claim details.%n%n"
                 + "They must respond by %s. Your account will be updated and you will be sent an email."
-                + "\n\n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.";
+                + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.";
 
             @Test
             void shouldReturnExpectedSubmittedCallbackResponse_whenInvoked() {

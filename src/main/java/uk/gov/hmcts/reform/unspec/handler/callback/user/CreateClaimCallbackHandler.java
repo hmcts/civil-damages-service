@@ -65,21 +65,21 @@ public class CreateClaimCallbackHandler extends CallbackHandler implements Parti
 
     private static final List<CaseEvent> EVENTS = Collections.singletonList(CREATE_CLAIM);
     public static final String CONFIRMATION_SUMMARY = "<br/>[Download the sealed claim form](%s)"
-        + "\n\n Your claim will not be issued until payment is confirmed. Once payment is confirmed you will "
+        + "%n%nYour claim will not be issued until payment is confirmed. Once payment is confirmed you will "
         + "receive an email. The email will also include the date when you need to notify the defendant of the claim."
-        + "\n\n You must notify the defendant of the claim within 4 months of the claim being issued. The exact "
+        + "%n%nYou must notify the defendant of the claim within 4 months of the claim being issued. The exact "
         + "date when you must notify the claim details will be provided when you first notify "
         + "the defendant of the claim."
-        + "\n\n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.";
+        + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.";
 
     public static final String LIP_CONFIRMATION_BODY = "<br />Your claim will not be issued until payment is confirmed."
         + " Once payment is confirmed you will receive an email. The claim will then progress offline."
-        + "\n\n To continue the claim you need to send the <a href=\"%s\" target=\"_blank\">sealed claim form</a>, "
+        + "%n%nTo continue the claim you need to send the <a href=\"%s\" target=\"_blank\">sealed claim form</a>, "
         + "a <a href=\"%3$s\" target=\"_blank\">response pack</a> and any supporting documents to "
         + "the defendant within 4 months. "
-        + "\n\nOnce you have served the claim, send the Certificate of Service and supporting documents to the County"
+        + "%n%nOnce you have served the claim, send the Certificate of Service and supporting documents to the County"
         + " Court Claims Centre."
-        + "\n\n<br/><br/>This is a new service - your <a href=\"%2$s\" target=\"_blank\">feedback</a> will help us to improve it.";
+        + "%n%n<br/><br/>This is a new service - your <a href=\"%2$s\" target=\"_blank\">feedback</a> will help us to improve it.";
 
     private final ClaimIssueConfiguration claimIssueConfiguration;
     private final ExitSurveyConfiguration exitSurveyConfiguration;
@@ -288,7 +288,6 @@ public class CreateClaimCallbackHandler extends CallbackHandler implements Parti
             exitSurveyConfiguration.getClaimantSurvey(),
             claimIssueConfiguration.getResponsePackLink(),
             formattedServiceDeadline
-
         );
     }
 }

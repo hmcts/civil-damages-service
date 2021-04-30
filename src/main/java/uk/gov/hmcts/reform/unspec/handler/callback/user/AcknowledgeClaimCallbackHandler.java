@@ -38,7 +38,7 @@ public class AcknowledgeClaimCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = Collections.singletonList(ACKNOWLEDGE_CLAIM);
 
     public static final String CONFIRMATION_SUMMARY = "<br />You need to respond to the claim before %s."
-        + "\n\n[Download the Acknowledgement of Claim form](%s)";
+        + "%n%n[Download the Acknowledgement of Claim form](%s)";
 
     private final DateOfBirthValidator dateOfBirthValidator;
     private final DeadlinesCalculator deadlinesCalculator;

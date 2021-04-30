@@ -35,9 +35,9 @@ public class NotifyClaimCallbackHandler extends CallbackHandler {
 
     private static final List<CaseEvent> EVENTS = Collections.singletonList(NOTIFY_DEFENDANT_OF_CLAIM);
     public static final String CONFIRMATION_SUMMARY = "<br />The defendant legal representative's organisation has "
-        + "been notified and granted access to this claim.\n\n"
+        + "been notified and granted access to this claim.%n%n"
         + "You must notify the defendant with the claim details by %s"
-        + "\n\n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.";
+        + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.";
 
     private final ExitSurveyConfiguration exitSurveyConfiguration;
     private final ObjectMapper objectMapper;
