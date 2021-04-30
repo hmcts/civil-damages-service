@@ -20,14 +20,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ProceedOfflineCallbackHandlerTest extends BaseCallbackHandlerTest {
 
     @Autowired
-    ProceedOfflineCallbackHandler proceedOfflineCallbackHandler;
+    ProceedOfflineCallbackHandler handler;
 
     @Test
     void shouldCaptureTakenOfflineDate_whenProceedInHeritageSystemRequested() {
         CaseData caseData = CaseDataBuilder.builder().atStatePendingClaimIssuedUnRepresentedDefendant().build();
         CallbackParams params = callbackParamsOf(caseData, CallbackType.ABOUT_TO_SUBMIT);
 
-        var response = (AboutToStartOrSubmitCallbackResponse) proceedOfflineCallbackHandler.handle(params);
+        var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
 
         assertThat(response.getData()).extracting("takenOfflineDate").isNotNull();
     }

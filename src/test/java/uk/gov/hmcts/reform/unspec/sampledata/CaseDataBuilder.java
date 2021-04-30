@@ -92,6 +92,7 @@ public class CaseDataBuilder {
     private DynamicList applicantSolicitor1PbaAccounts;
     private Fee claimFee;
     private StatementOfTruth applicantSolicitor1ClaimStatementOfTruth;
+    private StatementOfTruth uiStatementOfTruth;
     private String paymentReference;
     private String legacyCaseReference;
     private AllocatedTrack allocatedTrack;
@@ -306,6 +307,11 @@ public class CaseDataBuilder {
 
     public CaseDataBuilder extensionDate(LocalDate extensionDate) {
         this.respondentSolicitor1AgreedDeadlineExtension = extensionDate;
+        return this;
+    }
+
+    public CaseDataBuilder uiStatementOfTruth(StatementOfTruth statementOfTruth) {
+        this.uiStatementOfTruth = statementOfTruth;
         return this;
     }
 
@@ -998,6 +1004,9 @@ public class CaseDataBuilder {
             .takenOfflineDate(takenOfflineDate)
             .takenOfflineByStaffDate(takenOfflineByStaffDate)
             .claimDismissedDate(claimDismissedDate)
+
+            //ui field
+            .uiStatementOfTruth(uiStatementOfTruth)
             .build();
     }
 }

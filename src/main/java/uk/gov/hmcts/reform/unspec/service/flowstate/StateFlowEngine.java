@@ -10,8 +10,10 @@ import uk.gov.hmcts.reform.unspec.stateflow.StateFlowBuilder;
 import uk.gov.hmcts.reform.unspec.stateflow.model.State;
 
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.applicantOutOfTime;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseDismissed;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseDismissedAfterClaimAcknowledged;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseDismissedAfterClaimAcknowledgedExtension;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseDismissedAfterDetailNotified;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseDismissedAfterDetailNotifiedExtension;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimDetailsNotified;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimDetailsNotifiedTimeExtension;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimIssued;
@@ -118,7 +120,7 @@ public class StateFlowEngine {
                 .transitionTo(PART_ADMISSION).onlyIf(partAdmissionAfterNotifyDetails)
                 .transitionTo(COUNTER_CLAIM).onlyIf(counterClaimAfterNotifyDetails)
                 .transitionTo(TAKEN_OFFLINE_BY_STAFF).onlyIf(takenOfflineByStaffAfterClaimDetailsNotified)
-                .transitionTo(CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE).onlyIf(caseDismissed)
+                .transitionTo(CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE).onlyIf(caseDismissedAfterDetailNotified)
             .state(CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION)
                 .transitionTo(NOTIFICATION_ACKNOWLEDGED).onlyIf(notificationAcknowledgedTimeExtension)
                 .transitionTo(FULL_DEFENCE).onlyIf(fullDefence)
@@ -126,6 +128,8 @@ public class StateFlowEngine {
                 .transitionTo(PART_ADMISSION).onlyIf(partAdmission)
                 .transitionTo(COUNTER_CLAIM).onlyIf(counterClaim)
                 .transitionTo(TAKEN_OFFLINE_BY_STAFF).onlyIf(takenOfflineByStaffAfterClaimDetailsNotifiedExtension)
+                .transitionTo(CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE)
+                    .onlyIf(caseDismissedAfterDetailNotifiedExtension)
             .state(NOTIFICATION_ACKNOWLEDGED)
                 .transitionTo(NOTIFICATION_ACKNOWLEDGED_TIME_EXTENSION)
                     .onlyIf(notificationAcknowledgedTimeExtension)
@@ -143,7 +147,8 @@ public class StateFlowEngine {
                 .transitionTo(COUNTER_CLAIM).onlyIf(counterClaim)
                 .transitionTo(TAKEN_OFFLINE_BY_STAFF)
                     .onlyIf(takenOfflineByStaffAfterNotificationAcknowledgedTimeExtension)
-                .transitionTo(CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE).onlyIf(caseDismissedAfterClaimAcknowledged)
+                .transitionTo(CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE)
+            .onlyIf(caseDismissedAfterClaimAcknowledgedExtension)
             .state(FULL_DEFENCE)
                 .transitionTo(FULL_DEFENCE_PROCEED).onlyIf(fullDefenceProceed)
                 .transitionTo(FULL_DEFENCE_NOT_PROCEED).onlyIf(fullDefenceNotProceed)

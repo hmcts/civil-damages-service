@@ -10,8 +10,10 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.applicantOutOfTime;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseDismissed;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseDismissedAfterClaimAcknowledged;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseDismissedAfterClaimAcknowledgedExtension;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseDismissedAfterDetailNotified;
+import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.caseDismissedAfterDetailNotifiedExtension;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimDetailsNotified;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimDetailsNotifiedTimeExtension;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowPredicate.claimIssued;
@@ -434,27 +436,41 @@ class FlowPredicateTest {
     class ClaimDismissed {
 
         @Test
-        void shouldReturnTrue_whenCaseDataAtStateClaimDismissed() {
+        void shouldReturnTrue_whenCaseDataAtStateClaimDismissedAfterClaimDetailsNotified() {
             CaseData caseData = CaseDataBuilder.builder().atStateClaimDismissed().build();
-            assertTrue(caseDismissed.test(caseData));
+            assertTrue(caseDismissedAfterDetailNotified.test(caseData));
         }
 
         @Test
-        void shouldReturnFalse_whenCaseDataAtStateApplicantRespondToDefence() {
-            CaseData caseData = CaseDataBuilder.builder().atStateApplicantRespondToDefenceAndProceed().build();
-            assertFalse(caseDismissed.test(caseData));
+        void shouldReturnTrue_whenCaseDataAtStateClaimDismissedAfterClaimNotifiedExtension() {
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimDetailsNotifiedTimeExtension()
+                .claimDismissedDate(LocalDateTime.now())
+                .build();
+            assertTrue(caseDismissedAfterDetailNotifiedExtension.test(caseData));
         }
-    }
-
-    @Nested
-    class ClaimDismissedAfterClaimAcknowledged {
 
         @Test
-        void shouldReturnTrue_whenCaseDataAtStateClaimAcknowledgeWithClaimDismissedDate() {
+        void shouldReturnTrue_whenCaseDataAtStateClaimDismissedAfterNotificationAcknowledged() {
             CaseData caseData = CaseDataBuilder.builder().atStateNotificationAcknowledged()
                 .claimDismissedDate(LocalDateTime.now())
                 .build();
             assertTrue(caseDismissedAfterClaimAcknowledged.test(caseData));
+        }
+
+        @Test
+        void shouldReturnTrue_whenCaseDataAtStateClaimDismissedAfterNotificationAcknowledgedExtension() {
+            CaseData caseData = CaseDataBuilder.builder().atStateNotificationAcknowledgedTimeExtension()
+                .claimDismissedDate(LocalDateTime.now())
+                .build();
+            assertTrue(caseDismissedAfterClaimAcknowledgedExtension.test(caseData));
+        }
+
+        @Test
+        void shouldReturnFalse_whenCaseDataAtStateApplicantRespondToDefence() {
+            CaseData caseData = CaseDataBuilder.builder().atStateApplicantRespondToDefenceAndProceed()
+                .claimDismissedDate(LocalDateTime.now())
+                .build();
+            assertFalse(caseDismissedAfterDetailNotified.test(caseData));
         }
 
         @Test
