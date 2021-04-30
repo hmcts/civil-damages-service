@@ -156,7 +156,6 @@ class InformAgreedExtensionDateCallbackHandlerTest extends BaseCallbackHandlerTe
         @Test
         void shouldReturnExpectedResponse_whenInvoked() {
             LocalDateTime responseDeadline = now().atTime(END_OF_BUSINESS_DAY);
-            String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Defendant/";
             CaseData caseData = CaseDataBuilder.builder()
                 .respondent1ResponseDeadline(responseDeadline)
                 .build();
