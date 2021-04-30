@@ -400,7 +400,9 @@ class StateFlowEngineTest {
             names = {"FULL_DEFENCE_PROCEED", "FULL_DEFENCE_NOT_PROCEED"}
         )
         void shouldReturnFullDefenceProceed_whenCaseDataAtStateApplicantRespondToDefence(FlowState.Main flowState) {
-            CaseData caseData = CaseDataBuilder.builder().atState(flowState).build();
+            CaseData caseData = CaseDataBuilder.builder().atState(flowState)
+                .takenOfflineDate(LocalDateTime.now())
+                .build();
 
             StateFlow stateFlow = stateFlowEngine.evaluate(caseData);
 

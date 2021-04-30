@@ -245,6 +245,11 @@ public class CaseDataBuilder {
         return this;
     }
 
+    public CaseDataBuilder takenOfflineDate(LocalDateTime takenOfflineDate) {
+        this.takenOfflineDate = takenOfflineDate;
+        return this;
+    }
+
     public CaseDataBuilder systemGeneratedCaseDocuments(List<Element<CaseDocument>> systemGeneratedCaseDocuments) {
         this.systemGeneratedCaseDocuments = systemGeneratedCaseDocuments;
         return this;
