@@ -278,7 +278,6 @@ public class CreateClaimCallbackHandler extends CallbackHandler implements Parti
     private String getBody(CaseData caseData) {
         LocalDateTime serviceDeadline = LocalDate.now().plusDays(112).atTime(23, 59);
         String formattedServiceDeadline = formatLocalDateTime(serviceDeadline, DATE_TIME_AT);
-        String surveyLink = "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/";
 
         return format(
             caseData.getRespondent1Represented() == NO || caseData.getRespondent1OrgRegistered() == NO
