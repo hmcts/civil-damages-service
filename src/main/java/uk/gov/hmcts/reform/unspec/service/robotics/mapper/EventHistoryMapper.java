@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.unspec.model.robotics.EventDetails;
 import uk.gov.hmcts.reform.unspec.model.robotics.EventHistory;
 import uk.gov.hmcts.reform.unspec.service.flowstate.FlowState;
 import uk.gov.hmcts.reform.unspec.service.flowstate.StateFlowEngine;
+import uk.gov.hmcts.reform.unspec.stateflow.model.State;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,8 +34,9 @@ public class EventHistoryMapper {
         EventHistory.EventHistoryBuilder builder = EventHistory.builder()
             .directionsQuestionnaireFiled(List.of(Event.builder().build()));
 
-        stateFlowEngine.evaluate(caseData)
-            .getStateHistory()
+        List<State> stateHistory = stateFlowEngine.evaluate(caseData)
+            .getStateHistory();
+        stateHistory
             .forEach(state -> {
                 FlowState.Main flowState = (FlowState.Main) FlowState.fromFullName(state.getName());
                 switch (flowState) {
@@ -75,12 +77,53 @@ public class EventHistoryMapper {
                     case TAKEN_OFFLINE_BY_STAFF:
                         buildTakenOfflineByStaff(builder, caseData);
                         break;
+                    case CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE:
+                        buildClaimDismissedPastDeadline(builder, caseData, stateHistory);
+                        break;
                     default:
                         break;
                 }
             });
 
         return builder.build();
+    }
+
+    private void buildClaimDismissedPastDeadline(EventHistory.EventHistoryBuilder builder,
+                                                 CaseData caseData, List<State> stateHistory) {
+        State previousState = getPreviousState(stateHistory);
+        FlowState.Main flowState = (FlowState.Main) FlowState.fromFullName(previousState.getName());
+        builder.miscellaneous(
+            Event.builder()
+                .eventSequence(prepareEventSequence(builder.build()))
+                .eventCode("999")
+                .dateReceived(caseData.getClaimDismissedDate().format(ISO_DATE))
+                .eventDetailsText(prepareClaimDismissedDetails(flowState))
+                .eventDetails(EventDetails.builder()
+                                  .miscText(prepareClaimDismissedDetails(flowState))
+                                  .build())
+                .build());
+    }
+
+    public String prepareClaimDismissedDetails(FlowState.Main flowState) {
+        switch (flowState) {
+            case CLAIM_DETAILS_NOTIFIED:
+                return "RPA Reason: Case struck out after no response from defendant after claimant sent notification.";
+            case NOTIFICATION_ACKNOWLEDGED:
+                return "RPA Reason: Case struck out after no response from defendant after acknowledgement.";
+            case NOTIFICATION_ACKNOWLEDGED_TIME_EXTENSION:
+            case CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION:
+                return "RPA Reason: Case struck out after no response from defendant after extension request.";
+            default:
+                throw new IllegalStateException("Unexpected flow state " + flowState.fullName());
+        }
+    }
+
+    private State getPreviousState(List<State> stateHistory) {
+        if (stateHistory.size() > 1) {
+            return stateHistory.get(stateHistory.size() - 2);
+        } else {
+            throw new IllegalStateException("Flow state history should have at least two items: " + stateHistory);
+        }
     }
 
     private void buildTakenOfflineByStaff(EventHistory.EventHistoryBuilder builder, CaseData caseData) {
