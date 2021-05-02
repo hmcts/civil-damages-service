@@ -383,6 +383,7 @@ class FlowPredicateTest {
         @Test
         void shouldReturnTrue_whenCaseDataAtStateTakenOfflineAfterClaimIssue() {
             CaseData caseData = CaseDataBuilder.builder().atStateTakenOfflineByStaff().build();
+
             assertTrue(takenOfflineByStaffAfterClaimIssue.test(caseData));
         }
 

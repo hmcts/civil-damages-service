@@ -310,6 +310,11 @@ public class CaseDataBuilder {
         return this;
     }
 
+    public CaseDataBuilder takenOfflineByStaffDate(LocalDateTime takenOfflineByStaffDate) {
+        this.takenOfflineByStaffDate = takenOfflineByStaffDate;
+        return this;
+    }
+
     public CaseDataBuilder extensionDate(LocalDate extensionDate) {
         this.respondentSolicitor1AgreedDeadlineExtension = extensionDate;
         return this;
@@ -689,7 +694,7 @@ public class CaseDataBuilder {
 
     public CaseDataBuilder atStateClaimIssued() {
         atStatePendingClaimIssued();
-        claimNotificationDeadline = LocalDateTime.now();
+        claimNotificationDeadline = LocalDateTime.now().plusDays(1);
         ccdState = CASE_ISSUED;
         return this;
     }
