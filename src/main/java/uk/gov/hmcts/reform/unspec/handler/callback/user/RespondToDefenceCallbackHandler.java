@@ -13,8 +13,10 @@ import uk.gov.hmcts.reform.unspec.callback.CaseEvent;
 import uk.gov.hmcts.reform.unspec.enums.YesOrNo;
 import uk.gov.hmcts.reform.unspec.model.BusinessProcess;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
+import uk.gov.hmcts.reform.unspec.model.StatementOfTruth;
 import uk.gov.hmcts.reform.unspec.model.UnavailableDate;
 import uk.gov.hmcts.reform.unspec.model.common.Element;
+import uk.gov.hmcts.reform.unspec.model.dq.Applicant1DQ;
 import uk.gov.hmcts.reform.unspec.service.Time;
 import uk.gov.hmcts.reform.unspec.validation.UnavailableDateValidator;
 import uk.gov.hmcts.reform.unspec.validation.interfaces.ExpertsValidator;
@@ -53,6 +55,7 @@ public class RespondToDefenceCallbackHandler extends CallbackHandler implements 
             callbackKey(ABOUT_TO_START), this::emptyCallbackResponse,
             callbackKey(MID, "validate-unavailable-dates"), this::validateUnavailableDates,
             callbackKey(MID, "experts"), this::validateApplicantDqExperts,
+            callbackKey(MID, "statement-of-truth"), this::resetStatementOfTruth,
             callbackKey(ABOUT_TO_SUBMIT), this::aboutToSubmit,
             callbackKey(SUBMITTED), this::buildConfirmation
         );
@@ -66,6 +69,23 @@ public class RespondToDefenceCallbackHandler extends CallbackHandler implements 
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .errors(errors)
+            .build();
+    }
+
+    private CallbackResponse resetStatementOfTruth(CallbackParams callbackParams) {
+        CaseData caseData = callbackParams.getCaseData();
+        StatementOfTruth statementOfTruth = caseData.getUiStatementOfTruth();
+        Applicant1DQ dq = caseData.getApplicant1DQ().toBuilder()
+            .applicant1DQStatementOfTruth(statementOfTruth)
+            .build();
+
+        CaseData updatedCaseData = caseData.toBuilder()
+            .uiStatementOfTruth(null)
+            .applicant1DQ(dq)
+            .build();
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(updatedCaseData.toMap(objectMapper))
             .build();
     }
 

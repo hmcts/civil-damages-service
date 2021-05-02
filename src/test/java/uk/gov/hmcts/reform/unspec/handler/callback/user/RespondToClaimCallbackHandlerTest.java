@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.unspec.enums.AllocatedTrack;
 import uk.gov.hmcts.reform.unspec.handler.callback.BaseCallbackHandlerTest;
 import uk.gov.hmcts.reform.unspec.helpers.CaseDetailsConverter;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
+import uk.gov.hmcts.reform.unspec.model.StatementOfTruth;
 import uk.gov.hmcts.reform.unspec.model.UnavailableDate;
 import uk.gov.hmcts.reform.unspec.model.dq.Expert;
 import uk.gov.hmcts.reform.unspec.model.dq.Experts;
@@ -282,6 +283,33 @@ class RespondToClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
     }
 
     @Nested
+    class MidStatementOfTruth {
+
+        @Test
+        void shouldSetStatementOfTruthToNull_whenPopulated() {
+            String name = "John Smith";
+            String role = "Solicitor";
+
+            CaseData caseData = CaseDataBuilder.builder()
+                .uiStatementOfTruth(StatementOfTruth.builder().name(name).role(role).build())
+                .respondent1DQ()
+                .build();
+
+            CallbackParams params = callbackParamsOf(caseData, MID, "statement-of-truth");
+            var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
+
+            assertThat(response.getData())
+                .extracting("uiStatementOfTruth")
+                .isNull();
+
+            assertThat(response.getData())
+                .extracting("respondent1DQStatementOfTruth")
+                .extracting("name", "role")
+                .containsExactly(name, role);
+        }
+    }
+
+    @Nested
     class AboutToSubmitCallback {
         LocalDateTime responseDate = LocalDateTime.now();
         LocalDateTime deadline = LocalDateTime.now().plusDays(4);
@@ -340,7 +368,7 @@ class RespondToClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
             assertThat(response).usingRecursiveComparison().isEqualTo(
                 SubmittedCallbackResponse.builder()
-                    .confirmationHeader(format("# You've submitted your response%n## Claim number: 000LR001"))
+                    .confirmationHeader(format("# You've submitted your response%n## Claim number: 000DC001"))
                     .confirmationBody(format(
                         "<br />The claimant has until %s to proceed. We will let you know when they respond.",
                         formatLocalDateTime(APPLICANT_RESPONSE_DEADLINE, DATE)

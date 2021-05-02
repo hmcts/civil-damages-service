@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.unspec.model.Fee;
 import uk.gov.hmcts.reform.unspec.model.IdamUserDetails;
 import uk.gov.hmcts.reform.unspec.model.Party;
 import uk.gov.hmcts.reform.unspec.model.ServedDocumentFiles;
+import uk.gov.hmcts.reform.unspec.model.StatementOfTruth;
 import uk.gov.hmcts.reform.unspec.model.common.DynamicList;
 import uk.gov.hmcts.reform.unspec.model.common.DynamicListElement;
 import uk.gov.hmcts.reform.unspec.sampledata.CallbackParamsBuilder;
@@ -84,7 +85,7 @@ import static uk.gov.hmcts.reform.unspec.utils.PartyUtils.getPartyNameBasedOnTyp
     properties = {"reference.database.enabled=false"})
 class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
-    public static final String REFERENCE_NUMBER = "000LR001";
+    public static final String REFERENCE_NUMBER = "000DC001";
 
     public static final String LIP_CONFIRMATION_SCREEN = "<br />Your claim will not be issued"
         + " until payment is confirmed."
@@ -354,7 +355,7 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
         }
 
         @Nested
-        class FeatureToggleDisabled {
+        class OldCode {
 
             @Test
             void shouldCalculateClaimFeeAndAddPbaNumbers_whenCalledAndOrgExistsInPrd() {
@@ -609,7 +610,32 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
             assertThat(response.getErrors()).isEmpty();
         }
+    }
 
+    @Nested
+    class MidStatementOfTruth {
+
+        @Test
+        void shouldSetStatementOfTruthToNull_whenPopulated() {
+            String name = "John Smith";
+            String role = "Solicitor";
+
+            CaseData caseData = CaseDataBuilder.builder()
+                .uiStatementOfTruth(StatementOfTruth.builder().name(name).role(role).build())
+                .build();
+
+            CallbackParams params = callbackParamsOf(caseData, MID, "statement-of-truth");
+            var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
+
+            assertThat(response.getData())
+                .extracting("uiStatementOfTruth")
+                .isNull();
+
+            assertThat(response.getData())
+                .extracting("applicantSolicitor1ClaimStatementOfTruth")
+                .extracting("name", "role")
+                .containsExactly(name, role);
+        }
     }
 
     @Nested
@@ -819,7 +845,8 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                         .confirmationBody(format(
                             LIP_CONFIRMATION_SCREEN,
                             format("/cases/case-details/%s#CaseDocuments", CASE_ID),
-                            responsePackLink))
+                            responsePackLink
+                        ))
                         .build());
             }
         }
