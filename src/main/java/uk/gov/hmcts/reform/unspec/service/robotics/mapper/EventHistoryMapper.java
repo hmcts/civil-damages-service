@@ -80,12 +80,30 @@ public class EventHistoryMapper {
                     case CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE:
                         buildClaimDismissedPastDeadline(builder, caseData, stateHistory);
                         break;
+                    case TAKEN_OFFLINE_PAST_APPLICANT_RESPONSE_DEADLINE:
+                        buildClaimTakenOfflinePastApplicantResponse(builder, caseData);
+                        break;
                     default:
                         break;
                 }
             });
 
         return builder.build();
+    }
+
+    private void buildClaimTakenOfflinePastApplicantResponse(EventHistory.EventHistoryBuilder builder,
+                                                             CaseData caseData) {
+        String detailsText = "RPA Reason: Case struck out after no response from applicant past response deadline.";
+        builder.miscellaneous(
+            Event.builder()
+                .eventSequence(prepareEventSequence(builder.build()))
+                .eventCode("999")
+                .dateReceived(caseData.getTakenOfflineDate().format(ISO_DATE))
+                .eventDetailsText(detailsText)
+                .eventDetails(EventDetails.builder()
+                                  .miscText(detailsText)
+                                  .build())
+                .build());
     }
 
     private void buildClaimDismissedPastDeadline(EventHistory.EventHistoryBuilder builder,

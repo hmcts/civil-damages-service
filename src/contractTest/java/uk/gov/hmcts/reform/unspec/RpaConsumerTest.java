@@ -500,4 +500,26 @@ class RpaConsumerTest extends BaseRpaTest {
             assertEquals(PactVerificationResult.Ok.INSTANCE, result);
         }
     }
+
+    @Nested
+    class PastApplicantResponseDeadline {
+
+        @Test
+        @SneakyThrows
+        void shouldGeneratePact_whenApplicantResponseDeadlinePassedAfterFullDefence() {
+            CaseData caseData = CaseDataBuilder.builder()
+                .atStateNotificationAcknowledgedTimeExtension()
+                .atState(FlowState.Main.TAKEN_OFFLINE_PAST_APPLICANT_RESPONSE_DEADLINE)
+                .legacyCaseReference("000DC022")
+                .build();
+            String payload = roboticsDataMapper.toRoboticsCaseData(caseData).toJsonString();
+
+            assertThat(payload, validateJson());
+
+            String description = "Claim taken offline passed applicant deadline after full defence response";
+            PactVerificationResult result = getPactVerificationResult(payload, description);
+
+            assertEquals(PactVerificationResult.Ok.INSTANCE, result);
+        }
+    }
 }

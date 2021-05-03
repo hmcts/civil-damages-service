@@ -552,7 +552,7 @@ class EventHistoryMapperTest {
             Event expectedDefenceFiled = Event.builder()
                 .eventSequence(4)
                 .eventCode("50")
-                .dateReceived(caseData.getClaimNotificationDate().format(ISO_DATE))
+                .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
                 .litigiousPartyID("002")
                 .build();
             Event expectedDirectionsQuestionnaireFiled = Event.builder()
@@ -649,7 +649,7 @@ class EventHistoryMapperTest {
             Event expectedDefenceFiled = Event.builder()
                 .eventSequence(2)
                 .eventCode("50")
-                .dateReceived(caseData.getClaimNotificationDate().format(ISO_DATE))
+                .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
                 .litigiousPartyID("002")
                 .build();
             Event expectedDirectionsQuestionnaireFiled = Event.builder()
@@ -721,7 +721,7 @@ class EventHistoryMapperTest {
             Event expectedDefenceFiled = Event.builder()
                 .eventSequence(4)
                 .eventCode("50")
-                .dateReceived(caseData.getClaimNotificationDate().format(ISO_DATE))
+                .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
                 .litigiousPartyID("002")
                 .build();
             Event expectedDirectionsQuestionnaireRespondent = Event.builder()
@@ -843,7 +843,7 @@ class EventHistoryMapperTest {
             Event expectedDefenceFiled = Event.builder()
                 .eventSequence(2)
                 .eventCode("50")
-                .dateReceived(caseData.getClaimNotificationDate().format(ISO_DATE))
+                .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
                 .litigiousPartyID("002")
                 .build();
             Event expectedDirectionsQuestionnaireRespondent = Event.builder()
@@ -1220,7 +1220,7 @@ class EventHistoryMapperTest {
             Event expectedDefenceFiled = Event.builder()
                 .eventSequence(3)
                 .eventCode("50")
-                .dateReceived(caseData.getClaimNotificationDate().format(ISO_DATE))
+                .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
                 .litigiousPartyID("002")
                 .build();
             Event expectedDirectionsQuestionnaireRespondent = Event.builder()
@@ -1543,6 +1543,109 @@ class EventHistoryMapperTest {
                 "replyToDefence",
                 "directionsQuestionnaireFiled",
                 "receiptOfAdmission"
+            );
+        }
+    }
+
+    @Nested
+    class PastApplicantResponseDeadline {
+
+        @Test
+        void shouldPrepareExpectedEvents_whenPastApplicantResponseDeadline() {
+            CaseData caseData = CaseDataBuilder.builder()
+                .atStateNotificationAcknowledgedTimeExtension()
+                .atState(FlowState.Main.TAKEN_OFFLINE_PAST_APPLICANT_RESPONSE_DEADLINE)
+                .build();
+            Event expectedDefenceFiled = Event.builder()
+                .eventSequence(4)
+                .eventCode("50")
+                .dateReceived(caseData.getRespondent1ResponseDate().format(ISO_DATE))
+                .litigiousPartyID("002")
+                .build();
+            Event expectedDirectionsQuestionnaireFiled = Event.builder()
+                .eventSequence(5)
+                .eventCode("197")
+                .dateReceived(caseData.getClaimNotificationDate().format(ISO_DATE))
+                .litigiousPartyID("002")
+                .eventDetailsText(mapper.prepareEventDetailsText(
+                    caseData.getRespondent1DQ(),
+                    mapper.getPreferredCourtCode(caseData.getRespondent1DQ())
+                ))
+                .eventDetails(EventDetails.builder()
+                                  .stayClaim(mapper.isStayClaim(caseData.getRespondent1DQ()))
+                                  .preferredCourtCode(mapper.getPreferredCourtCode(caseData.getRespondent1DQ()))
+                                  .preferredCourtName("")
+                                  .build())
+                .build();
+            String detailsText = "RPA Reason: Case struck out after no response from applicant past response deadline.";
+            List<Event> expectedMiscellaneousEvents = List.of(
+                Event.builder()
+                    .eventSequence(1)
+                    .eventCode("999")
+                    .dateReceived(caseData.getClaimNotificationDate().format(ISO_DATE))
+                    .eventDetailsText("Claimant has notified defendant.")
+                    .eventDetails(EventDetails.builder()
+                                      .miscText("Claimant has notified defendant.")
+                                      .build())
+                    .build(),
+                Event.builder()
+                    .eventSequence(6)
+                    .eventCode("999")
+                    .dateReceived(caseData.getTakenOfflineDate().format(ISO_DATE))
+                    .eventDetailsText(detailsText)
+                    .eventDetails(EventDetails
+                                      .builder()
+                                      .miscText(detailsText)
+                                      .build())
+                    .build()
+            );
+            Event expectedAcknowledgementOfServiceReceived = Event.builder()
+                .eventSequence(2)
+                .eventCode("38")
+                .dateReceived(caseData.getClaimNotificationDate().format(ISO_DATE))
+                .litigiousPartyID("002")
+                .eventDetails(EventDetails.builder()
+                                  .responseIntention(caseData.getRespondent1ClaimResponseIntentionType()
+                                                         .getLabel())
+                                  .build())
+                .eventDetailsText(format(
+                    "responseIntention: %s",
+                    caseData.getRespondent1ClaimResponseIntentionType().getLabel()
+                ))
+                .build();
+            Event expectedConsentExtensionFilingDefence = Event.builder()
+                .eventSequence(3)
+                .eventCode("45")
+                .dateReceived(caseData.getRespondent1TimeExtensionDate().format(ISO_DATE))
+                .litigiousPartyID("002")
+                .eventDetails(EventDetails.builder()
+                                  .agreedExtensionDate(caseData.getRespondentSolicitor1AgreedDeadlineExtension()
+                                                           .format(ISO_DATE))
+                                  .build())
+                .eventDetailsText(format("agreedExtensionDate: %s", caseData
+                    .getRespondentSolicitor1AgreedDeadlineExtension()
+                    .format(ISO_DATE)))
+                .build();
+
+            var eventHistory = mapper.buildEvents(caseData);
+
+            assertThat(eventHistory).isNotNull();
+            assertThat(eventHistory).extracting("defenceFiled").asList()
+                .containsExactly(expectedDefenceFiled);
+            assertThat(eventHistory).extracting("directionsQuestionnaireFiled").asList()
+                .containsExactly(expectedDirectionsQuestionnaireFiled);
+            assertThat(eventHistory).extracting("miscellaneous").asList()
+                .containsExactly(expectedMiscellaneousEvents.get(0), expectedMiscellaneousEvents.get(1));
+            assertThat(eventHistory).extracting("acknowledgementOfServiceReceived").asList()
+                .containsExactly(expectedAcknowledgementOfServiceReceived);
+            assertThat(eventHistory).extracting("consentExtensionFilingDefence").asList()
+                .containsExactly(expectedConsentExtensionFilingDefence);
+
+            assertEmptyEvents(
+                eventHistory,
+                "receiptOfAdmission",
+                "receiptOfPartAdmission",
+                "replyToDefence"
             );
         }
     }
