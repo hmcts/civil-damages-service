@@ -68,7 +68,7 @@ import static uk.gov.hmcts.reform.unspec.enums.dq.HearingLength.ONE_DAY;
 
 public class CaseDataBuilder {
 
-    public static final String LEGACY_CASE_REFERENCE = "000LR001";
+    public static final String LEGACY_CASE_REFERENCE = "000DC001";
     public static final Long CASE_ID = 1594901956117591L;
     public static final LocalDateTime RESPONSE_DEADLINE = now().plusDays(14).atTime(23, 59, 59);
     public static final LocalDateTime APPLICANT_RESPONSE_DEADLINE = LocalDateTime.now().plusDays(120);
@@ -92,6 +92,7 @@ public class CaseDataBuilder {
     private DynamicList applicantSolicitor1PbaAccounts;
     private Fee claimFee;
     private StatementOfTruth applicantSolicitor1ClaimStatementOfTruth;
+    private StatementOfTruth uiStatementOfTruth;
     private String paymentReference;
     private String legacyCaseReference;
     private AllocatedTrack allocatedTrack;
@@ -305,6 +306,11 @@ public class CaseDataBuilder {
 
     public CaseDataBuilder extensionDate(LocalDate extensionDate) {
         this.respondentSolicitor1AgreedDeadlineExtension = extensionDate;
+        return this;
+    }
+
+    public CaseDataBuilder uiStatementOfTruth(StatementOfTruth statementOfTruth) {
+        this.uiStatementOfTruth = statementOfTruth;
         return this;
     }
 
@@ -865,6 +871,9 @@ public class CaseDataBuilder {
             .applicant1ResponseDeadline(applicant1ResponseDeadline)
             .takenOfflineDate(takenOfflineDate)
             .claimDismissedDate(claimDismissedDate)
+
+            //ui field
+            .uiStatementOfTruth(uiStatementOfTruth)
             .build();
     }
 }
