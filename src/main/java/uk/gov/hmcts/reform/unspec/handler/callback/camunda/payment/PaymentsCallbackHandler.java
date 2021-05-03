@@ -102,9 +102,12 @@ public class PaymentsCallbackHandler extends CallbackHandler {
         try {
             var paymentReference = paymentsService.createCreditAccountPayment(caseData, authToken).getReference();
             PaymentDetails paymentDetails = ofNullable(caseData.getClaimIssuedPaymentDetails())
-                .map(PaymentDetails::toBuilder).orElse(PaymentDetails.builder())
+                .map(PaymentDetails::toBuilder)
+                .orElse(PaymentDetails.builder())
                 .status(SUCCESS)
                 .reference(paymentReference)
+                .errorCode(null)
+                .errorMessage(null)
                 .build();
 
             caseData = caseData.toBuilder()
