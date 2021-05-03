@@ -245,6 +245,11 @@ public class CaseDataBuilder {
         return this;
     }
 
+    public CaseDataBuilder takenOfflineDate(LocalDateTime takenOfflineDate) {
+        this.takenOfflineDate = takenOfflineDate;
+        return this;
+    }
+
     public CaseDataBuilder systemGeneratedCaseDocuments(List<Element<CaseDocument>> systemGeneratedCaseDocuments) {
         this.systemGeneratedCaseDocuments = systemGeneratedCaseDocuments;
         return this;
@@ -302,6 +307,11 @@ public class CaseDataBuilder {
 
     public CaseDataBuilder claimDismissedDate(LocalDateTime date) {
         this.claimDismissedDate = date;
+        return this;
+    }
+
+    public CaseDataBuilder takenOfflineByStaffDate(LocalDateTime takenOfflineByStaffDate) {
+        this.takenOfflineByStaffDate = takenOfflineByStaffDate;
         return this;
     }
 
@@ -684,7 +694,7 @@ public class CaseDataBuilder {
 
     public CaseDataBuilder atStateClaimIssued() {
         atStatePendingClaimIssued();
-        claimNotificationDeadline = LocalDateTime.now();
+        claimNotificationDeadline = LocalDateTime.now().plusDays(1);
         ccdState = CASE_ISSUED;
         return this;
     }
