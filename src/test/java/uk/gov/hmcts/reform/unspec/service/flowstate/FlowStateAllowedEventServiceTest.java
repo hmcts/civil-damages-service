@@ -157,6 +157,7 @@ class FlowStateAllowedEventServiceTest {
                     CLAIM_DETAILS_NOTIFIED,
                     new CaseEvent[] {
                         ACKNOWLEDGE_CLAIM,
+                        DEFENDANT_RESPONSE,
                         INFORM_AGREED_EXTENSION_DATE,
                         ADD_DEFENDANT_LITIGATION_FRIEND,
                         WITHDRAW_CLAIM,
@@ -323,6 +324,7 @@ class FlowStateAllowedEventServiceTest {
                 of(
                     DEFENDANT_RESPONSE,
                     new String[] {NOTIFICATION_ACKNOWLEDGED.fullName(),
+                        CLAIM_DETAILS_NOTIFIED.fullName(),
                         CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION.fullName(),
                         NOTIFICATION_ACKNOWLEDGED_TIME_EXTENSION.fullName()
                     }

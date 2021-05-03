@@ -65,7 +65,7 @@ class RepresentativeServiceTest {
     class GetRespondentRepresentative {
 
         @Test
-        void shouldReturnValidOrganisationDetails_whenStateFlowIsNotProceedsOfflineUnrepresentedDefendant() {
+        void shouldReturnValidOrganisationDetails_whenDefendantIsRepresented() {
             CaseData caseData = CaseDataBuilder.builder().atStateClaimIssued().build();
 
             Representative representative = representativeService.getRespondentRepresentative(caseData);
@@ -95,8 +95,8 @@ class RepresentativeServiceTest {
         }
 
         @Test
-        void shouldReturnValidOrganisationDetails_whenStateFlowIsProceedsOfflineUnrepresentedDefendant() {
-            CaseData caseData = CaseDataBuilder.builder().atStateProceedsOfflineUnrepresentedDefendant().build();
+        void shouldReturnValidOrganisationDetails_whenDefendantIsNotRepresented() {
+            CaseData caseData = CaseDataBuilder.builder().atStatePendingClaimIssuedUnRepresentedDefendant().build();
 
             Representative representative = representativeService.getRespondentRepresentative(caseData);
 
@@ -113,8 +113,8 @@ class RepresentativeServiceTest {
         }
 
         @Test
-        void shouldReturnEmptyRepresentative_whenNoRespondentSolicitor1OrganisationDetailsProvided() {
-            CaseData caseData = CaseDataBuilder.builder().atStateProceedsOfflineUnrepresentedDefendant().build();
+        void shouldReturnEmptyRepresentative_whenDefendantSolicitorIsNotRegisteredInMyHmcts() {
+            CaseData caseData = CaseDataBuilder.builder().atStatePendingClaimIssuedUnRegisteredDefendant().build();
 
             Representative representative = representativeService.getRespondentRepresentative(caseData);
 
