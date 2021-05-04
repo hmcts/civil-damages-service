@@ -23,7 +23,7 @@ public interface ParticularsOfClaimValidator {
             .orElse(ServedDocumentFiles.builder().build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .errors(servedDocumentFiles.getErrors())
+            .errors(servedDocumentFiles.getErrorsBackwardsCompatible())
             .build();
     }
 }

@@ -49,7 +49,7 @@ public class NotifyClaimDetailsCallbackHandler extends CallbackHandler implement
     protected Map<String, Callback> callbacks() {
         return Map.of(
             callbackKey(ABOUT_TO_START), this::emptyCallbackResponse,
-            callbackKey(MID, "particulars-of-claim"), this::validateParticularsOfClaim,
+            callbackKey(MID, "particulars-of-claim"), this::validateParticularsOfClaimBackwardsCompatible,
             callbackKey(V_1, MID, "particulars-of-claim"), this::validateParticularsOfClaim,
             callbackKey(ABOUT_TO_SUBMIT), this::submitClaim,
             callbackKey(SUBMITTED), this::buildConfirmation
