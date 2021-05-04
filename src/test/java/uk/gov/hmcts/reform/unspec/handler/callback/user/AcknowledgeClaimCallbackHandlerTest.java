@@ -182,9 +182,9 @@ class AcknowledgeClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
             assertThat(response).usingRecursiveComparison().isEqualTo(
                 SubmittedCallbackResponse.builder()
-                    .confirmationHeader("# You've acknowledged claim")
+                    .confirmationHeader(format("# You have acknowledged the claim%n## Claim number: 000DC001"))
                     .confirmationBody(format(
-                        "<br />You need to respond before %s."
+                        "<br />You need to respond to the claim before %s."
                             + "%n%n[Download the Acknowledgement of Claim form]"
                             + "(/cases/case-details/%s#CaseDocuments)",
                         formatLocalDateTime(RESPONSE_DEADLINE, DATE_TIME_AT), caseData.getCcdCaseReference()

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.unspec.handler.callback.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -22,7 +23,9 @@ import uk.gov.hmcts.reform.unspec.model.CaseData;
 import uk.gov.hmcts.reform.unspec.model.CorrectEmail;
 import uk.gov.hmcts.reform.unspec.model.IdamUserDetails;
 import uk.gov.hmcts.reform.unspec.model.Party;
+import uk.gov.hmcts.reform.unspec.model.PaymentDetails;
 import uk.gov.hmcts.reform.unspec.model.SolicitorReferences;
+import uk.gov.hmcts.reform.unspec.model.StatementOfTruth;
 import uk.gov.hmcts.reform.unspec.model.common.DynamicList;
 import uk.gov.hmcts.reform.unspec.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.reform.unspec.service.FeesService;
@@ -47,6 +50,7 @@ import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.MID;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.SUBMITTED;
+import static uk.gov.hmcts.reform.unspec.callback.CallbackVersion.V_1;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.CREATE_CLAIM;
 import static uk.gov.hmcts.reform.unspec.enums.AllocatedTrack.getAllocatedTrack;
 import static uk.gov.hmcts.reform.unspec.enums.YesOrNo.NO;
@@ -60,18 +64,19 @@ public class CreateClaimCallbackHandler extends CallbackHandler implements Parti
 
     private static final List<CaseEvent> EVENTS = Collections.singletonList(CREATE_CLAIM);
     public static final String CONFIRMATION_SUMMARY = "<br/>[Download the sealed claim form](%s)"
-        + "\n\n You have until DATE to notify the defendant of the claim and claim details.";
+        + "\n\n Your claim will not be issued until payment is confirmed. Once payment is confirmed you will "
+        + "receive an email. The email will also include the date when you need to notify the defendant of the claim."
+        + "\n\n You must notify the defendant of the claim within 4 months of the claim being issued. The exact "
+        + "date when you must notify the claim details will be provided when you first notify "
+        + "the defendant of the claim.";
 
-    public static final String LIP_CONFIRMATION_BODY = "<br />To continue your claim by post you need to:"
-        + "%n* [Download the sealed claim form](%s)"
-        + "%n* Send the claim form, <a href=\"%s\" target=\"_blank\">a response pack</a> (PDF, 266 KB) "
-        + "and any supporting documents to the defendant by %s"
-        + "%n%nOnce you have served the claim send the Certificate of Service and any supporting documents to the "
-        + "County Court Claims Centre.";
-
-    public static final String UNREGISTERED_ORG_CONFIRMATION_BODY = "<br />\n\n### What you need to do\n\n"
-        + "\n* Serve the claim on the defendant by Date1."
-        + "\n* File the certificate of service with CCMC by Date2.";
+    public static final String LIP_CONFIRMATION_BODY = "<br />Your claim will not be issued until payment is confirmed."
+        + " Once payment is confirmed you will receive an email. The claim will then progress offline."
+        + "\n\n To continue the claim you need to send the <a href=\"%s\" target=\"_blank\">sealed claim form</a>, "
+        + "a <a href=\"%s\" target=\"_blank\">response pack</a> and any supporting documents to "
+        + "the defendant within 4 months. "
+        + "\n\nOnce you have served the claim, send the Certificate of Service and supporting documents to the County"
+        + " Court Claims Centre.";
 
     private final ClaimIssueConfiguration claimIssueConfiguration;
     private final ReferenceNumberRepository referenceNumberRepository;
@@ -86,18 +91,20 @@ public class CreateClaimCallbackHandler extends CallbackHandler implements Parti
 
     @Override
     protected Map<String, Callback> callbacks() {
-        return Map.of(
-            callbackKey(ABOUT_TO_START), this::emptyCallbackResponse,
-            callbackKey(MID, "eligibilityCheck"), this::eligibilityCheck,
-            callbackKey(MID, "applicant"), this::validateDateOfBirth,
-            callbackKey(MID, "fee"), this::calculateFee,
-            callbackKey(MID, "idam-email"), this::getIdamEmail,
-            callbackKey(MID, "particulars-of-claim"), this::validateParticularsOfClaim,
-            callbackKey(MID, "appOrgPolicy"), this::validateApplicantSolicitorOrgPolicy,
-            callbackKey(MID, "repOrgPolicy"), this::validateRespondentSolicitorOrgPolicy,
-            callbackKey(ABOUT_TO_SUBMIT), this::submitClaim,
-            callbackKey(SUBMITTED), this::buildConfirmation
-        );
+        return new ImmutableMap.Builder<String, Callback>()
+            .put(callbackKey(ABOUT_TO_START), this::emptyCallbackResponse)
+            .put(callbackKey(MID, "eligibilityCheck"), this::eligibilityCheck)
+            .put(callbackKey(MID, "applicant"), this::validateDateOfBirth)
+            .put(callbackKey(MID, "fee"), this::calculateFeeBackwardsCompatible)
+            .put(callbackKey(V_1, MID, "fee"), this::calculateFee)
+            .put(callbackKey(MID, "idam-email"), this::getIdamEmail)
+            .put(callbackKey(MID, "particulars-of-claim"), this::validateParticularsOfClaim)
+            .put(callbackKey(MID, "appOrgPolicy"), this::validateApplicantSolicitorOrgPolicy)
+            .put(callbackKey(MID, "repOrgPolicy"), this::validateRespondentSolicitorOrgPolicy)
+            .put(callbackKey(MID, "statement-of-truth"), this::resetStatementOfTruth)
+            .put(callbackKey(ABOUT_TO_SUBMIT), this::submitClaim)
+            .put(callbackKey(SUBMITTED), this::buildConfirmation)
+            .build();
     }
 
     @Override
@@ -143,7 +150,7 @@ public class CreateClaimCallbackHandler extends CallbackHandler implements Parti
             .build();
     }
 
-    private CallbackResponse calculateFee(CallbackParams callbackParams) {
+    private CallbackResponse calculateFeeBackwardsCompatible(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
         Optional<SolicitorReferences> references = ofNullable(caseData.getSolicitorReferences());
         String paymentReference = ofNullable(caseData.getPaymentReference())
@@ -157,6 +164,28 @@ public class CreateClaimCallbackHandler extends CallbackHandler implements Parti
             .applicantSolicitor1PbaAccounts(DynamicList.fromList(pbaNumbers))
             .applicantSolicitor1PbaAccountsIsEmpty(pbaNumbers.isEmpty() ? YES : NO)
             .paymentReference(paymentReference);
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDataBuilder.build().toMap(objectMapper))
+            .build();
+    }
+
+    private CallbackResponse calculateFee(CallbackParams callbackParams) {
+        CaseData caseData = callbackParams.getCaseData();
+        Optional<SolicitorReferences> references = ofNullable(caseData.getSolicitorReferences());
+        String reference = references.map(SolicitorReferences::getApplicantSolicitor1Reference).orElse("");
+        CaseData.CaseDataBuilder caseDataBuilder = caseData.toBuilder();
+
+        Optional<PaymentDetails> paymentDetails = ofNullable(caseData.getClaimIssuedPaymentDetails());
+        String customerReference = paymentDetails.map(PaymentDetails::getCustomerReference).orElse(reference);
+        PaymentDetails updatedDetails = PaymentDetails.builder().customerReference(customerReference).build();
+        caseDataBuilder.claimIssuedPaymentDetails(updatedDetails);
+
+        List<String> pbaNumbers = getPbaAccounts(callbackParams.getParams().get(BEARER_TOKEN).toString());
+
+        caseDataBuilder.claimFee(feesService.getFeeDataByClaimValue(caseData.getClaimValue()))
+            .applicantSolicitor1PbaAccounts(DynamicList.fromList(pbaNumbers))
+            .applicantSolicitor1PbaAccountsIsEmpty(pbaNumbers.isEmpty() ? YES : NO);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDataBuilder.build().toMap(objectMapper))
@@ -179,6 +208,20 @@ public class CreateClaimCallbackHandler extends CallbackHandler implements Parti
         return organisationService.findOrganisation(authToken)
             .map(Organisation::getPaymentAccount)
             .orElse(emptyList());
+    }
+
+    private CallbackResponse resetStatementOfTruth(CallbackParams callbackParams) {
+        CaseData caseData = callbackParams.getCaseData();
+        StatementOfTruth statementOfTruth = caseData.getUiStatementOfTruth();
+
+        CaseData updatedCaseData = caseData.toBuilder()
+            .uiStatementOfTruth(null)
+            .applicantSolicitor1ClaimStatementOfTruth(statementOfTruth)
+            .build();
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(updatedCaseData.toMap(objectMapper))
+            .build();
     }
 
     private CallbackResponse submitClaim(CallbackParams callbackParams) {
@@ -211,28 +254,32 @@ public class CreateClaimCallbackHandler extends CallbackHandler implements Parti
 
     private SubmittedCallbackResponse buildConfirmation(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
-        String claimNumber = caseData.getLegacyCaseReference();
-
-        if (caseData.getRespondent1OrgRegistered() == NO) {
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Your claim will now progress offline: %s", claimNumber))
-                .confirmationBody(UNREGISTERED_ORG_CONFIRMATION_BODY)
-                .build();
-        }
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Your claim has been issued%n## Claim number: %s", claimNumber))
-            .confirmationBody(getBody(caseData.getRespondent1Represented(), caseData.getCcdCaseReference()))
+            .confirmationHeader(getHeader(caseData))
+            .confirmationBody(getBody(caseData))
             .build();
     }
 
-    private String getBody(YesOrNo respondentRepresented, Long caseReference) {
+    private String getHeader(CaseData caseData) {
+        if (caseData.getRespondent1Represented() == NO || caseData.getRespondent1OrgRegistered() == NO) {
+            return format(
+                "# Your claim has been received and will progress offline%n## Claim number: %s",
+                caseData.getLegacyCaseReference()
+            );
+        }
+        return format("# Your claim has been received%n## Claim number: %s", caseData.getLegacyCaseReference());
+    }
+
+    private String getBody(CaseData caseData) {
         LocalDateTime serviceDeadline = LocalDate.now().plusDays(112).atTime(23, 59);
         String formattedServiceDeadline = formatLocalDateTime(serviceDeadline, DATE_TIME_AT);
 
         return format(
-            respondentRepresented == YesOrNo.NO ? LIP_CONFIRMATION_BODY : CONFIRMATION_SUMMARY,
-            format("/cases/case-details/%s#CaseDocuments", caseReference),
+            caseData.getRespondent1Represented() == NO || caseData.getRespondent1OrgRegistered() == NO
+                ? LIP_CONFIRMATION_BODY
+                : CONFIRMATION_SUMMARY,
+            format("/cases/case-details/%s#CaseDocuments", caseData.getCcdCaseReference()),
             claimIssueConfiguration.getResponsePackLink(),
             formattedServiceDeadline
         );

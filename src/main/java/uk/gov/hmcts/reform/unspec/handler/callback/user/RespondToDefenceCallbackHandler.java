@@ -13,10 +13,13 @@ import uk.gov.hmcts.reform.unspec.callback.CaseEvent;
 import uk.gov.hmcts.reform.unspec.enums.YesOrNo;
 import uk.gov.hmcts.reform.unspec.model.BusinessProcess;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
+import uk.gov.hmcts.reform.unspec.model.StatementOfTruth;
 import uk.gov.hmcts.reform.unspec.model.UnavailableDate;
 import uk.gov.hmcts.reform.unspec.model.common.Element;
+import uk.gov.hmcts.reform.unspec.model.dq.Applicant1DQ;
 import uk.gov.hmcts.reform.unspec.service.Time;
 import uk.gov.hmcts.reform.unspec.validation.UnavailableDateValidator;
+import uk.gov.hmcts.reform.unspec.validation.interfaces.ExpertsValidator;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,7 +37,7 @@ import static uk.gov.hmcts.reform.unspec.enums.YesOrNo.YES;
 
 @Service
 @RequiredArgsConstructor
-public class RespondToDefenceCallbackHandler extends CallbackHandler {
+public class RespondToDefenceCallbackHandler extends CallbackHandler implements ExpertsValidator {
 
     private static final List<CaseEvent> EVENTS = Collections.singletonList(CLAIMANT_RESPONSE);
     private final UnavailableDateValidator unavailableDateValidator;
@@ -51,6 +54,8 @@ public class RespondToDefenceCallbackHandler extends CallbackHandler {
         return Map.of(
             callbackKey(ABOUT_TO_START), this::emptyCallbackResponse,
             callbackKey(MID, "validate-unavailable-dates"), this::validateUnavailableDates,
+            callbackKey(MID, "experts"), this::validateApplicantDqExperts,
+            callbackKey(MID, "statement-of-truth"), this::resetStatementOfTruth,
             callbackKey(ABOUT_TO_SUBMIT), this::aboutToSubmit,
             callbackKey(SUBMITTED), this::buildConfirmation
         );
@@ -64,6 +69,23 @@ public class RespondToDefenceCallbackHandler extends CallbackHandler {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .errors(errors)
+            .build();
+    }
+
+    private CallbackResponse resetStatementOfTruth(CallbackParams callbackParams) {
+        CaseData caseData = callbackParams.getCaseData();
+        StatementOfTruth statementOfTruth = caseData.getUiStatementOfTruth();
+        Applicant1DQ dq = caseData.getApplicant1DQ().toBuilder()
+            .applicant1DQStatementOfTruth(statementOfTruth)
+            .build();
+
+        CaseData updatedCaseData = caseData.toBuilder()
+            .uiStatementOfTruth(null)
+            .applicant1DQ(dq)
+            .build();
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(updatedCaseData.toMap(objectMapper))
             .build();
     }
 
@@ -83,32 +105,31 @@ public class RespondToDefenceCallbackHandler extends CallbackHandler {
         YesOrNo proceeding = caseData.getApplicant1ProceedWithClaim();
 
         String claimNumber = caseData.getLegacyCaseReference();
-        String dqLink = "http://www.google.com";
-
-        String body = getBody(proceeding);
         String title = getTitle(proceeding);
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format(title, claimNumber))
-            .confirmationBody(format(body, dqLink))
+            .confirmationBody(getBody(proceeding))
             .build();
     }
 
     private String getTitle(YesOrNo proceeding) {
         if (proceeding == YES) {
-            return "# You've decided to proceed with the claim%n## Claim number: %s";
+            return "# You've chosen to proceed with the claim%n## Claim number: %s";
         }
-        return "# You have chosen not to proceed with the claim%n## Claim number: %s";
+        return "# You've chosen not to proceed with the claim%n## Claim number: %s";
     }
 
     private String getBody(YesOrNo proceeding) {
+        String dqLink = "http://www.google.com";
+
         if (proceeding == YES) {
-            return "<br />We'll review the case. We'll contact you to tell you what to do next.%n%n"
-                + "[Download directions questionnaire](%s)";
+            return format(
+                "<br />We'll review the case and contact you to tell you what to do next.%n%n"
+                    + "[Download directions questionnaire](%s)",
+                dqLink
+            );
         }
-        return "<br />If you do want to proceed you need to do it within: %n%n"
-            + "- 14 days if the claim is allocated to a small claims track%n"
-            + "- 28 days if the claim is allocated to a fast or multi track%n%n"
-            + "The case will be stayed if you do not proceed within the allowed timescale.";
+        return "<br />";
     }
 }
