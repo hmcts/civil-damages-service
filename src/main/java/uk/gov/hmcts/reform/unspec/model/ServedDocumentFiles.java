@@ -41,12 +41,12 @@ public class ServedDocumentFiles {
     @JsonIgnore
     public List<String> getErrorsBackwardsCompat() {
         List<String> errors = new ArrayList<>();
-        if (ofNullable(particularsOfClaimDocument).isPresent() && ofNullable(particularsOfClaimText).isPresent()) {
+        if (ofNullable(particularsOfClaimDocumentNew).isPresent() && ofNullable(particularsOfClaimText).isPresent()) {
             errors.add("You need to either upload 1 Particulars of claim only or enter the Particulars "
                            + "of claim text in the field provided. You cannot do both.");
         }
 
-        if (ofNullable(particularsOfClaimDocument).isEmpty() && ofNullable(particularsOfClaimText).isEmpty()) {
+        if (ofNullable(particularsOfClaimDocumentNew).isEmpty() && ofNullable(particularsOfClaimText).isEmpty()) {
             errors.add("You must add Particulars of claim details");
         }
         return errors;
