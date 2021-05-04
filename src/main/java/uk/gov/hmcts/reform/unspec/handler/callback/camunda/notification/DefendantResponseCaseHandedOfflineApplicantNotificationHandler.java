@@ -17,16 +17,13 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_APPLICANT_SOLICITOR1_FOR_CASE_HANDED_OFFLINE;
-import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_APPLICANT_SOLICITOR1_FOR_CASE_HANDED_OFFLINE_CC;
 
 @Service
 @RequiredArgsConstructor
 public class DefendantResponseCaseHandedOfflineApplicantNotificationHandler extends CallbackHandler
     implements NotificationData {
 
-    private static final List<CaseEvent> EVENTS = List.of(
-        NOTIFY_APPLICANT_SOLICITOR1_FOR_CASE_HANDED_OFFLINE,
-        NOTIFY_APPLICANT_SOLICITOR1_FOR_CASE_HANDED_OFFLINE_CC);
+    private static final List<CaseEvent> EVENTS = List.of(NOTIFY_APPLICANT_SOLICITOR1_FOR_CASE_HANDED_OFFLINE);
 
     public static final String TASK_ID = "DefendantResponseCaseHandedOfflineNotifyApplicantSolicitor1";
     private static final String REFERENCE_TEMPLATE = "defendant-response-case-handed-offline-applicant-notification-%s";
@@ -53,12 +50,9 @@ public class DefendantResponseCaseHandedOfflineApplicantNotificationHandler exte
 
     private CallbackResponse notifyApplicantSolicitorForCaseHandedOffline(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
-        var recipient = callbackParams.getRequest().getEventId().endsWith("_CC")
-            ? notificationsProperties.getRespondentSolicitorEmail()
-            : notificationsProperties.getApplicantSolicitorEmail();
 
         notificationService.sendMail(
-            recipient,
+            notificationsProperties.getApplicantSolicitorEmail(),
             notificationsProperties.getSolicitorResponseToCase(),
             addProperties(caseData),
             String.format(REFERENCE_TEMPLATE, caseData.getLegacyCaseReference())
