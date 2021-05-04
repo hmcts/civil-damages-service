@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.handler.callback.BaseCallbackHandlerTest;
 import uk.gov.hmcts.reform.unspec.helpers.CaseDetailsConverter;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
+import uk.gov.hmcts.reform.unspec.model.StatementOfTruth;
 import uk.gov.hmcts.reform.unspec.model.UnavailableDate;
 import uk.gov.hmcts.reform.unspec.model.dq.Applicant1DQ;
 import uk.gov.hmcts.reform.unspec.model.dq.Expert;
@@ -220,18 +221,29 @@ class RespondToDefenceCallbackHandlerTest extends BaseCallbackHandlerTest {
     }
 
     @Nested
-    class StatementOfTruth {
+    class MidStatementOfTruth {
 
         @Test
         void shouldSetStatementOfTruthToNull_whenPopulated() {
-            CaseData caseData = CaseDataBuilder.builder().atStateApplicantRespondToDefenceAndProceed().build();
+            String name = "John Smith";
+            String role = "Solicitor";
+
+            CaseData caseData = CaseDataBuilder.builder()
+                .uiStatementOfTruth(StatementOfTruth.builder().name(name).role(role).build())
+                .applicant1DQ()
+                .build();
 
             CallbackParams params = callbackParamsOf(caseData, MID, "statement-of-truth");
             var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
 
             assertThat(response.getData())
-                .extracting("applicant1DQStatementOfTruth")
+                .extracting("uiStatementOfTruth")
                 .isNull();
+
+            assertThat(response.getData())
+                .extracting("applicant1DQStatementOfTruth")
+                .extracting("name", "role")
+                .containsExactly(name, role);
         }
     }
 
@@ -278,7 +290,7 @@ class RespondToDefenceCallbackHandlerTest extends BaseCallbackHandlerTest {
 
             assertThat(response).usingRecursiveComparison().isEqualTo(
                 SubmittedCallbackResponse.builder()
-                    .confirmationHeader(format("# You've chosen to proceed with the claim%n## Claim number: 000LR001"))
+                    .confirmationHeader(format("# You've chosen to proceed with the claim%n## Claim number: 000DC001"))
                     .confirmationBody(format(
                         "<br />We'll review the case and contact you to tell you what to do next.%n%n"
                             + "[Download directions questionnaire](http://www.google.com)"))
@@ -298,7 +310,7 @@ class RespondToDefenceCallbackHandlerTest extends BaseCallbackHandlerTest {
             assertThat(response).usingRecursiveComparison().isEqualTo(
                 SubmittedCallbackResponse.builder()
                     .confirmationHeader(format("# You've chosen not to proceed with the claim%n## Claim number:"
-                                                   + " 000LR001"))
+                                                   + " 000DC001"))
                     .confirmationBody("<br />")
                     .build());
         }
