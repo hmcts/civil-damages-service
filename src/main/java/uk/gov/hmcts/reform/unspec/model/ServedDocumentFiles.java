@@ -41,11 +41,11 @@ public class ServedDocumentFiles {
     @JsonIgnore
     public List<String> getErrorsBackwardsCompatible() {
         List<String> errors = new ArrayList<>();
-        if (ofNullable(particularsOfClaimDocumentNew).isPresent() && ofNullable(particularsOfClaimText).isPresent()) {
+        if (ofNullable(particularsOfClaimDocument).isPresent() && ofNullable(particularsOfClaimText).isPresent()) {
             errors.add("More than one Particulars of claim details added");
         }
 
-        if (ofNullable(particularsOfClaimDocumentNew).isEmpty() && ofNullable(particularsOfClaimText).isEmpty()) {
+        if (ofNullable(particularsOfClaimDocument).isEmpty() && ofNullable(particularsOfClaimText).isEmpty()) {
             errors.add("You must add Particulars of claim details");
         }
         return errors;
