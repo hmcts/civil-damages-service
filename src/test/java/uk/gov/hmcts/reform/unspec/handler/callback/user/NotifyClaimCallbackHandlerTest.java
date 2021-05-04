@@ -89,7 +89,7 @@ class NotifyClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
             }
 
             @Test
-            void shouldSetClaimDetailsNotificationAsClaimNotificationDeadline_when14DaysIsAfterThe4MonthDeadline() {
+            void shouldSetClaimDetailsNotificationAsNotificationDeadlineAt_when14DaysIsAfterThe4MonthDeadline() {
                 LocalDateTime claimNotificationDeadline = notificationDate.minusDays(5);
                 CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseDetailsNotification()
                     .claimNotificationDeadline(claimNotificationDeadline)
@@ -100,8 +100,10 @@ class NotifyClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                 ).build();
                 var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
 
+                LocalDateTime expectedTime = claimNotificationDeadline.toLocalDate().atTime(END_OF_BUSINESS_DAY);
+
                 assertThat(response.getData())
-                    .containsEntry("claimDetailsNotificationDeadline", claimNotificationDeadline.format(ISO_DATE_TIME));
+                    .containsEntry("claimDetailsNotificationDeadline", expectedTime.format(ISO_DATE_TIME));
             }
 
             @Test
@@ -123,8 +125,8 @@ class NotifyClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
         @Nested
         class SubmittedOnDeadlineDay {
 
-            LocalDateTime claimNotificationDeadline = LocalDateTime.of(2021, 4, 6, 0, 0);
-            LocalDateTime claimDetailsNotificationDeadline = LocalDateTime.of(2021, 4, 5, 16, 0);
+            LocalDateTime claimNotificationDeadline = LocalDateTime.of(2021, 4, 6, 23, 59, 59);
+            LocalDateTime claimDetailsNotificationDeadline = LocalDateTime.of(2021, 4, 5, 15, 15, 59);
             LocalDateTime expectedDeadline = claimDetailsNotificationDeadline;
 
             @BeforeEach

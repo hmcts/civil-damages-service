@@ -8,24 +8,24 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import static java.time.LocalTime.MIDNIGHT;
 import static uk.gov.hmcts.reform.unspec.enums.AllocatedTrack.getDaysToAddToDeadline;
 
 @Service
 @RequiredArgsConstructor
 public class DeadlinesCalculator {
 
-    public static final LocalTime END_OF_BUSINESS_DAY = LocalTime.of(16, 0);
+    public static final LocalTime END_OF_BUSINESS_DAY = LocalTime.of(15, 59, 59);
+    public static final LocalTime END_OF_DAY = LocalTime.of(23, 59, 59);
 
     private final WorkingDayIndicator workingDayIndicator;
 
     public LocalDateTime addMonthsToDateAtMidnight(int months, LocalDate claimIssueDate) {
-        return claimIssueDate.plusMonths(months).atTime(MIDNIGHT);
+        return claimIssueDate.plusMonths(months).atTime(END_OF_DAY);
     }
 
     public LocalDateTime addMonthsToDateToNextWorkingDayAtMidnight(int months, LocalDate claimIssueDate) {
         LocalDate notificationDeadline = claimIssueDate.plusMonths(months);
-        return calculateFirstWorkingDay(notificationDeadline).atTime(MIDNIGHT);
+        return calculateFirstWorkingDay(notificationDeadline).atTime(END_OF_DAY);
     }
 
     public LocalDateTime plus14DaysAt4pmDeadline(LocalDateTime startDate) {
