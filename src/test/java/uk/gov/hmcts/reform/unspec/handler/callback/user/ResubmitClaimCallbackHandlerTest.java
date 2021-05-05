@@ -63,8 +63,9 @@ class ResubmitClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
             assertThat(response).usingRecursiveComparison().isEqualTo(
                 SubmittedCallbackResponse.builder()
                     .confirmationHeader("# Claim pending")
-                    .confirmationBody("<br />Once your payment is confirmed your claim will be processed ready to be issued. "
-                    + "Wait for us to contact you.")
+                    .confirmationBody(
+                        "<br />Once your payment is confirmed your claim will be processed ready to be issued. "
+                            + "Wait for us to contact you.")
                     .build());
         }
     }
