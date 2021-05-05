@@ -212,11 +212,11 @@ public class CreateClaimCallbackHandler extends CallbackHandler implements Parti
 
     private CallbackResponse resetStatementOfTruth(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
-        StatementOfTruth statementOfTruth = caseData.getUiStatementOfTruth();
 
+        // resetting statement of truth field, this resets in the page, but the data is still sent to the db.
+        // must be to do with the way XUI cache data entered through the lifecycle of an event.
         CaseData updatedCaseData = caseData.toBuilder()
             .uiStatementOfTruth(null)
-            .applicantSolicitor1ClaimStatementOfTruth(statementOfTruth)
             .build();
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -243,6 +243,12 @@ public class CreateClaimCallbackHandler extends CallbackHandler implements Parti
         dataBuilder.submittedDate(time.now());
         dataBuilder.allocatedTrack(getAllocatedTrack(caseData.getClaimValue().toPounds(), caseData.getClaimType()));
         dataBuilder.businessProcess(BusinessProcess.ready(CREATE_CLAIM));
+
+        // moving statement of truth value to correct field, this was not possible in mid event.
+        // resetting statement of truth to make sure it's empty the next time it appears in the UI.
+        StatementOfTruth statementOfTruth = caseData.getUiStatementOfTruth();
+        dataBuilder.uiStatementOfTruth(StatementOfTruth.builder().build());
+        dataBuilder.applicantSolicitor1ClaimStatementOfTruth(statementOfTruth);
 
         //set check email field to null for GDPR
         dataBuilder.applicantSolicitor1CheckEmail(CorrectEmail.builder().build());

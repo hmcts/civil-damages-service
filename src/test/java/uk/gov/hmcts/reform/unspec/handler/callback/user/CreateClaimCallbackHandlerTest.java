@@ -630,11 +630,6 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
             assertThat(response.getData())
                 .extracting("uiStatementOfTruth")
                 .isNull();
-
-            assertThat(response.getData())
-                .extracting("applicantSolicitor1ClaimStatementOfTruth")
-                .extracting("name", "role")
-                .containsExactly(name, role);
         }
     }
 
@@ -765,6 +760,36 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                     .extracting("applicantSolicitor1UserDetails")
                     .extracting("id", "email")
                     .containsExactly(userId, DIFFERENT_EMAIL);
+            }
+        }
+
+        @Nested
+        class ResetStatementOfTruth {
+
+            @Test
+            void shouldMoveStatementOfTruthToCorrectFieldAndResetUIField_whenInvoked() {
+                String name = "John Smith";
+                String role = "Solicitor";
+
+                CaseData data = caseData.toBuilder()
+                    .uiStatementOfTruth(StatementOfTruth.builder().name(name).role(role).build())
+                    .build();
+
+                var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(
+                    callbackParamsOf(
+                        data,
+                        ABOUT_TO_SUBMIT
+                    ));
+
+                assertThat(response.getData())
+                    .extracting("applicantSolicitor1ClaimStatementOfTruth")
+                    .extracting("name", "role")
+                    .containsExactly(name, role);
+
+                assertThat(response.getData())
+                    .extracting("uiStatementOfTruth")
+                    .extracting("name", "role")
+                    .containsExactly(null, null);
             }
         }
     }

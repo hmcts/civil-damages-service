@@ -286,13 +286,12 @@ class RespondToClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
     class MidStatementOfTruth {
 
         @Test
-        void shouldSetStatementOfTruthToNull_whenPopulated() {
+        void shouldSetStatementOfTruthFieldsToNull_whenPopulated() {
             String name = "John Smith";
             String role = "Solicitor";
 
             CaseData caseData = CaseDataBuilder.builder()
                 .uiStatementOfTruth(StatementOfTruth.builder().name(name).role(role).build())
-                .respondent1DQ()
                 .build();
 
             CallbackParams params = callbackParamsOf(caseData, MID, "statement-of-truth");
@@ -300,12 +299,8 @@ class RespondToClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
             assertThat(response.getData())
                 .extracting("uiStatementOfTruth")
-                .isNull();
-
-            assertThat(response.getData())
-                .extracting("respondent1DQStatementOfTruth")
                 .extracting("name", "role")
-                .containsExactly(name, role);
+                .containsExactly(null, null);
         }
     }
 
@@ -353,6 +348,37 @@ class RespondToClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                 .extracting("businessProcess")
                 .extracting("status")
                 .isEqualTo("READY");
+        }
+
+        @Nested
+        class ResetStatementOfTruth {
+
+            @Test
+            void shouldMoveStatementOfTruthToCorrectFieldAndResetUIField_whenInvoked() {
+                String name = "John Smith";
+                String role = "Solicitor";
+
+                CaseData caseData = CaseDataBuilder.builder().atStateRespondentFullDefence().build()
+                    .toBuilder()
+                    .uiStatementOfTruth(StatementOfTruth.builder().name(name).role(role).build())
+                    .build();
+
+                var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(
+                    callbackParamsOf(
+                        caseData,
+                        ABOUT_TO_SUBMIT
+                    ));
+
+                assertThat(response.getData())
+                    .extracting("respondent1DQStatementOfTruth")
+                    .extracting("name", "role")
+                    .containsExactly(name, role);
+
+                assertThat(response.getData())
+                    .extracting("uiStatementOfTruth")
+                    .extracting("name", "role")
+                    .containsExactly(null, null);
+            }
         }
     }
 

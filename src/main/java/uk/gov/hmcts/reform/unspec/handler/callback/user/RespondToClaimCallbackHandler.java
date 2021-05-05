@@ -91,36 +91,43 @@ public class RespondToClaimCallbackHandler extends CallbackHandler implements Ex
             .build();
     }
 
+    private CallbackResponse resetStatementOfTruth(CallbackParams callbackParams) {
+        CaseData caseData = callbackParams.getCaseData();
+
+        // resetting statement of truth field, this resets in the page, but the data is still sent to the db.
+        // setting null here does not clear, need to overwrite with value.
+        // must be to do with the way XUI cache data entered through the lifecycle of an event.
+        CaseData updatedCaseData = caseData.toBuilder()
+            .uiStatementOfTruth(StatementOfTruth.builder().role("").build())
+            .build();
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(updatedCaseData.toMap(objectMapper))
+            .build();
+    }
+
     private CallbackResponse setApplicantResponseDeadline(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
         LocalDateTime responseDate = time.now();
         AllocatedTrack allocatedTrack = caseData.getAllocatedTrack();
 
-        CaseData updatedData = caseData.toBuilder()
+        CaseData.CaseDataBuilder updatedData = caseData.toBuilder()
             .respondent1ResponseDate(responseDate)
             .applicant1ResponseDeadline(getApplicant1ResponseDeadline(responseDate, allocatedTrack))
-            .businessProcess(BusinessProcess.ready(DEFENDANT_RESPONSE))
-            .build();
+            .businessProcess(BusinessProcess.ready(DEFENDANT_RESPONSE));
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(updatedData.toMap(objectMapper))
-            .build();
-    }
-
-    private CallbackResponse resetStatementOfTruth(CallbackParams callbackParams) {
-        CaseData caseData = callbackParams.getCaseData();
+        // moving statement of truth value to correct field, this was not possible in mid event.
         StatementOfTruth statementOfTruth = caseData.getUiStatementOfTruth();
         Respondent1DQ dq = caseData.getRespondent1DQ().toBuilder()
             .respondent1DQStatementOfTruth(statementOfTruth)
             .build();
 
-        CaseData updatedCaseData = caseData.toBuilder()
-            .uiStatementOfTruth(null)
-            .respondent1DQ(dq)
-            .build();
+        updatedData.respondent1DQ(dq);
+        // resetting statement of truth to make sure it's empty the next time it appears in the UI.
+        updatedData.uiStatementOfTruth(StatementOfTruth.builder().build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(updatedCaseData.toMap(objectMapper))
+            .data(updatedData.build().toMap(objectMapper))
             .build();
     }
 
