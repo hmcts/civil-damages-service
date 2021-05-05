@@ -50,8 +50,6 @@ class ClaimContinuingOnlineApplicantNotificationHandlerTest extends BaseCallback
         @BeforeEach
         void setup() {
             when(notificationsProperties.getClaimantSolicitorClaimContinuingOnline()).thenReturn("template-id");
-            when(notificationsProperties.getApplicantSolicitorEmail()).thenReturn("claimantsolicitor@example.com");
-            when(notificationsProperties.getRespondentSolicitorEmail()).thenReturn("defendantsolicitor@example.com");
         }
 
         @Test
@@ -62,7 +60,7 @@ class ClaimContinuingOnlineApplicantNotificationHandlerTest extends BaseCallback
             handler.handle(params);
 
             verify(notificationService).sendMail(
-                "claimantsolicitor@example.com",
+                "applicantsolicitor@example.com",
                 "template-id",
                 getNotificationDataMap(caseData),
                 "claim-continuing-online-notification-000DC001"

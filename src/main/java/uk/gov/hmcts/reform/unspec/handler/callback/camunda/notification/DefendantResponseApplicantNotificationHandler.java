@@ -53,8 +53,8 @@ public class DefendantResponseApplicantNotificationHandler extends CallbackHandl
     private CallbackResponse notifyApplicantSolicitorForDefendantResponse(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
         var recipient = isCcNotification(callbackParams)
-            ? notificationsProperties.getRespondentSolicitorEmail()
-            : notificationsProperties.getApplicantSolicitorEmail();
+            ? caseData.getRespondentSolicitor1EmailAddress()
+            : caseData.getApplicantSolicitor1UserDetails().getEmail();
 
         notificationService.sendMail(
             recipient,

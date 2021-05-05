@@ -41,8 +41,6 @@ class FailedPaymentApplicantNotificationHandlerTest extends BaseCallbackHandlerT
         @BeforeEach
         void setup() {
             when(notificationsProperties.getFailedPayment()).thenReturn("template-id");
-            when(notificationsProperties.getApplicantSolicitorEmail()).thenReturn("claimantsolicitor@example.com");
-            when(notificationsProperties.getRespondentSolicitorEmail()).thenReturn("defendantsolicitor@example.com");
         }
 
         @Test
@@ -53,7 +51,7 @@ class FailedPaymentApplicantNotificationHandlerTest extends BaseCallbackHandlerT
             handler.handle(params);
 
             verify(notificationService).sendMail(
-                "claimantsolicitor@example.com",
+                "applicantsolicitor@example.com",
                 "template-id",
                 Map.of(CLAIM_REFERENCE_NUMBER, LEGACY_CASE_REFERENCE),
                 "failed-payment-applicant-notification-000DC001"

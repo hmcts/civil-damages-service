@@ -103,8 +103,6 @@ notifications:
   claimantSolicitorClaimContinuingOnline: "eacc12e2-c4b9-470c-bf49-23441bcd8386"
   solicitorCaseTakenOffline: "976d4b4a-43e0-498a-8c1e-8a0dc48e7fe8"
   solicitorLitigationFriendAdded: "b659b48e-2585-4162-911e-4166b51c3d0e"
-  applicantSolicitorEmail: civil.damages.claims+organisation.1.solicitor.1@gmail.com
-  respondentSolicitorEmail: civil.damages.claims+organisation.2.solicitor.1@gmail.com
 
 sendgrid:
   api-key: ${SENDGRID_API_KEY:false}
@@ -245,8 +243,6 @@ feign:
 
 notifications:
   govNotifyApiKey: some-gov-uk-notify-api-key
-  applicantSolicitorEmail: civil.damages.claims+organisation.1.solicitor.1@gmail.com
-  respondentSolicitorEmail: civil.damages.claims+organisation.2.solicitor.1@gmail.com
 
 testing:
   support:

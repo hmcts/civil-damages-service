@@ -46,8 +46,6 @@ class AgreedExtensionDateApplicantNotificationHandlerTest extends BaseCallbackHa
         @BeforeEach
         void setup() {
             when(notificationsProperties.getClaimantSolicitorAgreedExtensionDate()).thenReturn("template-id");
-            when(notificationsProperties.getApplicantSolicitorEmail()).thenReturn("claimantsolicitor@example.com");
-            when(notificationsProperties.getRespondentSolicitorEmail()).thenReturn("defendantsolicitor@example.com");
         }
 
         @Test
@@ -60,7 +58,7 @@ class AgreedExtensionDateApplicantNotificationHandlerTest extends BaseCallbackHa
             handler.handle(params);
 
             verify(notificationService).sendMail(
-                "claimantsolicitor@example.com",
+                "applicantsolicitor@example.com",
                 "template-id",
                 getNotificationDataMap(caseData),
                 "agreed-extension-date-applicant-notification-000DC001"
@@ -77,7 +75,7 @@ class AgreedExtensionDateApplicantNotificationHandlerTest extends BaseCallbackHa
             handler.handle(params);
 
             verify(notificationService).sendMail(
-                "defendantsolicitor@example.com",
+                "respondentsolicitor@example.com",
                 "template-id",
                 getNotificationDataMap(caseData),
                 "agreed-extension-date-applicant-notification-000DC001"

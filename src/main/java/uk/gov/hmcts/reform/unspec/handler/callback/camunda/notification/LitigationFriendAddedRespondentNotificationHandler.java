@@ -51,7 +51,7 @@ public class LitigationFriendAddedRespondentNotificationHandler extends Callback
         CaseData caseData = callbackParams.getCaseData();
 
         notificationService.sendMail(
-            notificationsProperties.getRespondentSolicitorEmail(),
+            caseData.getRespondentSolicitor1EmailAddress(),
             notificationsProperties.getSolicitorLitigationFriendAdded(),
             addProperties(caseData),
             String.format(REFERENCE_TEMPLATE, caseData.getLegacyCaseReference())

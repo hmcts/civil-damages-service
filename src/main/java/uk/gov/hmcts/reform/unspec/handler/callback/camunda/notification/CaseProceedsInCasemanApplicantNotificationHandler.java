@@ -51,7 +51,7 @@ public class CaseProceedsInCasemanApplicantNotificationHandler extends CallbackH
         CaseData caseData = callbackParams.getCaseData();
 
         notificationService.sendMail(
-            notificationsProperties.getApplicantSolicitorEmail(),
+            caseData.getApplicantSolicitor1UserDetails().getEmail(),
             notificationsProperties.getSolicitorCaseTakenOffline(),
             addProperties(caseData),
             String.format(REFERENCE_TEMPLATE, caseData.getLegacyCaseReference())

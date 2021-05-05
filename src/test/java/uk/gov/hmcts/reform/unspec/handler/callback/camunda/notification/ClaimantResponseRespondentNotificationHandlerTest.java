@@ -41,8 +41,6 @@ class ClaimantResponseRespondentNotificationHandlerTest extends BaseCallbackHand
         @BeforeEach
         void setup() {
             when(notificationsProperties.getSolicitorResponseToCase()).thenReturn("template-id");
-            when(notificationsProperties.getApplicantSolicitorEmail()).thenReturn("claimantsolicitor@example.com");
-            when(notificationsProperties.getRespondentSolicitorEmail()).thenReturn("defendantsolicitor@example.com");
         }
 
         @Test
@@ -53,7 +51,7 @@ class ClaimantResponseRespondentNotificationHandlerTest extends BaseCallbackHand
             handler.handle(params);
 
             verify(notificationService).sendMail(
-                notificationsProperties.getRespondentSolicitorEmail(),
+                "respondentsolicitor@example.com",
                 "template-id",
                 Map.of(CLAIM_REFERENCE_NUMBER, LEGACY_CASE_REFERENCE),
                 "claimant-response-respondent-notification-000DC001"

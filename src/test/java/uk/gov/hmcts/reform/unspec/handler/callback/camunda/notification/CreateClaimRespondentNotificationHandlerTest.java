@@ -45,8 +45,6 @@ class CreateClaimRespondentNotificationHandlerTest extends BaseCallbackHandlerTe
         @BeforeEach
         void setup() {
             when(notificationsProperties.getRespondentSolicitorClaimIssueEmailTemplate()).thenReturn("template-id");
-            when(notificationsProperties.getApplicantSolicitorEmail()).thenReturn("claimantsolicitor@example.com");
-            when(notificationsProperties.getRespondentSolicitorEmail()).thenReturn("defendantsolicitor@example.com");
         }
 
         @Test
@@ -58,7 +56,7 @@ class CreateClaimRespondentNotificationHandlerTest extends BaseCallbackHandlerTe
             handler.handle(params);
 
             verify(notificationService).sendMail(
-                "civilunspecified@gmail.com",
+                "respondentsolicitor@example.com",
                 "template-id",
                 getExpectedMap(),
                 "create-claim-respondent-notification-000DC001"
@@ -74,7 +72,7 @@ class CreateClaimRespondentNotificationHandlerTest extends BaseCallbackHandlerTe
             handler.handle(params);
 
             verify(notificationService).sendMail(
-                "claimantsolicitor@example.com",
+                "applicantsolicitor@example.com",
                 "template-id",
                 getExpectedMap(),
                 "create-claim-respondent-notification-000DC001"

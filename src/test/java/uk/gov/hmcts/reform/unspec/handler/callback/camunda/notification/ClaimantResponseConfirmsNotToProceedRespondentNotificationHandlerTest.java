@@ -44,8 +44,6 @@ class ClaimantResponseConfirmsNotToProceedRespondentNotificationHandlerTest exte
         @BeforeEach
         void setup() {
             when(notificationsProperties.getClaimantSolicitorConfirmsNotToProceed()).thenReturn("template-id");
-            when(notificationsProperties.getApplicantSolicitorEmail()).thenReturn("claimantsolicitor@example.com");
-            when(notificationsProperties.getRespondentSolicitorEmail()).thenReturn("defendantsolicitor@example.com");
         }
 
         @Test
@@ -58,7 +56,7 @@ class ClaimantResponseConfirmsNotToProceedRespondentNotificationHandlerTest exte
             handler.handle(params);
 
             verify(notificationService).sendMail(
-                "defendantsolicitor@example.com",
+                "respondentsolicitor@example.com",
                 "template-id",
                 getNotificationDataMap(caseData),
                 "claimant-confirms-not-to-proceed-respondent-notification-000DC001"
@@ -75,7 +73,7 @@ class ClaimantResponseConfirmsNotToProceedRespondentNotificationHandlerTest exte
             handler.handle(params);
 
             verify(notificationService).sendMail(
-                "claimantsolicitor@example.com",
+                "applicantsolicitor@example.com",
                 "template-id",
                 getNotificationDataMap(caseData),
                 "claimant-confirms-not-to-proceed-respondent-notification-000DC001"

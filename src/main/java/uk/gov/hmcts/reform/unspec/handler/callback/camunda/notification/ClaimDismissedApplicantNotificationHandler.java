@@ -55,7 +55,7 @@ public class ClaimDismissedApplicantNotificationHandler extends CallbackHandler
         CaseData caseData = callbackParams.getCaseData();
 
         notificationService.sendMail(
-            notificationsProperties.getApplicantSolicitorEmail(),
+            caseData.getApplicantSolicitor1UserDetails().getEmail(),
             notificationsProperties.getSolicitorClaimDismissed(),
             addProperties(caseData),
             String.format(REFERENCE_TEMPLATE, caseData.getLegacyCaseReference())

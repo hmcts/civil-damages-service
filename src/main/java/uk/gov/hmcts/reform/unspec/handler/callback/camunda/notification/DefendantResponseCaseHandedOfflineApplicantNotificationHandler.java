@@ -52,7 +52,7 @@ public class DefendantResponseCaseHandedOfflineApplicantNotificationHandler exte
         CaseData caseData = callbackParams.getCaseData();
 
         notificationService.sendMail(
-            notificationsProperties.getApplicantSolicitorEmail(),
+            caseData.getApplicantSolicitor1UserDetails().getEmail(),
             notificationsProperties.getSolicitorResponseToCase(),
             addProperties(caseData),
             String.format(REFERENCE_TEMPLATE, caseData.getLegacyCaseReference())

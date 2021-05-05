@@ -41,8 +41,6 @@ class DefendantResponseCaseHandedOfflineRespondentNotificationHandlerTest extend
         @BeforeEach
         void setup() {
             when(notificationsProperties.getSolicitorResponseToCase()).thenReturn("template-id");
-            when(notificationsProperties.getApplicantSolicitorEmail()).thenReturn("claimantsolicitor@example.com");
-            when(notificationsProperties.getRespondentSolicitorEmail()).thenReturn("defendantsolicitor@example.com");
         }
 
         @Test
@@ -53,7 +51,7 @@ class DefendantResponseCaseHandedOfflineRespondentNotificationHandlerTest extend
             handler.handle(params);
 
             verify(notificationService).sendMail(
-                "defendantsolicitor@example.com",
+                "respondentsolicitor@example.com",
                 "template-id",
                 Map.of(CLAIM_REFERENCE_NUMBER, LEGACY_CASE_REFERENCE),
                 "defendant-response-case-handed-offline-respondent-notification-000DC001"

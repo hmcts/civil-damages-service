@@ -54,8 +54,8 @@ public class ClaimantResponseConfirmsToProceedRespondentNotificationHandler exte
     private CallbackResponse notifyRespondentSolicitorForClaimantConfirmsToProceed(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
         var recipient = isCcNotification(callbackParams)
-            ? notificationsProperties.getApplicantSolicitorEmail()
-            : notificationsProperties.getRespondentSolicitorEmail();
+            ? caseData.getApplicantSolicitor1UserDetails().getEmail()
+            : caseData.getRespondentSolicitor1EmailAddress();
 
         notificationService.sendMail(
             recipient,

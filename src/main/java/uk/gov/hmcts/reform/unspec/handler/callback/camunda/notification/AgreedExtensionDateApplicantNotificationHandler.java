@@ -55,8 +55,8 @@ public class AgreedExtensionDateApplicantNotificationHandler extends CallbackHan
     private CallbackResponse notifyApplicantSolicitorForAgreedExtensionDate(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
         var recipient = isCcNotification(callbackParams)
-            ? notificationsProperties.getRespondentSolicitorEmail()
-            : notificationsProperties.getApplicantSolicitorEmail();
+            ? caseData.getRespondentSolicitor1EmailAddress()
+            : caseData.getApplicantSolicitor1UserDetails().getEmail();
 
         notificationService.sendMail(
             recipient,

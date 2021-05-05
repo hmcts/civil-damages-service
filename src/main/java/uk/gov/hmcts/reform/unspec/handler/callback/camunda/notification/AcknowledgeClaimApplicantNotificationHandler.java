@@ -53,8 +53,8 @@ public class AcknowledgeClaimApplicantNotificationHandler extends CallbackHandle
     private CallbackResponse notifyApplicantSolicitorForClaimAcknowledgement(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
         var recipient = isCcNotification(callbackParams)
-            ? notificationsProperties.getRespondentSolicitorEmail()
-            : notificationsProperties.getApplicantSolicitorEmail();
+            ? caseData.getRespondentSolicitor1EmailAddress()
+            : caseData.getApplicantSolicitor1UserDetails().getEmail();
 
         notificationService.sendMail(
             recipient,

@@ -28,7 +28,6 @@ import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 class RaisingClaimAgainstLitigantInPersonNotificationHandlerTest {
 
     public static final String TEMPLATE_ID = "template-id";
-    public static final String EMAIL = "claimantsolicitor@example.com";
 
     @MockBean
     private NotificationService notificationService;
@@ -45,7 +44,6 @@ class RaisingClaimAgainstLitigantInPersonNotificationHandlerTest {
         @BeforeEach
         void setup() {
             when(notificationsProperties.getClaimantSolicitorCaseWillProgressOffline()).thenReturn(TEMPLATE_ID);
-            when(notificationsProperties.getApplicantSolicitorEmail()).thenReturn(EMAIL);
         }
 
         @Test
@@ -56,7 +54,7 @@ class RaisingClaimAgainstLitigantInPersonNotificationHandlerTest {
             handler.handle(params);
 
             verify(notificationService).sendMail(
-                EMAIL,
+                "applicantsolicitor@example.com",
                 TEMPLATE_ID,
                 getExpectedMap(),
                 "applicant-create-case-handed-offline-notification-000DC001"

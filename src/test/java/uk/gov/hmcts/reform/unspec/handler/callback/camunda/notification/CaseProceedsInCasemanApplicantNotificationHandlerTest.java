@@ -43,8 +43,6 @@ class CaseProceedsInCasemanApplicantNotificationHandlerTest extends BaseCallback
         @BeforeEach
         void setup() {
             when(notificationsProperties.getSolicitorCaseTakenOffline()).thenReturn("template-id");
-            when(notificationsProperties.getApplicantSolicitorEmail()).thenReturn("claimantsolicitor@example.com");
-            when(notificationsProperties.getRespondentSolicitorEmail()).thenReturn("defendantsolicitor@example.com");
         }
 
         @Test
@@ -55,7 +53,7 @@ class CaseProceedsInCasemanApplicantNotificationHandlerTest extends BaseCallback
             handler.handle(params);
 
             verify(notificationService).sendMail(
-                "claimantsolicitor@example.com",
+                "applicantsolicitor@example.com",
                 "template-id",
                 getNotificationDataMap(caseData),
                 "case-proceeds-in-caseman-applicant-notification-000DC001"

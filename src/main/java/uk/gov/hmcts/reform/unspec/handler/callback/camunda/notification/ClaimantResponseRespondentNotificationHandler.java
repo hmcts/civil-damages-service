@@ -51,7 +51,7 @@ public class ClaimantResponseRespondentNotificationHandler extends CallbackHandl
         CaseData caseData = callbackParams.getCaseData();
 
         notificationService.sendMail(
-            notificationsProperties.getRespondentSolicitorEmail(),
+            caseData.getRespondentSolicitor1EmailAddress(),
             notificationsProperties.getSolicitorResponseToCase(),
             addProperties(caseData),
             String.format(REFERENCE_TEMPLATE, caseData.getLegacyCaseReference())

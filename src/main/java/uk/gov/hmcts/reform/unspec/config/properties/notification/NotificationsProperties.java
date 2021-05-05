@@ -28,12 +28,6 @@ public class NotificationsProperties {
     private String failedPayment;
 
     @NotEmpty
-    private String applicantSolicitorEmail;
-
-    @NotEmpty
-    private String respondentSolicitorEmail;
-
-    @NotEmpty
     private String solicitorClaimDismissed;
 
     @NotEmpty

@@ -43,8 +43,6 @@ class LitigationFriendAddedApplicantNotificationHandlerTest extends BaseCallback
         @BeforeEach
         void setup() {
             when(notificationsProperties.getSolicitorLitigationFriendAdded()).thenReturn("template-id");
-            when(notificationsProperties.getApplicantSolicitorEmail()).thenReturn("claimantsolicitor@example.com");
-            when(notificationsProperties.getRespondentSolicitorEmail()).thenReturn("defendantsolicitor@example.com");
         }
 
         @Test
@@ -55,7 +53,7 @@ class LitigationFriendAddedApplicantNotificationHandlerTest extends BaseCallback
             handler.handle(params);
 
             verify(notificationService).sendMail(
-                "claimantsolicitor@example.com",
+                "applicantsolicitor@example.com",
                 "template-id",
                 getNotificationDataMap(caseData),
                 "litigation-friend-added-applicant-notification-000DC001"

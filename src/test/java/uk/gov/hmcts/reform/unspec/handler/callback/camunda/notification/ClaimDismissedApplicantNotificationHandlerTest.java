@@ -28,8 +28,6 @@ import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 class ClaimDismissedApplicantNotificationHandlerTest {
 
     public static final String TEMPLATE_ID = "template-id";
-    public static final String APPLICANT_EMAIL = "applicantsolicitor@example.com";
-    public static final String RESPONDENT_EMAIL = "applicantsolicitor@example.com";
 
     @MockBean
     private NotificationService notificationService;
@@ -46,8 +44,6 @@ class ClaimDismissedApplicantNotificationHandlerTest {
         @BeforeEach
         void setup() {
             when(notificationsProperties.getSolicitorClaimDismissed()).thenReturn(TEMPLATE_ID);
-            when(notificationsProperties.getApplicantSolicitorEmail()).thenReturn(APPLICANT_EMAIL);
-            when(notificationsProperties.getRespondentSolicitorEmail()).thenReturn(RESPONDENT_EMAIL);
         }
 
         @Test
@@ -58,7 +54,7 @@ class ClaimDismissedApplicantNotificationHandlerTest {
             handler.handle(params);
 
             verify(notificationService).sendMail(
-                APPLICANT_EMAIL,
+                "applicantsolicitor@example.com",
                 TEMPLATE_ID,
                 getExpectedMap(),
                 "claim-dismissed-applicant-notification-000DC001"
