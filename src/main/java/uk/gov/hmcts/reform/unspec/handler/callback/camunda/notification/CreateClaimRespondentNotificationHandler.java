@@ -57,7 +57,7 @@ public class CreateClaimRespondentNotificationHandler extends CallbackHandler im
 
     private CallbackResponse notifyRespondentSolicitorForClaimIssue(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
-        var recipient = callbackParams.getRequest().getEventId().endsWith("_CC")
+        var recipient = isCcNotification(callbackParams)
             ? notificationsProperties.getApplicantSolicitorEmail()
             : caseData.getRespondentSolicitor1EmailAddress();
 
@@ -81,5 +81,10 @@ public class CreateClaimRespondentNotificationHandler extends CallbackHandler im
             RESPONDENT_NAME, getPartyNameBasedOnType(caseData.getRespondent1()),
             ISSUED_ON, formatLocalDate(caseData.getIssueDate(), DATE)
         );
+    }
+
+    private boolean isCcNotification(CallbackParams callbackParams) {
+        return callbackParams.getRequest().getEventId()
+            .equals(NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIM_ISSUE_CC.name());
     }
 }

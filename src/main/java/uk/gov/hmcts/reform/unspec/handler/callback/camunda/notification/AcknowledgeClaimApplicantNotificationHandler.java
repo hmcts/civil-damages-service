@@ -52,7 +52,7 @@ public class AcknowledgeClaimApplicantNotificationHandler extends CallbackHandle
 
     private CallbackResponse notifyApplicantSolicitorForClaimAcknowledgement(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
-        var recipient = callbackParams.getRequest().getEventId().endsWith("_CC")
+        var recipient = isCcNotification(callbackParams)
             ? notificationsProperties.getRespondentSolicitorEmail()
             : notificationsProperties.getApplicantSolicitorEmail();
 
@@ -72,5 +72,10 @@ public class AcknowledgeClaimApplicantNotificationHandler extends CallbackHandle
             RESPONDENT_NAME, caseData.getRespondent1().getPartyName(),
             RESPONSE_DEADLINE, caseData.getRespondent1ResponseDeadline().toString()
         );
+    }
+
+    private boolean isCcNotification(CallbackParams callbackParams) {
+        return callbackParams.getRequest().getEventId()
+            .equals(NOTIFY_APPLICANT_SOLICITOR1_FOR_CLAIM_ACKNOWLEDGEMENT_CC.name());
     }
 }

@@ -54,7 +54,7 @@ public class AgreedExtensionDateApplicantNotificationHandler extends CallbackHan
 
     private CallbackResponse notifyApplicantSolicitorForAgreedExtensionDate(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
-        var recipient = callbackParams.getRequest().getEventId().endsWith("_CC")
+        var recipient = isCcNotification(callbackParams)
             ? notificationsProperties.getRespondentSolicitorEmail()
             : notificationsProperties.getApplicantSolicitorEmail();
 
@@ -74,5 +74,10 @@ public class AgreedExtensionDateApplicantNotificationHandler extends CallbackHan
             FRONTEND_BASE_URL_KEY, FRONTEND_BASE_URL,
             AGREED_EXTENSION_DATE, formatLocalDate(caseData.getRespondentSolicitor1AgreedDeadlineExtension(), DATE)
         );
+    }
+
+    private boolean isCcNotification(CallbackParams callbackParams) {
+        return callbackParams.getRequest().getEventId()
+            .equals(NOTIFY_APPLICANT_SOLICITOR1_FOR_AGREED_EXTENSION_DATE_CC.name());
     }
 }

@@ -53,7 +53,7 @@ public class ClaimantResponseConfirmsNotToProceedRespondentNotificationHandler e
 
     private CallbackResponse notifyRespondentSolicitorForClaimantConfirmsNotToProceed(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
-        var recipient = callbackParams.getRequest().getEventId().endsWith("_CC")
+        var recipient = isCcNotification(callbackParams)
             ? notificationsProperties.getApplicantSolicitorEmail()
             : notificationsProperties.getRespondentSolicitorEmail();
 
@@ -71,5 +71,10 @@ public class ClaimantResponseConfirmsNotToProceedRespondentNotificationHandler e
         return Map.of(
             CLAIM_REFERENCE_NUMBER, caseData.getLegacyCaseReference()
         );
+    }
+
+    private boolean isCcNotification(CallbackParams callbackParams) {
+        return callbackParams.getRequest().getEventId()
+            .equals(NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIMANT_CONFIRMS_NOT_TO_PROCEED_CC.name());
     }
 }

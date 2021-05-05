@@ -52,7 +52,7 @@ public class DefendantResponseApplicantNotificationHandler extends CallbackHandl
 
     private CallbackResponse notifyApplicantSolicitorForDefendantResponse(CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
-        var recipient = callbackParams.getRequest().getEventId().endsWith("_CC")
+        var recipient = isCcNotification(callbackParams)
             ? notificationsProperties.getRespondentSolicitorEmail()
             : notificationsProperties.getApplicantSolicitorEmail();
 
@@ -70,5 +70,10 @@ public class DefendantResponseApplicantNotificationHandler extends CallbackHandl
         return Map.of(
             CLAIM_REFERENCE_NUMBER, caseData.getLegacyCaseReference()
         );
+    }
+
+    private boolean isCcNotification(CallbackParams callbackParams) {
+        return callbackParams.getRequest().getEventId()
+            .equals(NOTIFY_APPLICANT_SOLICITOR1_FOR_DEFENDANT_RESPONSE_CC.name());
     }
 }
