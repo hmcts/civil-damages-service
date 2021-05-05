@@ -53,8 +53,15 @@ class FailedPaymentApplicantNotificationHandlerTest extends BaseCallbackHandlerT
             verify(notificationService).sendMail(
                 "applicantsolicitor@example.com",
                 "template-id",
-                Map.of(CLAIM_REFERENCE_NUMBER, LEGACY_CASE_REFERENCE),
+                getNotificationDataMap(caseData),
                 "failed-payment-applicant-notification-000DC001"
+            );
+        }
+
+        private Map<String, String> getNotificationDataMap(CaseData caseData) {
+            return Map.of(
+                CLAIM_REFERENCE_NUMBER, LEGACY_CASE_REFERENCE,
+                "frontendBaseUrl", "https://www.MyHMCTS.gov.uk"
             );
         }
     }

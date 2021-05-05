@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.unspec.handler.callback.camunda.notification;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,8 @@ import java.util.Map;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.unspec.handler.callback.camunda.notification.NotificationData.CLAIM_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.unspec.sampledata.CaseDataBuilder.LEGACY_CASE_REFERENCE;
 
 @SpringBootTest(classes = {
     ClaimDismissedApplicantNotificationHandler.class,
@@ -56,15 +59,17 @@ class ClaimDismissedApplicantNotificationHandlerTest {
             verify(notificationService).sendMail(
                 "applicantsolicitor@example.com",
                 TEMPLATE_ID,
-                getExpectedMap(),
+                getNotificationDataMap(caseData),
                 "claim-dismissed-applicant-notification-000DC001"
             );
         }
     }
 
-    private Map<String, String> getExpectedMap() {
+    @NotNull
+    private Map<String, String> getNotificationDataMap(CaseData caseData) {
         return Map.of(
-            "claimReferenceNumber", "000DC001"
+            CLAIM_REFERENCE_NUMBER, LEGACY_CASE_REFERENCE,
+            "frontendBaseUrl", "https://www.MyHMCTS.gov.uk"
         );
     }
 

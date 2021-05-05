@@ -45,7 +45,7 @@ class DefendantResponseCaseHandedOfflineApplicantNotificationHandlerTest extends
 
         @Test
         void shouldNotifyApplicantSolicitor_whenInvoked() {
-            CaseData caseData = CaseDataBuilder.builder().atStateClaimDetailsNotified().build();
+            CaseData caseData = CaseDataBuilder.builder().atStateRespondentCounterClaimAfterNotifyDetails().build();
             CallbackParams params = CallbackParamsBuilder.builder().of(ABOUT_TO_SUBMIT, caseData).build();
 
             handler.handle(params);
@@ -53,8 +53,16 @@ class DefendantResponseCaseHandedOfflineApplicantNotificationHandlerTest extends
             verify(notificationService).sendMail(
                 "applicantsolicitor@example.com",
                 "template-id",
-                Map.of(CLAIM_REFERENCE_NUMBER, LEGACY_CASE_REFERENCE),
+                getNotificationDataMap(caseData),
                 "defendant-response-case-handed-offline-applicant-notification-000DC001"
+            );
+        }
+
+        private Map<String, String> getNotificationDataMap(CaseData caseData) {
+            return Map.of(
+                CLAIM_REFERENCE_NUMBER, LEGACY_CASE_REFERENCE,
+                "frontendBaseUrl", "https://www.MyHMCTS.gov.uk",
+                "reason", caseData.getRespondent1ClaimResponseType().getDisplayedValue()
             );
         }
     }

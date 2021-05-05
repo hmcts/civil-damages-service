@@ -22,8 +22,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.unspec.handler.callback.camunda.notification.NotificationData.CLAIM_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.unspec.handler.callback.camunda.notification.NotificationData.FRONTEND_BASE_URL;
-import static uk.gov.hmcts.reform.unspec.handler.callback.camunda.notification.NotificationData.FRONTEND_BASE_URL_KEY;
 import static uk.gov.hmcts.reform.unspec.handler.callback.camunda.notification.NotificationData.ISSUED_ON;
 import static uk.gov.hmcts.reform.unspec.handler.callback.camunda.notification.NotificationData.NOTIFICATION_DEADLINE;
 import static uk.gov.hmcts.reform.unspec.helpers.DateFormatHelper.DATE;
@@ -73,7 +71,7 @@ class ClaimContinuingOnlineApplicantNotificationHandlerTest extends BaseCallback
                 CLAIM_REFERENCE_NUMBER, LEGACY_CASE_REFERENCE,
                 ISSUED_ON, formatLocalDate(CLAIM_ISSUED_DATE, DATE),
                 NOTIFICATION_DEADLINE, caseData.getClaimNotificationDeadline().toString(),
-                FRONTEND_BASE_URL_KEY, FRONTEND_BASE_URL
+                "frontendBaseUrl", "https://www.MyHMCTS.gov.uk"
             );
         }
     }

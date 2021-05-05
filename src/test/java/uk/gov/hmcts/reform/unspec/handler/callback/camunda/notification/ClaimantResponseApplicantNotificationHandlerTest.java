@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.unspec.handler.callback.camunda.notification;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -45,7 +46,7 @@ class ClaimantResponseApplicantNotificationHandlerTest extends BaseCallbackHandl
 
         @Test
         void shouldNotifyClaimantSolicitor_whenInvoked() {
-            CaseData caseData = CaseDataBuilder.builder().atStateClaimDetailsNotified().build();
+            CaseData caseData = CaseDataBuilder.builder().atStateRespondentCounterClaimAfterNotifyDetails().build();
             CallbackParams params = CallbackParamsBuilder.builder().of(ABOUT_TO_SUBMIT, caseData).build();
 
             handler.handle(params);
@@ -53,8 +54,17 @@ class ClaimantResponseApplicantNotificationHandlerTest extends BaseCallbackHandl
             verify(notificationService).sendMail(
                 "applicantsolicitor@example.com",
                 "template-id",
-                Map.of(CLAIM_REFERENCE_NUMBER, LEGACY_CASE_REFERENCE),
+                getNotificationDataMap(caseData),
                 "claimant-response-applicant-notification-000DC001"
+            );
+        }
+
+        @NotNull
+        private Map<String, String> getNotificationDataMap(CaseData caseData) {
+            return Map.of(
+                CLAIM_REFERENCE_NUMBER, LEGACY_CASE_REFERENCE,
+                "frontendBaseUrl", "https://www.MyHMCTS.gov.uk",
+                "reason", caseData.getRespondent1ClaimResponseType().getDisplayedValue()
             );
         }
     }

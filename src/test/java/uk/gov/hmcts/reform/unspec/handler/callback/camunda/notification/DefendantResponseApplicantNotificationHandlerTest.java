@@ -41,7 +41,7 @@ class DefendantResponseApplicantNotificationHandlerTest extends BaseCallbackHand
     class AboutToSubmitCallback {
         @BeforeEach
         void setup() {
-            when(notificationsProperties.getSolicitorDefendantResponseCaseTakenOffline()).thenReturn("template-id");
+            when(notificationsProperties.getClaimantSolicitorDefendantResponseFullDefence()).thenReturn("template-id");
         }
 
         @Test
@@ -56,7 +56,7 @@ class DefendantResponseApplicantNotificationHandlerTest extends BaseCallbackHand
             verify(notificationService).sendMail(
                 "applicantsolicitor@example.com",
                 "template-id",
-                Map.of(CLAIM_REFERENCE_NUMBER, LEGACY_CASE_REFERENCE),
+                getNotificationDataMap(caseData),
                 "defendant-response-applicant-notification-000DC001"
             );
         }
@@ -73,8 +73,16 @@ class DefendantResponseApplicantNotificationHandlerTest extends BaseCallbackHand
             verify(notificationService).sendMail(
                 "respondentsolicitor@example.com",
                 "template-id",
-                Map.of(CLAIM_REFERENCE_NUMBER, LEGACY_CASE_REFERENCE),
+                getNotificationDataMap(caseData),
                 "defendant-response-applicant-notification-000DC001"
+            );
+        }
+
+        private Map<String, String> getNotificationDataMap(CaseData caseData) {
+            return Map.of(
+                CLAIM_REFERENCE_NUMBER, LEGACY_CASE_REFERENCE,
+                "defendantName", "Mr. Sole Trader",
+                "frontendBaseUrl", "https://www.MyHMCTS.gov.uk"
             );
         }
     }

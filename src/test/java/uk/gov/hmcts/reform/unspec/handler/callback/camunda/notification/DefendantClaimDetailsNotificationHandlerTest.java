@@ -21,9 +21,11 @@ import java.util.Map;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.unspec.handler.callback.camunda.notification.NotificationData.CLAIM_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.unspec.helpers.DateFormatHelper.DATE;
 import static uk.gov.hmcts.reform.unspec.helpers.DateFormatHelper.formatLocalDate;
 import static uk.gov.hmcts.reform.unspec.sampledata.CaseDataBuilder.CLAIM_ISSUED_DATE;
+import static uk.gov.hmcts.reform.unspec.sampledata.CaseDataBuilder.LEGACY_CASE_REFERENCE;
 
 @SpringBootTest(classes = {
     DefendantClaimDetailsNotificationHandler.class,
@@ -59,7 +61,7 @@ class DefendantClaimDetailsNotificationHandlerTest extends BaseCallbackHandlerTe
             verify(notificationService).sendMail(
                 "respondentsolicitor@example.com",
                 "template-id",
-                getExpectedMap(),
+                getNotificationDataMap(caseData),
                 "claim-details-respondent-notification-000DC001"
             );
         }
@@ -75,18 +77,17 @@ class DefendantClaimDetailsNotificationHandlerTest extends BaseCallbackHandlerTe
             verify(notificationService).sendMail(
                 "applicantsolicitor@example.com",
                 "template-id",
-                getExpectedMap(),
+                getNotificationDataMap(caseData),
                 "claim-details-respondent-notification-000DC001"
             );
         }
 
-        private Map<String, String> getExpectedMap() {
+        private Map<String, String> getNotificationDataMap(CaseData caseData) {
             return Map.of(
-                "claimReferenceNumber", "000DC001",
-                "defendantName", "Mr. Sole Trader",
-                "issuedOn", formatLocalDate(CLAIM_ISSUED_DATE, DATE)
+                CLAIM_REFERENCE_NUMBER, LEGACY_CASE_REFERENCE,
+                "frontendBaseUrl", "https://www.MyHMCTS.gov.uk",
+                "claimDetailsNotificationDeadline", formatLocalDate(CLAIM_ISSUED_DATE, DATE)
             );
         }
     }
-
 }
