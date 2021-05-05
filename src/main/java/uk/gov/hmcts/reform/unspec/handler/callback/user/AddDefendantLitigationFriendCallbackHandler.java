@@ -42,6 +42,3 @@ public class AddDefendantLitigationFriendCallbackHandler extends CallbackHandler
             .build();
     }
 }
-
-
-
