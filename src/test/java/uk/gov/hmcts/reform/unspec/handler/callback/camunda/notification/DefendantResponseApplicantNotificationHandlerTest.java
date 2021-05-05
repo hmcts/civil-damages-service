@@ -41,7 +41,7 @@ class DefendantResponseApplicantNotificationHandlerTest extends BaseCallbackHand
     class AboutToSubmitCallback {
         @BeforeEach
         void setup() {
-            when(notificationsProperties.getSolicitorResponseToCase()).thenReturn("template-id");
+            when(notificationsProperties.getSolicitorDefendantResponseCaseTakenOffline()).thenReturn("template-id");
         }
 
         @Test

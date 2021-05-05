@@ -53,7 +53,7 @@ public class DefendantResponseCaseHandedOfflineApplicantNotificationHandler exte
 
         notificationService.sendMail(
             caseData.getApplicantSolicitor1UserDetails().getEmail(),
-            notificationsProperties.getSolicitorResponseToCase(),
+            notificationsProperties.getSolicitorDefendantResponseCaseTakenOffline(),
             addProperties(caseData),
             String.format(REFERENCE_TEMPLATE, caseData.getLegacyCaseReference())
         );
@@ -64,7 +64,9 @@ public class DefendantResponseCaseHandedOfflineApplicantNotificationHandler exte
     @Override
     public Map<String, String> addProperties(CaseData caseData) {
         return Map.of(
-            CLAIM_REFERENCE_NUMBER, caseData.getLegacyCaseReference()
+            CLAIM_REFERENCE_NUMBER, caseData.getLegacyCaseReference(),
+            REASON, caseData.getRespondent1ClaimResponseType().getDisplayedValue(),
+            FRONTEND_BASE_URL_KEY, FRONTEND_BASE_URL
         );
     }
 }

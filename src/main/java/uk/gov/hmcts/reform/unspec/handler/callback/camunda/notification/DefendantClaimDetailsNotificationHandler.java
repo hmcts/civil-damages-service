@@ -77,8 +77,8 @@ public class DefendantClaimDetailsNotificationHandler extends CallbackHandler im
     public Map<String, String> addProperties(CaseData caseData) {
         return Map.of(
             CLAIM_REFERENCE_NUMBER, caseData.getLegacyCaseReference(),
-            RESPONDENT_NAME, getPartyNameBasedOnType(caseData.getRespondent1()),
-            ISSUED_ON, formatLocalDate(caseData.getIssueDate(), DATE)
+            CLAIM_DETAILS_NOTIFICATION_DEADLINE, formatLocalDate(caseData.getIssueDate(), DATE),
+            FRONTEND_BASE_URL_KEY, FRONTEND_BASE_URL
         );
     }
 

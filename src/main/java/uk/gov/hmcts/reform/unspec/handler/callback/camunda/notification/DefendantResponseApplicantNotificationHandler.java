@@ -18,6 +18,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_APPLICANT_SOLICITOR1_FOR_DEFENDANT_RESPONSE;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_APPLICANT_SOLICITOR1_FOR_DEFENDANT_RESPONSE_CC;
+import static uk.gov.hmcts.reform.unspec.utils.PartyUtils.getPartyNameBasedOnType;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +59,7 @@ public class DefendantResponseApplicantNotificationHandler extends CallbackHandl
 
         notificationService.sendMail(
             recipient,
-            notificationsProperties.getSolicitorResponseToCase(),
+            notificationsProperties.getClaimantSolicitorDefendantResponseFullDefence(),
             addProperties(caseData),
             String.format(REFERENCE_TEMPLATE, caseData.getLegacyCaseReference())
         );
@@ -68,7 +69,9 @@ public class DefendantResponseApplicantNotificationHandler extends CallbackHandl
     @Override
     public Map<String, String> addProperties(CaseData caseData) {
         return Map.of(
-            CLAIM_REFERENCE_NUMBER, caseData.getLegacyCaseReference()
+            CLAIM_REFERENCE_NUMBER, caseData.getLegacyCaseReference(),
+            RESPONDENT_NAME, getPartyNameBasedOnType(caseData.getRespondent1()),
+            FRONTEND_BASE_URL_KEY, FRONTEND_BASE_URL
         );
     }
 
