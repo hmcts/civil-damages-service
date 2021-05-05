@@ -65,8 +65,7 @@ public class CaseProceedsInCasemanCallbackHandler extends CallbackHandler {
         CaseData caseData = callbackParams.getCaseData().toBuilder()
             //TODO: merge on last CMC-1442 PR
             //.businessProcess(BusinessProcess.ready(CASE_PROCEEDS_IN_CASEMAN))
-            //TODO: change to use takenOfflineByStaffDate
-            .takenOfflineDate(time.now())
+            .takenOfflineByStaffDate(time.now())
             .build();
 
         return AboutToStartOrSubmitCallbackResponse.builder()
