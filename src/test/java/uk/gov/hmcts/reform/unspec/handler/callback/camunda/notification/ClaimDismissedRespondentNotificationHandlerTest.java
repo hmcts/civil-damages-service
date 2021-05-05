@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.unspec.handler.callback.camunda.notification.claimdismissed;
+package uk.gov.hmcts.reform.unspec.handler.callback.camunda.notification;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -21,14 +21,15 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 
 @SpringBootTest(classes = {
-    PastClaimNotificationDeadlineApplicantNotificationHandler.class,
+    ClaimDismissedRespondentNotificationHandler.class,
     NotificationsProperties.class,
     JacksonAutoConfiguration.class
 })
-class PastClaimNotificationDeadlineApplicantNotificationHandlerTest {
+class ClaimDismissedRespondentNotificationHandlerTest {
 
     public static final String TEMPLATE_ID = "template-id";
-    public static final String EMAIL = "applicantsolicitor@example.com";
+    public static final String APPLICANT_EMAIL = "applicantsolicitor@example.com";
+    public static final String RESPONDENT_EMAIL = "applicantsolicitor@example.com";
 
     @MockBean
     private NotificationService notificationService;
@@ -37,16 +38,16 @@ class PastClaimNotificationDeadlineApplicantNotificationHandlerTest {
     private NotificationsProperties notificationsProperties;
 
     @Autowired
-    private PastClaimNotificationDeadlineApplicantNotificationHandler handler;
+    private ClaimDismissedRespondentNotificationHandler handler;
 
     @Nested
     class AboutToSubmitCallback {
 
         @BeforeEach
         void setup() {
-            when(notificationsProperties.getApplicantSolicitorClaimDismissedPastClaimNotificationDeadline())
-                .thenReturn(TEMPLATE_ID);
-            when(notificationsProperties.getApplicantSolicitorEmail()).thenReturn(EMAIL);
+            when(notificationsProperties.getSolicitorClaimDismissed()).thenReturn(TEMPLATE_ID);
+            when(notificationsProperties.getApplicantSolicitorEmail()).thenReturn(APPLICANT_EMAIL);
+            when(notificationsProperties.getRespondentSolicitorEmail()).thenReturn(RESPONDENT_EMAIL);
         }
 
         @Test
@@ -57,18 +58,17 @@ class PastClaimNotificationDeadlineApplicantNotificationHandlerTest {
             handler.handle(params);
 
             verify(notificationService).sendMail(
-                EMAIL,
+                RESPONDENT_EMAIL,
                 TEMPLATE_ID,
                 getExpectedMap(),
-                "claim-dismissed-past-claim-notification-deadline-applicant-notification-000DC001"
+                "claim-dismissed-respondent-notification-000DC001"
             );
         }
     }
 
     private Map<String, String> getExpectedMap() {
         return Map.of(
-            "claimReferenceNumber", "000DC001",
-            "defendantName", "Mr. Sole Trader"
+            "claimReferenceNumber", "000DC001"
         );
     }
 

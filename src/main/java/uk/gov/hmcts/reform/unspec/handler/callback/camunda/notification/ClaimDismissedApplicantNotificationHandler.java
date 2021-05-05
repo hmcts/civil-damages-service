@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.unspec.handler.callback.camunda.notification.claimdismissed;
+package uk.gov.hmcts.reform.unspec.handler.callback.camunda.notification;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.unspec.callback.CallbackHandler;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.callback.CaseEvent;
 import uk.gov.hmcts.reform.unspec.config.properties.notification.NotificationsProperties;
-import uk.gov.hmcts.reform.unspec.handler.callback.camunda.notification.NotificationData;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
 import uk.gov.hmcts.reform.unspec.service.NotificationService;
 
@@ -17,19 +16,18 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_APPLICANT_SOLICITOR1_PAST_CLAIM_DETAILS_NOTIFICATION_DEADLINE;
-import static uk.gov.hmcts.reform.unspec.utils.PartyUtils.getPartyNameBasedOnType;
+import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.NOTIFY_APPLICANT_SOLICITOR1_FOR_CLAIM_DISMISSED;
 
 @Service
 @RequiredArgsConstructor
-public class PastClaimDetailsNotificationDeadlineApplicantNotificationHandler extends CallbackHandler
+public class ClaimDismissedApplicantNotificationHandler extends CallbackHandler
     implements NotificationData {
 
     private static final List<CaseEvent> EVENTS = List.of(
-        NOTIFY_APPLICANT_SOLICITOR1_PAST_CLAIM_DETAILS_NOTIFICATION_DEADLINE);
-    public static final String TASK_ID = "ClaimDismissedPastClaimDetailsNotificationDeadlineNotifyApplicantSolicitor1";
+        NOTIFY_APPLICANT_SOLICITOR1_FOR_CLAIM_DISMISSED);
+    public static final String TASK_ID = "ClaimDismissedNotifyApplicantSolicitor1";
     private static final String REFERENCE_TEMPLATE =
-        "claim-dismissed-past-claim-details-notification-deadline-applicant-notification-%s";
+        "claim-dismissed-applicant-notification-%s";
 
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
@@ -38,7 +36,7 @@ public class PastClaimDetailsNotificationDeadlineApplicantNotificationHandler ex
     protected Map<String, Callback> callbacks() {
         return Map.of(
             callbackKey(ABOUT_TO_SUBMIT),
-            this::notifyApplicantSolicitorOfClaimDismissedPastClaimDetailsNotificationDeadline
+            this::notifyApplicantSolicitorForClaimDismissed
         );
     }
 
@@ -52,13 +50,13 @@ public class PastClaimDetailsNotificationDeadlineApplicantNotificationHandler ex
         return EVENTS;
     }
 
-    private CallbackResponse notifyApplicantSolicitorOfClaimDismissedPastClaimDetailsNotificationDeadline(
+    private CallbackResponse notifyApplicantSolicitorForClaimDismissed(
         CallbackParams callbackParams) {
         CaseData caseData = callbackParams.getCaseData();
 
         notificationService.sendMail(
             notificationsProperties.getApplicantSolicitorEmail(),
-            notificationsProperties.getApplicantSolicitorClaimDismissedPastClaimDetailsNotificationDeadline(),
+            notificationsProperties.getSolicitorClaimDismissed(),
             addProperties(caseData),
             String.format(REFERENCE_TEMPLATE, caseData.getLegacyCaseReference())
         );
@@ -69,8 +67,7 @@ public class PastClaimDetailsNotificationDeadlineApplicantNotificationHandler ex
     @Override
     public Map<String, String> addProperties(CaseData caseData) {
         return Map.of(
-            CLAIM_REFERENCE_NUMBER, caseData.getLegacyCaseReference(),
-            RESPONDENT_NAME, getPartyNameBasedOnType(caseData.getRespondent1())
+            CLAIM_REFERENCE_NUMBER, caseData.getLegacyCaseReference()
         );
     }
 }
