@@ -376,7 +376,8 @@ class StateFlowEngineTest {
 
         @Test
         void shouldReturnClaimDismissed_whenCaseDataAtStateClaimDismissed() {
-            CaseData caseData = CaseDataBuilder.builder().atStateClaimDismissed().build();
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimDismissed()
+                .build();
 
             StateFlow stateFlow = stateFlowEngine.evaluate(caseData);
 
@@ -509,7 +510,8 @@ class StateFlowEngineTest {
 
         @Test
         void shouldReturnProceedsWithOfflineJourney_whenCaseTakenOfflineAfterClaimIssue() {
-            CaseData caseData = CaseDataBuilder.builder().atStateTakenOfflineByStaff().build();
+            CaseData caseData = CaseDataBuilder.builder().atStateTakenOfflineByStaff()
+                .build();
             StateFlow stateFlow = stateFlowEngine.evaluate(caseData);
             assertThat(stateFlow.getState())
                 .extracting(State::getName)
@@ -639,6 +641,70 @@ class StateFlowEngineTest {
                     PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED.fullName(), CLAIM_NOTIFIED.fullName(),
                     CLAIM_DETAILS_NOTIFIED.fullName(), NOTIFICATION_ACKNOWLEDGED.fullName(),
                     FULL_DEFENCE.fullName(), TAKEN_OFFLINE_BY_STAFF.fullName()
+                );
+        }
+
+        @Test
+        void shouldReturnProceedsWithOfflineJourney_whenCaseTakenOfflinePastClaimDismissDeadline() {
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimDismissed()
+                .takenOfflineByStaffDate(LocalDateTime.now())
+                .build();
+            StateFlow stateFlow = stateFlowEngine.evaluate(caseData);
+            assertThat(stateFlow.getState())
+                .extracting(State::getName)
+                .isNotNull()
+                .isEqualTo(TAKEN_OFFLINE_BY_STAFF.fullName());
+            assertThat(stateFlow.getStateHistory())
+                .hasSize(9)
+                .extracting(State::getName)
+                .containsExactly(
+                    DRAFT.fullName(), CLAIM_SUBMITTED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
+                    PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED.fullName(), CLAIM_NOTIFIED.fullName(),
+                    CLAIM_DETAILS_NOTIFIED.fullName(),
+                    CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE.fullName(),
+                    TAKEN_OFFLINE_BY_STAFF.fullName()
+                );
+        }
+
+        @Test
+        void shouldReturnProceedsWithOfflineJourney_whenCaseTakenOfflinePastClaimNotificationDeadline() {
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimDismissedPastClaimNotificationDeadline()
+                .takenOfflineByStaffDate(LocalDateTime.now())
+                .build();
+            StateFlow stateFlow = stateFlowEngine.evaluate(caseData);
+            assertThat(stateFlow.getState())
+                .extracting(State::getName)
+                .isNotNull()
+                .isEqualTo(TAKEN_OFFLINE_BY_STAFF.fullName());
+            assertThat(stateFlow.getStateHistory())
+                .hasSize(7)
+                .extracting(State::getName)
+                .containsExactly(
+                    DRAFT.fullName(), CLAIM_SUBMITTED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
+                    PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED.fullName(),
+                    CLAIM_DISMISSED_PAST_CLAIM_NOTIFICATION_DEADLINE.fullName(),
+                    TAKEN_OFFLINE_BY_STAFF.fullName()
+                );
+        }
+
+        @Test
+        void shouldReturnProceedsWithOfflineJourney_whenCaseTakenOfflinePastClaimDetailsNotificationDeadline() {
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimDismissedPastClaimDetailsNotificationDeadline()
+                .takenOfflineByStaffDate(LocalDateTime.now())
+                .build();
+            StateFlow stateFlow = stateFlowEngine.evaluate(caseData);
+            assertThat(stateFlow.getState())
+                .extracting(State::getName)
+                .isNotNull()
+                .isEqualTo(TAKEN_OFFLINE_BY_STAFF.fullName());
+            assertThat(stateFlow.getStateHistory())
+                .hasSize(8)
+                .extracting(State::getName)
+                .containsExactly(
+                    DRAFT.fullName(), CLAIM_SUBMITTED.fullName(), CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName(),
+                    PENDING_CLAIM_ISSUED.fullName(), CLAIM_ISSUED.fullName(), CLAIM_NOTIFIED.fullName(),
+                    CLAIM_DISMISSED_PAST_CLAIM_DETAILS_NOTIFICATION_DEADLINE.fullName(),
+                    TAKEN_OFFLINE_BY_STAFF.fullName()
                 );
         }
     }
