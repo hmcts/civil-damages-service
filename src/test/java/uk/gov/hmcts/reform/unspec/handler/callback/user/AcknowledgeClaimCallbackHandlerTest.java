@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.callback.CallbackType;
+import uk.gov.hmcts.reform.unspec.config.ExitSurveyConfiguration;
 import uk.gov.hmcts.reform.unspec.handler.callback.BaseCallbackHandlerTest;
 import uk.gov.hmcts.reform.unspec.helpers.CaseDetailsConverter;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
@@ -42,6 +44,7 @@ import static uk.gov.hmcts.reform.unspec.sampledata.CaseDataBuilder.RESPONSE_DEA
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {
     AcknowledgeClaimCallbackHandler.class,
+    ExitSurveyConfiguration.class,
     JacksonAutoConfiguration.class,
     ValidationAutoConfiguration.class,
     DateOfBirthValidator.class,
@@ -57,6 +60,9 @@ class AcknowledgeClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
     @Autowired
     private AcknowledgeClaimCallbackHandler handler;
+
+    @Value("${exitsurvey.defendant}")
+    private String defendantSurvey;
 
     @Nested
     class AboutToStartCallback {
@@ -186,8 +192,10 @@ class AcknowledgeClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                     .confirmationBody(format(
                         "<br />You need to respond to the claim before %s."
                             + "%n%n[Download the Acknowledgement of Claim form]"
-                            + "(/cases/case-details/%s#CaseDocuments)",
-                        formatLocalDateTime(RESPONSE_DEADLINE, DATE_TIME_AT), caseData.getCcdCaseReference()
+                            + "(/cases/case-details/%s#CaseDocuments)"
+                            + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
+
+                formatLocalDateTime(RESPONSE_DEADLINE, DATE_TIME_AT), caseData.getCcdCaseReference(), defendantSurvey
                     ))
                     .build());
         }
