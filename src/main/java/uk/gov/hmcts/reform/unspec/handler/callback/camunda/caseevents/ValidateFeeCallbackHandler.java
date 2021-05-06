@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.VALIDATE_FEE;
 public class ValidateFeeCallbackHandler extends CallbackHandler {
 
     private static final List<CaseEvent> EVENTS = Collections.singletonList(VALIDATE_FEE);
-    private static final String ERROR_MESSAGE = "Fee has changed since claim submitted, it need to be validated again";
+    private static final String ERROR_MESSAGE = "Fee has changed since claim submitted. It needs to be validated again";
 
     private final FeesService feesService;
 
