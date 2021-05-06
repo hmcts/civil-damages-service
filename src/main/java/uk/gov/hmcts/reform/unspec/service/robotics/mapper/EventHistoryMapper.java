@@ -107,12 +107,11 @@ public class EventHistoryMapper {
     public String prepareClaimDismissedDetails(FlowState.Main flowState) {
         switch (flowState) {
             case CLAIM_DETAILS_NOTIFIED:
-                return "RPA Reason: Case struck out after no response from defendant after claimant sent notification.";
+                return "RPA Reason: Claim dismissed after no response from defendant after claimant sent notification.";
             case NOTIFICATION_ACKNOWLEDGED:
-                return "RPA Reason: Case struck out after no response from defendant after acknowledgement.";
             case NOTIFICATION_ACKNOWLEDGED_TIME_EXTENSION:
             case CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION:
-                return "RPA Reason: Case struck out after no response from defendant after extension request.";
+                return "RPA Reason: Claim dismissed. No user action has been taken for 6 months.";
             default:
                 throw new IllegalStateException("Unexpected flow state " + flowState.fullName());
         }
