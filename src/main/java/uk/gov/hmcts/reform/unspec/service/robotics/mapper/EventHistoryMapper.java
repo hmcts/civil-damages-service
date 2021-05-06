@@ -80,6 +80,22 @@ public class EventHistoryMapper {
                     case CLAIM_DISMISSED_PAST_CLAIM_DISMISSED_DEADLINE:
                         buildClaimDismissedPastDeadline(builder, caseData, stateHistory);
                         break;
+                    case CLAIM_DISMISSED_PAST_CLAIM_NOTIFICATION_DEADLINE:
+                        buildClaimDismissedPastNotificationsDeadline(
+                            builder,
+                            caseData,
+                            "RPA Reason: Claim dismissed. Claimant hasn't taken action since the "
+                                + "claim was issued."
+                        );
+                        break;
+                    case CLAIM_DISMISSED_PAST_CLAIM_DETAILS_NOTIFICATION_DEADLINE:
+                        buildClaimDismissedPastNotificationsDeadline(
+                            builder,
+                            caseData,
+                            "RPA Reason: Claim dismissed. Claimant hasn't notified defendant of the "
+                                + "claim details within the allowed 2 weeks."
+                        );
+                        break;
                     case TAKEN_OFFLINE_PAST_APPLICANT_RESPONSE_DEADLINE:
                         buildClaimTakenOfflinePastApplicantResponse(builder, caseData);
                         break;
@@ -93,7 +109,7 @@ public class EventHistoryMapper {
 
     private void buildClaimTakenOfflinePastApplicantResponse(EventHistory.EventHistoryBuilder builder,
                                                              CaseData caseData) {
-        String detailsText = "RPA Reason: Case struck out after no response from applicant past response deadline.";
+        String detailsText = "RPA Reason: Claim dismissed after no response from applicant past response deadline.";
         builder.miscellaneous(
             Event.builder()
                 .eventSequence(prepareEventSequence(builder.build()))
@@ -102,6 +118,20 @@ public class EventHistoryMapper {
                 .eventDetailsText(detailsText)
                 .eventDetails(EventDetails.builder()
                                   .miscText(detailsText)
+                                  .build())
+                .build());
+    }
+
+    private void buildClaimDismissedPastNotificationsDeadline(EventHistory.EventHistoryBuilder builder,
+                                                              CaseData caseData, String miscText) {
+        builder.miscellaneous(
+            Event.builder()
+                .eventSequence(prepareEventSequence(builder.build()))
+                .eventCode("999")
+                .dateReceived(caseData.getClaimDismissedDate().format(ISO_DATE))
+                .eventDetailsText(miscText)
+                .eventDetails(EventDetails.builder()
+                                  .miscText(miscText)
                                   .build())
                 .build());
     }
@@ -124,13 +154,12 @@ public class EventHistoryMapper {
 
     public String prepareClaimDismissedDetails(FlowState.Main flowState) {
         switch (flowState) {
-            case CLAIM_DETAILS_NOTIFIED:
-                return "RPA Reason: Case struck out after no response from defendant after claimant sent notification.";
+            case CLAIM_NOTIFIED:
+                return "RPA Reason: Claim dismissed after no response from defendant after claimant sent notification.";
             case NOTIFICATION_ACKNOWLEDGED:
-                return "RPA Reason: Case struck out after no response from defendant after acknowledgement.";
             case NOTIFICATION_ACKNOWLEDGED_TIME_EXTENSION:
             case CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION:
-                return "RPA Reason: Case struck out after no response from defendant after extension request.";
+                return "RPA Reason: Claim dismissed. No user action has been taken for 6 months.";
             default:
                 throw new IllegalStateException("Unexpected flow state " + flowState.fullName());
         }
