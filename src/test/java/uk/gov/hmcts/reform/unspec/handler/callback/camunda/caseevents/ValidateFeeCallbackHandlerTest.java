@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 })
 class ValidateFeeCallbackHandlerTest extends BaseCallbackHandlerTest {
 
-    private static final String ERROR_MESSAGE = "Fee has changed since claim submitted, it need to be validated again";
+    private static final String ERROR_MESSAGE = "Fee has changed since claim submitted. It needs to be validated again";
 
     @Autowired
     private ValidateFeeCallbackHandler handler;
