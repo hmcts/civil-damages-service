@@ -155,6 +155,7 @@ public class EventHistoryMapper {
     public String prepareClaimDismissedDetails(FlowState.Main flowState) {
         switch (flowState) {
             case CLAIM_NOTIFIED:
+            case CLAIM_DETAILS_NOTIFIED:
                 return "RPA Reason: Claim dismissed after no response from defendant after claimant sent notification.";
             case NOTIFICATION_ACKNOWLEDGED:
             case NOTIFICATION_ACKNOWLEDGED_TIME_EXTENSION:
