@@ -10,11 +10,11 @@ import uk.gov.hmcts.reform.unspec.callback.Callback;
 import uk.gov.hmcts.reform.unspec.callback.CallbackHandler;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.callback.CaseEvent;
-import uk.gov.hmcts.reform.unspec.config.ExitSurveyConfiguration;
 import uk.gov.hmcts.reform.unspec.model.BusinessProcess;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
 import uk.gov.hmcts.reform.unspec.model.Party;
 import uk.gov.hmcts.reform.unspec.service.DeadlinesCalculator;
+import uk.gov.hmcts.reform.unspec.service.ExitSurveyContentService;
 import uk.gov.hmcts.reform.unspec.service.Time;
 import uk.gov.hmcts.reform.unspec.validation.DateOfBirthValidator;
 
@@ -39,10 +39,9 @@ public class AcknowledgeClaimCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = Collections.singletonList(ACKNOWLEDGE_CLAIM);
 
     public static final String CONFIRMATION_SUMMARY = "<br />You need to respond to the claim before %s."
-        + "%n%n[Download the Acknowledgement of Claim form](%s)"
-        + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.";
+        + "%n%n[Download the Acknowledgement of Claim form](%s)";
 
-    private final ExitSurveyConfiguration exitSurveyConfiguration;
+    private final ExitSurveyContentService exitSurveyContentService;
     private final DateOfBirthValidator dateOfBirthValidator;
     private final DeadlinesCalculator deadlinesCalculator;
     private final ObjectMapper objectMapper;
@@ -94,9 +93,8 @@ public class AcknowledgeClaimCallbackHandler extends CallbackHandler {
         String body = format(
             CONFIRMATION_SUMMARY,
             formatLocalDateTime(caseData.getRespondent1ResponseDeadline(), DATE_TIME_AT),
-            format("/cases/case-details/%s#CaseDocuments", caseData.getCcdCaseReference()),
-            exitSurveyConfiguration.getDefendantSurvey()
-            );
+            format("/cases/case-details/%s#CaseDocuments", caseData.getCcdCaseReference()))
+            + exitSurveyContentService.respondentSurvey();
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(String.format(

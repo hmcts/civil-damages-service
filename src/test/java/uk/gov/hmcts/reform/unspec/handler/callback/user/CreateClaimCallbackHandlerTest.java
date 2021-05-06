@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.unspec.sampledata.CallbackParamsBuilder;
 import uk.gov.hmcts.reform.unspec.sampledata.CaseDataBuilder;
 import uk.gov.hmcts.reform.unspec.sampledata.CaseDetailsBuilder;
 import uk.gov.hmcts.reform.unspec.sampledata.PartyBuilder;
+import uk.gov.hmcts.reform.unspec.service.ExitSurveyContentService;
 import uk.gov.hmcts.reform.unspec.service.FeesService;
 import uk.gov.hmcts.reform.unspec.service.OrganisationService;
 import uk.gov.hmcts.reform.unspec.service.Time;
@@ -79,6 +80,7 @@ import static uk.gov.hmcts.reform.unspec.utils.PartyUtils.getPartyNameBasedOnTyp
     CaseDetailsConverter.class,
     ClaimIssueConfiguration.class,
     ExitSurveyConfiguration.class,
+    ExitSurveyContentService.class,
     MockDatabaseConfiguration.class,
     ValidationAutoConfiguration.class,
     DateOfBirthValidator.class,
@@ -93,11 +95,10 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
         + " until payment is confirmed."
         + " Once payment is confirmed you will receive an email. The claim will then progress offline."
         + "%n%nTo continue the claim you need to send the <a href=\"%s\" target=\"_blank\">sealed claim form</a>, "
-        + "a <a href=\"%3$s\" target=\"_blank\">response pack</a> and any supporting documents to "
+        + "a <a href=\"%s\" target=\"_blank\">response pack</a> and any supporting documents to "
         + "the defendant within 4 months. "
         + "%n%nOnce you have served the claim, send the Certificate of Service and supporting documents to the County"
-        + " Court Claims Centre."
-        + "%n%n<br/><br/>This is a new service - your <a href=\"%2$s\" target=\"_blank\">feedback</a> will help us to improve it.";
+        + " Court Claims Centre.";
 
     @MockBean
     private Time time;
@@ -117,11 +118,11 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
     @Autowired
     private CreateClaimCallbackHandler handler;
 
+    @Autowired
+    private ExitSurveyContentService exitSurveyContentService;
+
     @Value("${unspecified.response-pack-url}")
     private String responsePackLink;
-
-    @Value("${exitsurvey.claimant}")
-    private String claimantSurvey;
 
     @Nested
     class AboutToStartCallback {
@@ -792,10 +793,9 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                 String body = format(
                     LIP_CONFIRMATION_BODY,
                     format("/cases/case-details/%s#CaseDocuments", CASE_ID),
-                    claimantSurvey,
                     responsePackLink,
                     formatLocalDateTime(serviceDeadline, DATE_TIME_AT)
-                );
+                ) + exitSurveyContentService.applicantSurvey();
 
                 assertThat(response).usingRecursiveComparison().isEqualTo(
                     SubmittedCallbackResponse.builder()
@@ -819,9 +819,8 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
                 String body = format(
                     CONFIRMATION_SUMMARY,
-                    format("/cases/case-details/%s#CaseDocuments", CASE_ID),
-                    claimantSurvey
-                );
+                    format("/cases/case-details/%s#CaseDocuments", CASE_ID))
+                    + exitSurveyContentService.applicantSurvey();
 
                 assertThat(response).usingRecursiveComparison().isEqualTo(
                     SubmittedCallbackResponse.builder()
@@ -853,9 +852,8 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                         .confirmationBody(format(
                             LIP_CONFIRMATION_SCREEN,
                             format("/cases/case-details/%s#CaseDocuments", CASE_ID),
-                            claimantSurvey,
                             responsePackLink
-                        ))
+                        ) + exitSurveyContentService.applicantSurvey())
                         .build());
             }
         }

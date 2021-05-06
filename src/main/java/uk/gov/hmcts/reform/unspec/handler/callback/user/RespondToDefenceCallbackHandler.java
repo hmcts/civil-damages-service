@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.unspec.callback.Callback;
 import uk.gov.hmcts.reform.unspec.callback.CallbackHandler;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.callback.CaseEvent;
-import uk.gov.hmcts.reform.unspec.config.ExitSurveyConfiguration;
 import uk.gov.hmcts.reform.unspec.enums.YesOrNo;
 import uk.gov.hmcts.reform.unspec.model.BusinessProcess;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
@@ -18,6 +17,7 @@ import uk.gov.hmcts.reform.unspec.model.StatementOfTruth;
 import uk.gov.hmcts.reform.unspec.model.UnavailableDate;
 import uk.gov.hmcts.reform.unspec.model.common.Element;
 import uk.gov.hmcts.reform.unspec.model.dq.Applicant1DQ;
+import uk.gov.hmcts.reform.unspec.service.ExitSurveyContentService;
 import uk.gov.hmcts.reform.unspec.service.Time;
 import uk.gov.hmcts.reform.unspec.validation.UnavailableDateValidator;
 import uk.gov.hmcts.reform.unspec.validation.interfaces.ExpertsValidator;
@@ -41,7 +41,7 @@ import static uk.gov.hmcts.reform.unspec.enums.YesOrNo.YES;
 public class RespondToDefenceCallbackHandler extends CallbackHandler implements ExpertsValidator {
 
     private static final List<CaseEvent> EVENTS = Collections.singletonList(CLAIMANT_RESPONSE);
-    private final ExitSurveyConfiguration exitSurveyConfiguration;
+    private final ExitSurveyContentService exitSurveyContentService;
     private final UnavailableDateValidator unavailableDateValidator;
     private final ObjectMapper objectMapper;
     private final Time time;
@@ -128,12 +128,9 @@ public class RespondToDefenceCallbackHandler extends CallbackHandler implements 
         if (proceeding == YES) {
             return format(
                 "<br />We'll review the case and contact you to tell you what to do next.%n%n"
-                    + "[Download directions questionnaire](%s)"
-                    + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
-                dqLink, exitSurveyConfiguration.getClaimantSurvey()
-            );
+                    + "[Download directions questionnaire](%s)", dqLink)
+                + exitSurveyContentService.applicantSurvey();
         }
-        return format("%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.",
-            exitSurveyConfiguration.getClaimantSurvey());
+        return exitSurveyContentService.applicantSurvey();
     }
 }

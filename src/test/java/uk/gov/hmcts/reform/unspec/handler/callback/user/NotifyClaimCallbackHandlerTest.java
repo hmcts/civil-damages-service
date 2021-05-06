@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.reform.unspec.model.CaseData;
 import uk.gov.hmcts.reform.unspec.sampledata.CallbackParamsBuilder;
 import uk.gov.hmcts.reform.unspec.sampledata.CaseDataBuilder;
 import uk.gov.hmcts.reform.unspec.service.DeadlinesCalculator;
+import uk.gov.hmcts.reform.unspec.service.ExitSurveyContentService;
 import uk.gov.hmcts.reform.unspec.service.Time;
 
 import java.time.LocalDate;
@@ -40,6 +40,7 @@ import static uk.gov.hmcts.reform.unspec.service.DeadlinesCalculator.END_OF_BUSI
 @SpringBootTest(classes = {
     NotifyClaimCallbackHandler.class,
     ExitSurveyConfiguration.class,
+    ExitSurveyContentService.class,
     JacksonAutoConfiguration.class,
     CaseDetailsConverter.class
 })
@@ -55,11 +56,11 @@ class NotifyClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
     @Autowired
     private NotifyClaimCallbackHandler handler;
 
+    @Autowired
+    private ExitSurveyContentService exitSurveyContentService;
+
     private final LocalDateTime notificationDate = LocalDateTime.now();
     private final LocalDateTime deadline = notificationDate.toLocalDate().atTime(END_OF_BUSINESS_DAY);
-
-    @Value("${exitsurvey.claimant}")
-    private String claimantSurvey;
 
     @BeforeEach
     void setup() {
@@ -120,8 +121,7 @@ class NotifyClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
         private static final String CONFIRMATION_BODY = "<br />The defendant legal representative's organisation has "
             + "been notified and granted access to this claim.%n%n"
-            + "You must notify the defendant with the claim details by %s"
-            + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.";
+            + "You must notify the defendant with the claim details by %s";
 
         @Test
         void shouldReturnExpectedSubmittedCallbackResponse_whenInvoked() {
@@ -130,7 +130,8 @@ class NotifyClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
             SubmittedCallbackResponse response = (SubmittedCallbackResponse) handler.handle(params);
 
             String formattedDeadline = formatLocalDateTime(DEADLINE, DATE_TIME_AT);
-            String confirmationBody = String.format(CONFIRMATION_BODY, formattedDeadline, claimantSurvey);
+            String confirmationBody = String.format(CONFIRMATION_BODY, formattedDeadline)
+                + exitSurveyContentService.applicantSurvey();
 
             assertThat(response).usingRecursiveComparison().isEqualTo(
                 SubmittedCallbackResponse.builder()

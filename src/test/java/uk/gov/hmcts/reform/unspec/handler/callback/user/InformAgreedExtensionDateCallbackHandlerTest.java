@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.reform.unspec.sampledata.CallbackParamsBuilder;
 import uk.gov.hmcts.reform.unspec.sampledata.CaseDataBuilder;
 import uk.gov.hmcts.reform.unspec.sampledata.CaseDetailsBuilder;
 import uk.gov.hmcts.reform.unspec.service.DeadlinesCalculator;
+import uk.gov.hmcts.reform.unspec.service.ExitSurveyContentService;
 import uk.gov.hmcts.reform.unspec.service.Time;
 import uk.gov.hmcts.reform.unspec.validation.DeadlineExtensionValidator;
 
@@ -44,6 +44,7 @@ import static uk.gov.hmcts.reform.unspec.service.DeadlinesCalculator.END_OF_BUSI
 @SpringBootTest(classes = {
     InformAgreedExtensionDateCallbackHandler.class,
     ExitSurveyConfiguration.class,
+    ExitSurveyContentService.class,
     DeadlineExtensionValidator.class,
     JacksonAutoConfiguration.class,
     CaseDetailsConverter.class,
@@ -54,14 +55,14 @@ class InformAgreedExtensionDateCallbackHandlerTest extends BaseCallbackHandlerTe
     @Autowired
     private InformAgreedExtensionDateCallbackHandler handler;
 
+    @Autowired
+    private ExitSurveyContentService exitSurveyContentService;
+
     @MockBean
     private DeadlinesCalculator deadlinesCalculator;
 
     @MockBean
     private Time time;
-
-    @Value("${exitsurvey.defendant}")
-    private String defendantSurvey;
 
     @Nested
     class AboutToStartCallback {
@@ -150,8 +151,7 @@ class InformAgreedExtensionDateCallbackHandlerTest extends BaseCallbackHandlerTe
     @Nested
     class SubmittedCallback {
 
-        private static final String BODY = "<br />What happens next%n%n You must respond to the claimant by %s"
-            + "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.";
+        private static final String BODY = "<br />What happens next%n%n You must respond to the claimant by %s";
 
         @Test
         void shouldReturnExpectedResponse_whenInvoked() {
@@ -166,8 +166,8 @@ class InformAgreedExtensionDateCallbackHandlerTest extends BaseCallbackHandlerTe
             assertThat(response).isEqualTo(
                 SubmittedCallbackResponse.builder()
                     .confirmationHeader("# Extension deadline submitted")
-                    .confirmationBody(format(BODY, formatLocalDateTime(responseDeadline, DATE_TIME_AT),
-                                             defendantSurvey))
+                    .confirmationBody(format(BODY, formatLocalDateTime(responseDeadline, DATE_TIME_AT))
+                                          + exitSurveyContentService.respondentSurvey())
                     .build());
         }
     }

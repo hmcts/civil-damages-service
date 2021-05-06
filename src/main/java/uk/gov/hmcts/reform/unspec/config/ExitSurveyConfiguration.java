@@ -8,12 +8,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ExitSurveyConfiguration {
 
-    private final String claimantSurvey;
-    private final String defendantSurvey;
+    private final String applicantSurvey;
+    private final String respondentSurvey;
 
-    public ExitSurveyConfiguration(@Value("${exitsurvey.claimant}") String claimantSurvey,
-                                   @Value("${exitsurvey.defendant}") String defendantSurvey) {
-        this.claimantSurvey = claimantSurvey;
-        this.defendantSurvey = defendantSurvey;
+    public ExitSurveyConfiguration(@Value("${exitsurvey.claimant}") String applicantSurvey,
+                                   @Value("${exitsurvey.defendant}") String respondentSurvey) {
+        this.applicantSurvey = applicantSurvey;
+        this.respondentSurvey = respondentSurvey;
     }
+
 }
