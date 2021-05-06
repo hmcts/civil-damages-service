@@ -385,7 +385,7 @@ public class CaseDataBuilder {
     }
 
     public CaseDataBuilder atStateClaimDismissedPastClaimNotificationDeadline() {
-        atStatePendingClaimIssued();
+        atStateClaimIssued();
         ccdState = CASE_DISMISSED;
         claimNotificationDeadline = LocalDateTime.now().minusDays(1);
         claimDismissedDate = LocalDateTime.now();

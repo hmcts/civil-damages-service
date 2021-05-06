@@ -25,7 +25,6 @@ import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.unspec.enums.ResponseIntention.CONTEST_JURISDICTION;
 import static uk.gov.hmcts.reform.unspec.enums.ResponseIntention.PART_DEFENCE;
-import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DETAILS_NOTIFIED;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.CLAIM_DETAILS_NOTIFIED_TIME_EXTENSION;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.NOTIFICATION_ACKNOWLEDGED;
 import static uk.gov.hmcts.reform.unspec.service.flowstate.FlowState.Main.NOTIFICATION_ACKNOWLEDGED_TIME_EXTENSION;
@@ -1300,9 +1299,52 @@ class EventHistoryMapperTest {
     class ClaimDismissedPastClaimDismissedDeadline {
 
         @Test
-        void shouldPrepareExpectedEvents_whenDeadlinePassedAfterStateClaimDetailsNotified() {
-            CaseData caseData = CaseDataBuilder.builder().atStateClaimDismissed().build();
+        void shouldPrepareExpectedEvents_whenDeadlinePassedAfterStateClaimNotified() {
+            CaseData caseData = CaseDataBuilder.builder()
+                .atStateClaimDismissedPastClaimNotificationDeadline()
+                .build();
 
+            String text = "RPA Reason: Claim dismissed. Claimant hasn't taken action since the claim was issued.";
+            List<Event> expectedMiscellaneousEvents = List.of(
+                Event.builder()
+                    .eventSequence(1)
+                    .eventCode("999")
+                    .dateReceived(caseData.getClaimDismissedDate().format(ISO_DATE))
+                    .eventDetailsText(text)
+                    .eventDetails(EventDetails.builder()
+                                      .miscText(text)
+                                      .build())
+                    .build()
+            );
+
+            var eventHistory = mapper.buildEvents(caseData);
+
+            assertThat(eventHistory).isNotNull();
+            assertThat(eventHistory).extracting("miscellaneous").asList()
+                .containsExactly(expectedMiscellaneousEvents.get(0));
+
+            assertEmptyEvents(
+                eventHistory,
+                "defenceFiled",
+                "defenceAndCounterClaim",
+                "receiptOfPartAdmission",
+                "replyToDefence",
+                "directionsQuestionnaireFiled",
+                "receiptOfAdmission",
+                "acknowledgementOfServiceReceived",
+                "consentExtensionFilingDefence"
+            );
+        }
+
+        @Test
+        void shouldPrepareExpectedEvents_whenDeadlinePassedAfterStateClaimDetailsNotified() {
+            CaseData caseData = CaseDataBuilder.builder()
+                .atStateClaimDismissedPastClaimDetailsNotificationDeadline()
+                .claimDismissedDate(LocalDateTime.now())
+                .build();
+
+            String detailsText = "RPA Reason: Claim dismissed. Claimant hasn't notified defendant of the "
+                + "claim details within the allowed 2 weeks.";
             List<Event> expectedMiscellaneousEvents = List.of(
                 Event.builder()
                     .eventSequence(1)
@@ -1317,9 +1359,9 @@ class EventHistoryMapperTest {
                     .eventSequence(2)
                     .eventCode("999")
                     .dateReceived(caseData.getClaimDismissedDate().format(ISO_DATE))
-                    .eventDetailsText(mapper.prepareClaimDismissedDetails(CLAIM_DETAILS_NOTIFIED))
+                    .eventDetailsText(detailsText)
                     .eventDetails(EventDetails.builder()
-                                      .miscText(mapper.prepareClaimDismissedDetails(CLAIM_DETAILS_NOTIFIED))
+                                      .miscText(detailsText)
                                       .build())
                     .build()
             );
@@ -1345,7 +1387,8 @@ class EventHistoryMapperTest {
 
         @Test
         void shouldPrepareExpectedEvents_whenDeadlinePassedAfterStateClaimDetailsNotifiedExtension() {
-            CaseData caseData = CaseDataBuilder.builder().atStateClaimDetailsNotifiedTimeExtension()
+            CaseData caseData = CaseDataBuilder.builder()
+                .atStateClaimDetailsNotifiedTimeExtension()
                 .claimDismissedDate(LocalDateTime.now())
                 .build();
 
