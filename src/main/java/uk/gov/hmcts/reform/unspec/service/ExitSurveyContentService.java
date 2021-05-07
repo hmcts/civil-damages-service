@@ -13,11 +13,11 @@ public class ExitSurveyContentService {
 
     public String applicantSurvey() {
         return String.format(feedbackLink,
-                             exitSurveyConfiguration.getApplicantSurvey());
+                             exitSurveyConfiguration.getApplicantLink());
     }
 
     public String respondentSurvey() {
         return String.format(feedbackLink,
-                              exitSurveyConfiguration.getRespondentSurvey());
+                              exitSurveyConfiguration.getRespondentLink());
     }
 }
