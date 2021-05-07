@@ -9,10 +9,9 @@ import uk.gov.hmcts.reform.unspec.config.ExitSurveyConfiguration;
 public class ExitSurveyContentService {
 
     private final ExitSurveyConfiguration exitSurveyConfiguration;
-    static final String feedbackLink = "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.";
+    private static final String feedbackLink = "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.";
 
     public String applicantSurvey() {
-
         return String.format(feedbackLink,
                              exitSurveyConfiguration.getApplicantSurvey());
     }
