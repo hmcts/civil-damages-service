@@ -113,9 +113,9 @@ testing:
   support:
     enabled: ${TESTING_SUPPORT_ENABLED:false}
 
-exitsurvey:
-  applicantLink: "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/"
-  respondentLink: "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Defendant/"
+exit-survey:
+  applicant-link: https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/
+  respondent-link: https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Defendant/
 
 ---
 

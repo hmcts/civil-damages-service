@@ -1,18 +1,20 @@
 package uk.gov.hmcts.reform.unspec.config;
 
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 import javax.validation.constraints.NotBlank;
 
 @Data
-@RequiredArgsConstructor
-@ConfigurationProperties(prefix = "exitsurvey")
+@Configuration
+@EnableConfigurationProperties
+@ConfigurationProperties(prefix = "exit-survey")
 public class ExitSurveyConfiguration {
 
     @NotBlank
-    private final String applicantLink;
+    private String applicantLink;
     @NotBlank
-    private final String respondentLink;
+    private String respondentLink;
 }
