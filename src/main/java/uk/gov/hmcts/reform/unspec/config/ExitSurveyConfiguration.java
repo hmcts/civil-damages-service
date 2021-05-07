@@ -11,8 +11,8 @@ public class ExitSurveyConfiguration {
     private final String applicantSurvey;
     private final String respondentSurvey;
 
-    public ExitSurveyConfiguration(@Value("${exitsurvey.claimant}") String applicantSurvey,
-                                   @Value("${exitsurvey.defendant}") String respondentSurvey) {
+    public ExitSurveyConfiguration(@Value("${exitsurvey.applicant}") String applicantSurvey,
+                                   @Value("${exitsurvey.respondent}") String respondentSurvey) {
         this.applicantSurvey = applicantSurvey;
         this.respondentSurvey = respondentSurvey;
     }
