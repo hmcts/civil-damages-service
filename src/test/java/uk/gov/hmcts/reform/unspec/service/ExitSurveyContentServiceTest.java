@@ -7,25 +7,29 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.unspec.config.ExitSurveyConfiguration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {ExitSurveyContentService.class, ExitSurveyConfiguration.class},
-    properties = {
-        "exit-survey.applicant-link: http://applicant.com",
-        "exit-survey.respondent-link: http://respondent.com"
+@SpringBootTest(classes = {
+    ExitSurveyContentService.class,
+    ExitSurveyConfiguration.class
     })
 class ExitSurveyContentServiceTest {
 
+    private static final String feedbackLink = "%n%n<br/><br/>This is a new service - your <a href=\"%s\" target=\"_blank\">feedback</a> will help us to improve it.";
+
     @Autowired
-    ExitSurveyContentService service;
+    ExitSurveyContentService exitSurveyContentService;
 
     @Test
     void shouldReturnApplicantSurveyContents_whenInvoked() {
-        //TODO:
-        service.applicantSurvey();
+        assertThat(exitSurveyContentService.applicantSurvey()).isEqualTo(String.format(feedbackLink,
+                                                                                       "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Claimant/"));
     }
 
     @Test
     void shouldReturnRespondentSurveyContents_whenInvoked() {
-        //TODO:
+        assertThat(exitSurveyContentService.respondentSurvey()).isEqualTo(String.format(feedbackLink,
+                                                                                        "https://www.smartsurvey.co.uk/s/CivilDamages_ExitSurvey_Defendant/"));
     }
 }
