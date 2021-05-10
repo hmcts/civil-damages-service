@@ -71,14 +71,14 @@ nonworking-days:
 unspecified:
   response-pack-url: https://formfinder.hmctsformfinder.justice.gov.uk/n9-eng.pdf
   system-update:
-    username: 'civil-system-update@mailnesia.com'
-    password: 'Password12!'
+    username: ${UNSPECIFIED_SYSYEM_UPDATE_USERNAME:}
+    password: ${UNSPECIFIED_SYSYEM_UPDATE_PASSWORD:}
   prd-admin:
-    username: 'civil.damages.prd.admin@example.com'
-    password: 'Password12!'
+    username: ${UNSPECIFIED_PRD_ADMIN_USERNAME:}
+    password: ${UNSPECIFIED_PRD_ADMIN_PASSWORD:}
   cross-access:
-    username: 'caseworker-caa@mailnesia.com'
-    password: 'Password12!'
+    username: ${UNSPECIFIED_CROSS_ACCESS_USERNAME:}
+    password: ${UNSPECIFIED_CROSS_ACCESS_PASSWORD:}
 
 core_case_data:
   api:
@@ -190,6 +190,17 @@ robotics:
   notification:
     sender: civilunspecified@gmail.com
     recipient: civilunspecified+robotics@gmail.com
+
+unspecified:
+  system-update:
+    username: 'civil-system-update@mailnesia.com'
+    password: 'Password12!'
+  prd-admin:
+    username: 'civil.damages.prd.admin@example.com'
+    password: 'Password12!'
+  cross-access:
+    username: 'caseworker-caa@mailnesia.com'
+    password: 'Password12!'
 ---
 
 spring:

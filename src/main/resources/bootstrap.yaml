@@ -6,12 +6,12 @@ spring:
       paths: /mnt/secrets/unspec
       aliases:
         microservicekey-unspec-service: idam.s2s-auth.totp_secret
-        system-update-user-password: unspecified.system-update.password
-        system-update-user-username: unspecified.system-update.username
-        cross-access-user-password: unspecified.cross-access.password
-        cross-access-user-username: unspecified.cross-access.username
-        prd-admin-user-password: unspecified.prd-admin.password
-        prd-admin-user-username: unspecified.prd-admin.username
+        system-update-user-password: UNSPECIFIED_SYSYEM_UPDATE_PASSWORD
+        system-update-user-username: UNSPECIFIED_SYSYEM_UPDATE_USERNAME
+        cross-access-user-password: UNSPECIFIED_CROSS_ACCESS_PASSWORD
+        cross-access-user-username: UNSPECIFIED_CROSS_ACCESS_USERNAME
+        prd-admin-user-password: UNSPECIFIED_PRD_ADMIN_PASSWORD
+        prd-admin-user-username: UNSPECIFIED_PRD_ADMIN_USERNAME
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
         cmc-db-password: CMC_DB_PASSWORD
         docmosis-api-key: docmosis.tornado.key
