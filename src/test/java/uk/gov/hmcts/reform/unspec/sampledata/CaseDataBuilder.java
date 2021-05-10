@@ -386,7 +386,7 @@ public class CaseDataBuilder {
     }
 
     public CaseDataBuilder atStateClaimDismissedPastClaimNotificationDeadline() {
-        atStatePendingClaimIssued();
+        atStateClaimIssued();
         ccdState = CASE_DISMISSED;
         claimNotificationDeadline = LocalDateTime.now().minusDays(1);
         claimDismissedDate = LocalDateTime.now();
@@ -723,6 +723,7 @@ public class CaseDataBuilder {
         atStateClaimDetailsNotified();
         respondent1ResponseDeadline = RESPONSE_DEADLINE;
         respondent1TimeExtensionDate = LocalDateTime.now();
+        respondentSolicitor1AgreedDeadlineExtension = LocalDate.now();
         return this;
     }
 
