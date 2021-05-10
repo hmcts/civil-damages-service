@@ -44,6 +44,7 @@ import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.MID;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.SUBMITTED;
+import static uk.gov.hmcts.reform.unspec.callback.CallbackVersion.V_1;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.CLAIMANT_RESPONSE;
 import static uk.gov.hmcts.reform.unspec.enums.BusinessProcessStatus.READY;
 import static uk.gov.hmcts.reform.unspec.enums.YesOrNo.NO;
@@ -274,13 +275,10 @@ class RespondToDefenceCallbackHandlerTest extends BaseCallbackHandlerTest {
         class ResetStatementOfTruth {
 
             @Test
-            void shouldMoveStatementOfTruthToCorrectFieldAndResetUIField_whenInvoked() {
-                String name = "John Smith";
-                String role = "Solicitor";
-
+            void shouldKeepStatementOfTruth_whenInvoked() {
                 CaseData caseData = CaseDataBuilder.builder().atStateApplicantRespondToDefenceAndProceed().build()
                     .toBuilder()
-                    .uiStatementOfTruth(StatementOfTruth.builder().name(name).role(role).build())
+                    .uiStatementOfTruth(null)
                     .build();
 
                 var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(
@@ -292,7 +290,34 @@ class RespondToDefenceCallbackHandlerTest extends BaseCallbackHandlerTest {
                 assertThat(response.getData())
                     .extracting("applicant1DQStatementOfTruth")
                     .extracting("name", "role")
-                    .containsExactly(name, role);
+                    .containsExactly("Bob Jones", "Solicitor");
+
+                assertThat(response.getData())
+                    .extracting("uiStatementOfTruth")
+                    .isNull();
+            }
+
+            @Test
+            void shouldAddUiStatementOfTruthToApplicantStatementOfTruth_whenV1Callback() {
+                String name = "John Smith";
+                String role = "Solicitor";
+
+                CaseData caseData = CaseDataBuilder.builder().atStateApplicantRespondToDefenceAndProceed().build()
+                    .toBuilder()
+                    .uiStatementOfTruth(StatementOfTruth.builder().name(name).role(role).build())
+                    .build();
+
+                var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(
+                    callbackParamsOf(
+                        V_1,
+                        caseData,
+                        ABOUT_TO_SUBMIT
+                    ));
+
+                assertThat(response.getData())
+                    .extracting("applicant1DQStatementOfTruth")
+                    .extracting("name", "role")
+                    .containsExactly("John Smith", "Solicitor");
 
                 assertThat(response.getData())
                     .extracting("uiStatementOfTruth")

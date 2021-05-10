@@ -46,6 +46,7 @@ import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.MID;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.SUBMITTED;
+import static uk.gov.hmcts.reform.unspec.callback.CallbackVersion.V_1;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.DEFENDANT_RESPONSE;
 import static uk.gov.hmcts.reform.unspec.enums.YesOrNo.NO;
 import static uk.gov.hmcts.reform.unspec.enums.YesOrNo.YES;
@@ -365,6 +366,7 @@ class RespondToClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
                 var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(
                     callbackParamsOf(
+                        V_1,
                         caseData,
                         ABOUT_TO_SUBMIT
                     ));
@@ -378,6 +380,29 @@ class RespondToClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                     .extracting("uiStatementOfTruth")
                     .extracting("name", "role")
                     .containsExactly(null, null);
+            }
+
+            @Test
+            void shouldKeepApplicantStatementOfTruth_whenV1Callback() {
+                CaseData caseData = CaseDataBuilder.builder().atStateRespondentFullDefence().build()
+                    .toBuilder()
+                    .uiStatementOfTruth(null)
+                    .build();
+
+                var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(
+                    callbackParamsOf(
+                        caseData,
+                        ABOUT_TO_SUBMIT
+                    ));
+
+                assertThat(response.getData())
+                    .extracting("respondent1DQStatementOfTruth")
+                    .extracting("name", "role")
+                    .containsExactly("John Doe", "Solicitor");
+
+                assertThat(response.getData())
+                    .extracting("uiStatementOfTruth")
+                    .isNull();
             }
         }
     }

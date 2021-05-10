@@ -777,6 +777,7 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
                 var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(
                     callbackParamsOf(
+                        V_1,
                         data,
                         ABOUT_TO_SUBMIT
                     ));
@@ -790,6 +791,21 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                     .extracting("uiStatementOfTruth")
                     .extracting("name", "role")
                     .containsExactly(null, null);
+            }
+
+            @Test
+            void shouldKeepApplicantStatementOfTruth_whenNotV_1Callback() {
+                var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(
+                    callbackParamsOf(caseData, ABOUT_TO_SUBMIT));
+
+                assertThat(response.getData())
+                    .extracting("applicantSolicitor1ClaimStatementOfTruth")
+                    .extracting("name", "role")
+                    .containsExactly("Signer Name", "Signer Role");
+
+                assertThat(response.getData())
+                    .extracting("uiStatementOfTruth")
+                    .isNull();
             }
         }
     }
