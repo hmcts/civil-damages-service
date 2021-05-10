@@ -68,7 +68,8 @@ class TakeCaseOfflineCallbackHandlerTest extends BaseCallbackHandlerTest {
 
             var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
 
-            assertThat(response.getData()).containsEntry("takenOfflineDate", now.format(ISO_DATE_TIME));
+            assertThat(response.getData())
+                .containsEntry("takenOfflineDate", now.format(ISO_DATE_TIME));
         }
     }
 }
