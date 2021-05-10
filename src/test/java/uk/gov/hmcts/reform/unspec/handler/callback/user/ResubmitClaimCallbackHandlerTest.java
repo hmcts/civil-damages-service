@@ -56,15 +56,18 @@ class ResubmitClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
         @Test
         void shouldReturnExpectedSubmittedCallbackResponse_whenInvoked() {
-            CaseData caseData = CaseDataBuilder.builder().atStateClaimCreated().respondent1Represented(NO).build();
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimDetailsNotified()
+                .respondent1Represented(NO).build();
+
             CallbackParams params = callbackParamsOf(caseData, SUBMITTED);
             SubmittedCallbackResponse response = (SubmittedCallbackResponse) handler.handle(params);
 
             assertThat(response).usingRecursiveComparison().isEqualTo(
                 SubmittedCallbackResponse.builder()
                     .confirmationHeader("# Claim pending")
-                    .confirmationBody("Once your payment is confirmed your claim will be processed ready to be issued. "
-                                          + "Wait for us to contact you.")
+                    .confirmationBody(
+                        "<br />Once your payment is confirmed your claim will be processed ready to be issued. "
+                            + "Wait for us to contact you.")
                     .build());
         }
     }
