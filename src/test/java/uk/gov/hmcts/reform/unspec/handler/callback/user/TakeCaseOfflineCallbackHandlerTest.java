@@ -71,8 +71,8 @@ class TakeCaseOfflineCallbackHandlerTest extends BaseCallbackHandlerTest {
 
             assertThat(response.getData())
                 .containsEntry("takenOfflineDate", now.format(ISO_DATE_TIME));
-            
-          assertThat(response.getData())
+
+            assertThat(response.getData())
                 .extracting("businessProcess")
                 .extracting("camundaEvent")
                 .isEqualTo(TAKE_CASE_OFFLINE.name());
