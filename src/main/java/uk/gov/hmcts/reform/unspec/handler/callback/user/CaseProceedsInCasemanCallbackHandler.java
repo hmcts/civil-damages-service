@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.unspec.callback.Callback;
 import uk.gov.hmcts.reform.unspec.callback.CallbackHandler;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.callback.CaseEvent;
+import uk.gov.hmcts.reform.unspec.model.BusinessProcess;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
 import uk.gov.hmcts.reform.unspec.service.Time;
 import uk.gov.hmcts.reform.unspec.validation.groups.CasemanTransferDateGroup;
@@ -22,6 +23,7 @@ import javax.validation.Validator;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.unspec.callback.CallbackType.MID;
+import static uk.gov.hmcts.reform.unspec.callback.CallbackType.SUBMITTED;
 import static uk.gov.hmcts.reform.unspec.callback.CaseEvent.CASE_PROCEEDS_IN_CASEMAN;
 
 @Service
@@ -39,7 +41,8 @@ public class CaseProceedsInCasemanCallbackHandler extends CallbackHandler {
         return Map.of(
             callbackKey(ABOUT_TO_START), this::emptyCallbackResponse,
             callbackKey(MID, "transfer-date"), this::validateTransferDate,
-            callbackKey(ABOUT_TO_SUBMIT), this::addTakenOfflineDate
+            callbackKey(ABOUT_TO_SUBMIT), this::addTakenOfflineDate,
+            callbackKey(SUBMITTED), this::emptySubmittedCallbackResponse
         );
     }
 
@@ -60,7 +63,10 @@ public class CaseProceedsInCasemanCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse addTakenOfflineDate(CallbackParams callbackParams) {
-        CaseData caseData = callbackParams.getCaseData().toBuilder().takenOfflineDate(time.now()).build();
+        CaseData caseData = callbackParams.getCaseData().toBuilder()
+            .businessProcess(BusinessProcess.ready(CASE_PROCEEDS_IN_CASEMAN))
+            .takenOfflineByStaffDate(time.now())
+            .build();
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseData.toMap(mapper))

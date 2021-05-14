@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.prd.model.Organisation;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.config.ClaimIssueConfiguration;
+import uk.gov.hmcts.reform.unspec.config.ExitSurveyConfiguration;
 import uk.gov.hmcts.reform.unspec.config.MockDatabaseConfiguration;
 import uk.gov.hmcts.reform.unspec.handler.callback.BaseCallbackHandlerTest;
 import uk.gov.hmcts.reform.unspec.helpers.CaseDetailsConverter;
@@ -36,6 +37,7 @@ import uk.gov.hmcts.reform.unspec.sampledata.CallbackParamsBuilder;
 import uk.gov.hmcts.reform.unspec.sampledata.CaseDataBuilder;
 import uk.gov.hmcts.reform.unspec.sampledata.CaseDetailsBuilder;
 import uk.gov.hmcts.reform.unspec.sampledata.PartyBuilder;
+import uk.gov.hmcts.reform.unspec.service.ExitSurveyContentService;
 import uk.gov.hmcts.reform.unspec.service.FeesService;
 import uk.gov.hmcts.reform.unspec.service.OrganisationService;
 import uk.gov.hmcts.reform.unspec.service.Time;
@@ -77,6 +79,8 @@ import static uk.gov.hmcts.reform.unspec.utils.PartyUtils.getPartyNameBasedOnTyp
     JacksonAutoConfiguration.class,
     CaseDetailsConverter.class,
     ClaimIssueConfiguration.class,
+    ExitSurveyConfiguration.class,
+    ExitSurveyContentService.class,
     MockDatabaseConfiguration.class,
     ValidationAutoConfiguration.class,
     DateOfBirthValidator.class,
@@ -90,10 +94,10 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
     public static final String LIP_CONFIRMATION_SCREEN = "<br />Your claim will not be issued"
         + " until payment is confirmed."
         + " Once payment is confirmed you will receive an email. The claim will then progress offline."
-        + "\n\n To continue the claim you need to send the <a href=\"%s\" target=\"_blank\">sealed claim form</a>, "
+        + "%n%nTo continue the claim you need to send the <a href=\"%s\" target=\"_blank\">sealed claim form</a>, "
         + "a <a href=\"%s\" target=\"_blank\">response pack</a> and any supporting documents to "
         + "the defendant within 4 months. "
-        + "\n\nOnce you have served the claim, send the Certificate of Service and supporting documents to the County"
+        + "%n%nOnce you have served the claim, send the Certificate of Service and supporting documents to the County"
         + " Court Claims Centre.";
 
     @MockBean
@@ -114,6 +118,9 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
     @Autowired
     private CreateClaimCallbackHandler handler;
 
+    @Autowired
+    private ExitSurveyContentService exitSurveyContentService;
+
     @Value("${unspecified.response-pack-url}")
     private String responsePackLink;
 
@@ -122,7 +129,7 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
         @Test
         void shouldReturnNoError_WhenAboutToStartIsInvoked() {
-            CaseDetails caseDetails = CaseDetailsBuilder.builder().atStateClaimDraft().build();
+            CaseDetails caseDetails = CaseDetailsBuilder.builder().atStatePendingClaimIssued().build();
             CallbackParams params = CallbackParamsBuilder.builder().of(ABOUT_TO_START, caseDetails).build();
 
             AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse) handler
@@ -276,7 +283,6 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
         private final String pageId = "fee";
         private final Fee feeData = Fee.builder()
-            .version("1")
             .code("CODE")
             .calculatedAmountInPence(BigDecimal.valueOf(100))
             .build();
@@ -290,130 +296,64 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
             given(feesService.getFeeDataByClaimValue(any())).willReturn(feeData);
         }
 
-        @Nested
-        class NewCode {
+        @Test
+        void shouldCalculateClaimFeeAndAddPbaNumbers_whenCalledAndOrgExistsInPrd() {
+            given(organisationService.findOrganisation(any())).willReturn(Optional.of(organisation));
 
-            @Test
-            void shouldCalculateClaimFeeAndAddPbaNumbers_whenCalledAndOrgExistsInPrd() {
-                given(organisationService.findOrganisation(any())).willReturn(Optional.of(organisation));
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimDraft().build();
+            CallbackParams params = callbackParamsOf(caseData, MID, pageId);
 
-                CaseData caseData = CaseDataBuilder.builder().atStateClaimDraft().build();
-                CallbackParams params = callbackParamsOf(V_1, caseData, MID, pageId);
+            var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
 
-                var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
+            assertThat(response.getData())
+                .extracting("claimFee")
+                .extracting("calculatedAmountInPence", "code", "version")
+                .containsExactly(
+                    String.valueOf(feeData.getCalculatedAmountInPence()),
+                    feeData.getCode(),
+                    feeData.getVersion()
+                );
 
-                assertThat(response.getData())
-                    .extracting("claimFee")
-                    .extracting("calculatedAmountInPence", "code", "version")
-                    .containsExactly(
-                        String.valueOf(feeData.getCalculatedAmountInPence()),
-                        feeData.getCode(),
-                        feeData.getVersion()
-                    );
+            assertThat(response.getData())
+                .extracting("claimIssuedPaymentDetails")
+                .extracting("customerReference")
+                .isEqualTo("12345");
 
-                assertThat(response.getData())
-                    .extracting("claimIssuedPaymentDetails")
-                    .extracting("customerReference")
-                    .isEqualTo("12345");
+            DynamicList dynamicList = getDynamicList(response);
 
-                DynamicList dynamicList = getDynamicList(response);
+            List<String> actualPbas = dynamicList.getListItems().stream()
+                .map(DynamicListElement::getLabel)
+                .collect(Collectors.toList());
 
-                List<String> actualPbas = dynamicList.getListItems().stream()
-                    .map(DynamicListElement::getLabel)
-                    .collect(Collectors.toList());
-
-                assertThat(actualPbas).containsOnly("12345", "98765");
-                assertThat(dynamicList.getValue()).isEqualTo(DynamicListElement.EMPTY);
-            }
-
-            @Test
-            void shouldCalculateClaimFee_whenCalledAndOrgDoesNotExistInPrd() {
-                given(organisationService.findOrganisation(any())).willReturn(Optional.empty());
-
-                CaseData caseData = CaseDataBuilder.builder().atStateClaimDraft().build();
-                CallbackParams params = callbackParamsOf(V_1, caseData, MID, pageId);
-
-                var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
-
-                assertThat(response.getData())
-                    .extracting("claimFee")
-                    .extracting("calculatedAmountInPence", "code", "version")
-                    .containsExactly(
-                        String.valueOf(feeData.getCalculatedAmountInPence()),
-                        feeData.getCode(),
-                        feeData.getVersion()
-                    );
-
-                assertThat(response.getData())
-                    .extracting("claimIssuedPaymentDetails")
-                    .extracting("customerReference")
-                    .isEqualTo("12345");
-
-                assertThat(getDynamicList(response))
-                    .isEqualTo(DynamicList.builder().value(DynamicListElement.EMPTY).build());
-            }
+            assertThat(actualPbas).containsOnly("12345", "98765");
+            assertThat(dynamicList.getValue()).isEqualTo(DynamicListElement.EMPTY);
         }
 
-        @Nested
-        class OldCode {
+        @Test
+        void shouldCalculateClaimFee_whenCalledAndOrgDoesNotExistInPrd() {
+            given(organisationService.findOrganisation(any())).willReturn(Optional.empty());
 
-            @Test
-            void shouldCalculateClaimFeeAndAddPbaNumbers_whenCalledAndOrgExistsInPrd() {
-                given(organisationService.findOrganisation(any())).willReturn(Optional.of(organisation));
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimDraft().build();
+            CallbackParams params = callbackParamsOf(caseData, MID, pageId);
 
-                CaseData caseData = CaseDataBuilder.builder().atStateClaimDraft().build();
-                CallbackParams params = callbackParamsOf(caseData, MID, pageId);
+            var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
 
-                var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
+            assertThat(response.getData())
+                .extracting("claimFee")
+                .extracting("calculatedAmountInPence", "code", "version")
+                .containsExactly(
+                    String.valueOf(feeData.getCalculatedAmountInPence()),
+                    feeData.getCode(),
+                    feeData.getVersion()
+                );
 
-                assertThat(response.getData())
-                    .extracting("claimFee")
-                    .extracting("calculatedAmountInPence", "code", "version")
-                    .containsExactly(
-                        String.valueOf(feeData.getCalculatedAmountInPence()),
-                        feeData.getCode(),
-                        feeData.getVersion()
-                    );
+            assertThat(response.getData())
+                .extracting("claimIssuedPaymentDetails")
+                .extracting("customerReference")
+                .isEqualTo("12345");
 
-                assertThat(response.getData())
-                    .extracting("paymentReference")
-                    .isEqualTo("12345");
-
-                DynamicList dynamicList = getDynamicList(response);
-
-                List<String> actualPbas = dynamicList.getListItems().stream()
-                    .map(DynamicListElement::getLabel)
-                    .collect(Collectors.toList());
-
-                assertThat(actualPbas).containsOnly("12345", "98765");
-                assertThat(dynamicList.getValue()).isEqualTo(DynamicListElement.EMPTY);
-            }
-
-            @Test
-            void shouldCalculateClaimFee_whenCalledAndOrgDoesNotExistInPrd() {
-                given(organisationService.findOrganisation(any())).willReturn(Optional.empty());
-
-                CaseData caseData = CaseDataBuilder.builder().atStateClaimDraft().build();
-                CallbackParams params = callbackParamsOf(caseData, MID, pageId);
-
-                var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
-
-                assertThat(response.getData())
-                    .extracting("claimFee")
-                    .extracting("calculatedAmountInPence", "code", "version")
-                    .containsExactly(
-                        String.valueOf(feeData.getCalculatedAmountInPence()),
-                        feeData.getCode(),
-                        feeData.getVersion()
-                    );
-
-                assertThat(response.getData())
-                    .extracting("paymentReference")
-                    .isEqualTo("12345");
-
-                assertThat(getDynamicList(response))
-                    .isEqualTo(DynamicList.builder().value(DynamicListElement.EMPTY).build());
-            }
+            assertThat(getDynamicList(response))
+                .isEqualTo(DynamicList.builder().value(DynamicListElement.EMPTY).build());
         }
 
         private DynamicList getDynamicList(AboutToStartOrSubmitCallbackResponse response) {
@@ -630,11 +570,6 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
             assertThat(response.getData())
                 .extracting("uiStatementOfTruth")
                 .isNull();
-
-            assertThat(response.getData())
-                .extracting("applicantSolicitor1ClaimStatementOfTruth")
-                .extracting("name", "role")
-                .containsExactly(name, role);
         }
     }
 
@@ -767,6 +702,52 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                     .containsExactly(userId, DIFFERENT_EMAIL);
             }
         }
+
+        @Nested
+        class ResetStatementOfTruth {
+
+            @Test
+            void shouldMoveStatementOfTruthToCorrectFieldAndResetUIField_whenInvoked() {
+                String name = "John Smith";
+                String role = "Solicitor";
+
+                CaseData data = caseData.toBuilder()
+                    .uiStatementOfTruth(StatementOfTruth.builder().name(name).role(role).build())
+                    .build();
+
+                var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(
+                    callbackParamsOf(
+                        V_1,
+                        data,
+                        ABOUT_TO_SUBMIT
+                    ));
+
+                assertThat(response.getData())
+                    .extracting("applicantSolicitor1ClaimStatementOfTruth")
+                    .extracting("name", "role")
+                    .containsExactly(name, role);
+
+                assertThat(response.getData())
+                    .extracting("uiStatementOfTruth")
+                    .extracting("name", "role")
+                    .containsExactly(null, null);
+            }
+
+            @Test
+            void shouldKeepApplicantStatementOfTruth_whenNotV_1Callback() {
+                var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(
+                    callbackParamsOf(caseData, ABOUT_TO_SUBMIT));
+
+                assertThat(response.getData())
+                    .extracting("applicantSolicitor1ClaimStatementOfTruth")
+                    .extracting("name", "role")
+                    .containsExactly("Signer Name", "Signer Role");
+
+                assertThat(response.getData())
+                    .extracting("uiStatementOfTruth")
+                    .isNull();
+            }
+        }
     }
 
     @Nested
@@ -788,7 +769,7 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                     format("/cases/case-details/%s#CaseDocuments", CASE_ID),
                     responsePackLink,
                     formatLocalDateTime(serviceDeadline, DATE_TIME_AT)
-                );
+                ) + exitSurveyContentService.applicantSurvey();
 
                 assertThat(response).usingRecursiveComparison().isEqualTo(
                     SubmittedCallbackResponse.builder()
@@ -806,14 +787,14 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
             @Test
             void shouldReturnExpectedSubmittedCallbackResponse_whenRespondent1HasRepresentation() {
-                CaseData caseData = CaseDataBuilder.builder().atStateClaimCreated().build();
+                CaseData caseData = CaseDataBuilder.builder().atStateClaimDetailsNotified().build();
                 CallbackParams params = callbackParamsOf(caseData, SUBMITTED);
                 SubmittedCallbackResponse response = (SubmittedCallbackResponse) handler.handle(params);
 
                 String body = format(
                     CONFIRMATION_SUMMARY,
-                    format("/cases/case-details/%s#CaseDocuments", CASE_ID)
-                );
+                    format("/cases/case-details/%s#CaseDocuments", CASE_ID))
+                    + exitSurveyContentService.applicantSurvey();
 
                 assertThat(response).usingRecursiveComparison().isEqualTo(
                     SubmittedCallbackResponse.builder()
@@ -831,7 +812,7 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
             @Test
             void shouldReturnExpectedSubmittedCallbackResponse_whenRespondent1SolicitorNotRegisteredInMyHmcts() {
-                CaseData caseData = CaseDataBuilder.builder().atStateClaimCreated()
+                CaseData caseData = CaseDataBuilder.builder().atStateClaimDetailsNotified()
                     .respondent1Represented(YES)
                     .respondent1OrgRegistered(NO)
                     .build();
@@ -846,7 +827,7 @@ class CreateClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                             LIP_CONFIRMATION_SCREEN,
                             format("/cases/case-details/%s#CaseDocuments", CASE_ID),
                             responsePackLink
-                        ))
+                        ) + exitSurveyContentService.applicantSurvey())
                         .build());
             }
         }

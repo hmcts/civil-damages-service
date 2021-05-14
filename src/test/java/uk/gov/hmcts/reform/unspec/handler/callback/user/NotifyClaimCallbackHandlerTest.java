@@ -12,12 +12,14 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.unspec.callback.CallbackParams;
 import uk.gov.hmcts.reform.unspec.callback.CallbackType;
+import uk.gov.hmcts.reform.unspec.config.ExitSurveyConfiguration;
 import uk.gov.hmcts.reform.unspec.handler.callback.BaseCallbackHandlerTest;
 import uk.gov.hmcts.reform.unspec.helpers.CaseDetailsConverter;
 import uk.gov.hmcts.reform.unspec.model.CaseData;
 import uk.gov.hmcts.reform.unspec.sampledata.CallbackParamsBuilder;
 import uk.gov.hmcts.reform.unspec.sampledata.CaseDataBuilder;
 import uk.gov.hmcts.reform.unspec.service.DeadlinesCalculator;
+import uk.gov.hmcts.reform.unspec.service.ExitSurveyContentService;
 import uk.gov.hmcts.reform.unspec.service.Time;
 
 import java.time.LocalDateTime;
@@ -36,6 +38,8 @@ import static uk.gov.hmcts.reform.unspec.service.DeadlinesCalculator.END_OF_BUSI
 
 @SpringBootTest(classes = {
     NotifyClaimCallbackHandler.class,
+    ExitSurveyConfiguration.class,
+    ExitSurveyContentService.class,
     JacksonAutoConfiguration.class,
     CaseDetailsConverter.class
 })
@@ -50,6 +54,9 @@ class NotifyClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
     @Autowired
     private NotifyClaimCallbackHandler handler;
+
+    @Autowired
+    private ExitSurveyContentService exitSurveyContentService;
 
     private final LocalDateTime notificationDate = LocalDateTime.now();
     private final LocalDateTime deadline = notificationDate.toLocalDate().atTime(END_OF_BUSINESS_DAY);
@@ -69,7 +76,7 @@ class NotifyClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
             @Test
             void shouldUpdateBusinessProcessAndAddNotificationDeadline_when14DaysIsBeforeThe4MonthDeadline() {
                 LocalDateTime claimNotificationDeadline = notificationDate.plusMonths(4);
-                CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseDetailsNotification()
+                CaseData caseData = CaseDataBuilder.builder().atStateClaimNotified()
                     .claimNotificationDeadline(claimNotificationDeadline)
                     .build();
                 CallbackParams params = CallbackParamsBuilder.builder().of(
@@ -91,7 +98,7 @@ class NotifyClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
             @Test
             void shouldSetClaimDetailsNotificationAsNotificationDeadlineAt_when14DaysIsAfterThe4MonthDeadline() {
                 LocalDateTime claimNotificationDeadline = notificationDate.minusDays(5);
-                CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseDetailsNotification()
+                CaseData caseData = CaseDataBuilder.builder().atStateClaimNotified()
                     .claimNotificationDeadline(claimNotificationDeadline)
                     .build();
                 CallbackParams params = CallbackParamsBuilder.builder().of(
@@ -108,7 +115,7 @@ class NotifyClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
 
             @Test
             void shouldSetClaimDetailsNotificationAsClaimNotificationDeadline_when14DaysIsSameDayAs4MonthDeadline() {
-                CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseDetailsNotification()
+                CaseData caseData = CaseDataBuilder.builder().atStateClaimNotified()
                     .claimNotificationDeadline(deadline)
                     .build();
                 CallbackParams params = CallbackParamsBuilder.builder().of(
@@ -140,7 +147,7 @@ class NotifyClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                 LocalDateTime notifyClaimDateTime = LocalDateTime.of(2021, 4, 5, 10, 0);
                 when(time.now()).thenReturn(notifyClaimDateTime);
 
-                CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseDetailsNotification()
+                CaseData caseData = CaseDataBuilder.builder().atStateClaimNotified()
                     .claimNotificationDeadline(claimNotificationDeadline)
                     .build();
                 CallbackParams params = CallbackParamsBuilder.builder().of(
@@ -158,7 +165,7 @@ class NotifyClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
                 LocalDateTime notifyClaimDateTime = LocalDateTime.of(2021, 4, 5, 17, 0);
                 when(time.now()).thenReturn(notifyClaimDateTime);
 
-                CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseDetailsNotification()
+                CaseData caseData = CaseDataBuilder.builder().atStateClaimNotified()
                     .claimNotificationDeadline(claimNotificationDeadline)
                     .build();
                 CallbackParams params = CallbackParamsBuilder.builder().of(
@@ -177,17 +184,18 @@ class NotifyClaimCallbackHandlerTest extends BaseCallbackHandlerTest {
     class SubmittedCallback {
 
         private static final String CONFIRMATION_BODY = "<br />The defendant legal representative's organisation has "
-            + "been notified and granted access to this claim.\n\n"
+            + "been notified and granted access to this claim.%n%n"
             + "You must notify the defendant with the claim details by %s";
 
         @Test
         void shouldReturnExpectedSubmittedCallbackResponse_whenInvoked() {
-            CaseData caseData = CaseDataBuilder.builder().atStateAwaitingCaseDetailsNotification().build();
+            CaseData caseData = CaseDataBuilder.builder().atStateClaimNotified().build();
             CallbackParams params = callbackParamsOf(caseData, SUBMITTED);
             SubmittedCallbackResponse response = (SubmittedCallbackResponse) handler.handle(params);
 
             String formattedDeadline = formatLocalDateTime(DEADLINE, DATE_TIME_AT);
-            String confirmationBody = String.format(CONFIRMATION_BODY, formattedDeadline);
+            String confirmationBody = String.format(CONFIRMATION_BODY, formattedDeadline)
+                + exitSurveyContentService.applicantSurvey();
 
             assertThat(response).usingRecursiveComparison().isEqualTo(
                 SubmittedCallbackResponse.builder()
