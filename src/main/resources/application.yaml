@@ -15,7 +15,7 @@ management:
 
 spring:
   application:
-    name: civil-service
+    name: unspec-service
   cache:
     cache-names: userInfoCache
     caffeine:
@@ -52,11 +52,11 @@ fees:
 payments:
   api:
     site_id: AAA7
-    service: CIVIL
+    service: UNSPEC
 
 idam:
   s2s-auth:
-    microservice: civil_service
+    microservice: unspec_service
 
 document_management:
   userRoles: "caseworker-civil,caseworker-civil-solicitor"
@@ -68,13 +68,13 @@ bankHolidays:
 nonworking-days:
   datafile: /data/non-working_days.dat
 
-civil:
+unspecified:
   response-pack-url: https://formfinder.hmctsformfinder.justice.gov.uk/n9-eng.pdf
   system-update:
     username: 'civil-system-update@mailnesia.com'
     password: 'Password12!'
   prd-admin:
-    username: 'civil.prd.admin@example.com'
+    username: 'civil.damages.prd.admin@example.com'
     password: 'Password12!'
   cross-access:
     username: 'caseworker-caa@mailnesia.com'
@@ -161,7 +161,7 @@ idam:
     url: http://localhost:4502
     totp_secret: AABBCCDDEEFFGGHH
   client:
-    id: civil
+    id: unspec
     redirect_uri: https://localhost:9000/oauth2/callback
     secret: OOOOOOOOOOOOOOOO
 
@@ -188,8 +188,8 @@ rd_professional:
 
 robotics:
   notification:
-    sender: hmcts.civil@gmail.com
-    recipient: hmcts.civil+robotics@gmail.com
+    sender: civilunspecified@gmail.com
+    recipient: civilunspecified+robotics@gmail.com
 ---
 
 spring:
