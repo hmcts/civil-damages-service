@@ -82,4 +82,24 @@ class GenerateDirectionsQuestionnaireCallbackHandlerTest extends BaseCallbackHan
         assertThat(updatedData.getSystemGeneratedCaseDocuments()).hasSize(2);
         assertThat(updatedData.getSystemGeneratedCaseDocuments().get(1).getValue()).isEqualTo(DOCUMENT);
     }
+
+    @Test
+    void shouldReturnDefendantResponseActivityId_whenDefendantRespond() {
+        CaseData caseData = CaseDataBuilder.builder().atStateRespondentFullDefence().build();
+
+        CallbackParams params = callbackParamsOf(caseData, ABOUT_TO_SUBMIT);
+
+        assertThat(handler.camundaActivityId(params))
+            .isEqualTo("DefendantResponseFullDefenceGenerateDirectionsQuestionnaire");
+    }
+
+    @Test
+    void shouldReturnResponseToDefenceActivityId_whenClaimantProceedsCase() {
+        CaseData caseData = CaseDataBuilder.builder().atStateApplicantRespondToDefenceAndProceed().build();
+
+        CallbackParams params = callbackParamsOf(caseData, ABOUT_TO_SUBMIT);
+
+        assertThat(handler.camundaActivityId(params))
+            .isEqualTo("ClaimantResponseGenerateDirectionsQuestionnaire");
+    }
 }
