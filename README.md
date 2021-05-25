@@ -1,3 +1,5 @@
+# This repo is now deprecated, [civil-service](https://github.com/hmcts/civil-service) is used instead.
+
 # civil-damages-service
 
 Civil Damages CCD Callback Service.
